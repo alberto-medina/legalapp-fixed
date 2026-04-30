@@ -1,0 +1,152 @@
+<VideollamadaScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # TOPBAR
+        BoxLayout:
+            size_hint_y: None
+            height: 58
+            padding: [12, 10, 16, 10]
+            canvas.before:
+                Color:
+                    rgba: 0.10, 0.12, 0.18, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint_x: None
+                width: 36
+                font_size: 22
+                bold: True
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            Label:
+                text: "VIDEOLLAMADA"
+                font_size: 16
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                text_size: self.size
+
+        # CARD CENTRAL
+        BoxLayout:
+            orientation: "vertical"
+            padding: [24, 40, 24, 24]
+            spacing: 20
+
+            # Icono camara (texto)
+            Label:
+                text: "[ VIDEO ]"
+                font_size: 36
+                bold: True
+                color: 0.10, 0.12, 0.18, 1
+                size_hint_y: None
+                height: 60
+                halign: "center"
+                text_size: self.size
+
+            Label:
+                id: lbl_con_quien
+                text: ""
+                font_size: 16
+                bold: True
+                color: 0.10, 0.12, 0.18, 1
+                size_hint_y: None
+                height: 34
+                halign: "center"
+                text_size: self.size
+
+            # Card sala
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: 90
+                padding: [16, 12]
+                spacing: 6
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [14]
+                    Color:
+                        rgba: 0.88, 0.90, 0.93, 1
+                    Line:
+                        rounded_rectangle: [self.x+1, self.y+1, self.width-2, self.height-2, 14]
+                        width: 0.8
+
+                Label:
+                    id: lbl_sala
+                    text: "Generando sala..."
+                    font_size: 13
+                    bold: True
+                    color: 0.10, 0.12, 0.18, 1
+                    halign: "center"
+                    text_size: self.size
+
+                Label:
+                    id: lbl_url
+                    text: ""
+                    font_size: 10
+                    color: 0.50, 0.55, 0.65, 1
+                    halign: "center"
+                    text_size: self.size
+
+            Label:
+                text: "La sala es privada y unica para esta consulta."
+                font_size: 12
+                color: 0.50, 0.55, 0.65, 1
+                size_hint_y: None
+                height: 28
+                halign: "center"
+                text_size: self.size
+
+            Widget:
+                size_hint_y: None
+                height: 10
+
+            # BOTON UNIRSE
+            Button:
+                text: "Unirse a la videollamada"
+                size_hint_y: None
+                height: 60
+                bold: True
+                font_size: 17
+                background_normal: ""
+                background_color: 0.10, 0.12, 0.18, 1
+                color: 1, 1, 1, 1
+                on_release: root.unirse()
+
+            Label:
+                text: "Se abrira en tu navegador o app de video"
+                font_size: 11
+                color: 0.60, 0.63, 0.70, 1
+                size_hint_y: None
+                height: 22
+                halign: "center"
+                text_size: self.size
+
+            # BOTON VOLVER AL CHAT
+            Button:
+                text: "Volver al chat"
+                size_hint_y: None
+                height: 46
+                font_size: 13
+                background_color: 0, 0, 0, 0
+                color: 0.45, 0.50, 0.58, 1
+                on_release: root.volver()
+
+            Widget:

@@ -17,7 +17,7 @@
             padding: [12, 10, 16, 10]
             canvas.before:
                 Color:
-                    rgba: 0.00, 0.04, 0.22, 1
+                    rgba: 0.10, 0.12, 0.18, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -29,12 +29,12 @@
                 font_size: 22
                 bold: True
                 background_color: 0, 0, 0, 0
-                color: 0.99, 0.84, 0.00, 1
+                color: 1, 1, 1, 1
                 on_release: root.volver()
 
             Label:
                 text: "MI PERFIL"
-                font_size: 16
+                font_size: 17
                 bold: True
                 color: 1, 1, 1, 1
                 halign: "left"
@@ -45,24 +45,24 @@
             BoxLayout:
                 orientation: "vertical"
                 padding: [16, 16, 16, 80]
-                spacing: 12
+                spacing: 14
                 size_hint_y: None
                 height: self.minimum_height
 
-                # AVATAR CARD
+                # -- AVATAR CARD ----------------------------------
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
-                    height: 160
+                    height: 170
                     spacing: 8
-                    padding: [0, 12, 0, 8]
+                    padding: [0, 14, 0, 10]
                     canvas.before:
                         Color:
-                            rgba: 0.00, 0.04, 0.22, 1
+                            rgba: 0.10, 0.12, 0.18, 1
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [16]
+                            radius: [18]
 
                     AsyncImage:
                         id: img_avatar
@@ -76,28 +76,30 @@
                     Label:
                         id: lbl_rol_badge
                         text: ""
-                        font_size: 12
+                        font_size: 13
                         bold: True
                         size_hint_y: None
                         height: 22
                         halign: "center"
                         text_size: self.size
+                        color: 1, 1, 1, 1
 
                     Button:
                         text: "Cambiar foto"
                         size_hint: None, None
-                        size: 130, 32
+                        size: 140, 34
                         pos_hint: {"center_x": 0.5}
-                        font_size: 12
-                        background_color: 0.99, 0.84, 0.00, 1
-                        color: 0.00, 0.04, 0.22, 1
+                        font_size: 13
+                        background_normal: ""
+                        background_color: 0.18, 0.80, 0.44, 1
+                        color: 1, 1, 1, 1
                         bold: True
                         on_release: root.elegir_foto()
 
-                # CAMPOS
+                # -- CAMPOS COMUNES -------------------------------
                 Label:
                     text: "NOMBRE"
-                    font_size: 10
+                    font_size: 11
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
                     size_hint_y: None
@@ -110,16 +112,17 @@
                     hint_text: "Tu nombre completo"
                     multiline: False
                     size_hint_y: None
-                    height: 46
+                    height: 48
                     background_color: 1, 1, 1, 1
-                    foreground_color: 0.08, 0.12, 0.28, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
-                    cursor_color: 0.00, 0.04, 0.22, 1
-                    padding: [12, 12]
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [14, 14]
+                    font_size: 15
 
                 Label:
                     text: "TELEFONO"
-                    font_size: 10
+                    font_size: 11
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
                     size_hint_y: None
@@ -132,16 +135,17 @@
                     hint_text: "+54 9 xxx-xxx"
                     multiline: False
                     size_hint_y: None
-                    height: 46
+                    height: 48
                     background_color: 1, 1, 1, 1
-                    foreground_color: 0.08, 0.12, 0.28, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
-                    cursor_color: 0.00, 0.04, 0.22, 1
-                    padding: [12, 12]
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [14, 14]
+                    font_size: 15
 
                 Label:
                     text: "FOTO (ruta o URL)"
-                    font_size: 10
+                    font_size: 11
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
                     size_hint_y: None
@@ -154,24 +158,37 @@
                     hint_text: "Se completa al elegir foto..."
                     multiline: False
                     size_hint_y: None
-                    height: 46
+                    height: 48
                     background_color: 1, 1, 1, 1
-                    foreground_color: 0.08, 0.12, 0.28, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
-                    cursor_color: 0.00, 0.04, 0.22, 1
-                    padding: [12, 12]
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [14, 14]
+                    font_size: 15
 
-                # SECCION ABOGADO
+                # -- SECCION ABOGADO (height se controla desde Python) --
                 BoxLayout:
                     id: seccion_abogado
                     orientation: "vertical"
-                    spacing: 12
+                    spacing: 14
                     size_hint_y: None
                     height: self.minimum_height
 
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 36
+                        padding: [0, 10, 0, 0]
+                        Label:
+                            text: "DATOS PROFESIONALES"
+                            font_size: 12
+                            bold: True
+                            color: 0.35, 0.40, 0.50, 1
+                            halign: "left"
+                            text_size: self.size
+
                     Label:
                         text: "MATRICULA"
-                        font_size: 10
+                        font_size: 11
                         bold: True
                         color: 0.40, 0.45, 0.55, 1
                         size_hint_y: None
@@ -184,16 +201,17 @@
                         hint_text: "Numero de matricula"
                         multiline: False
                         size_hint_y: None
-                        height: 46
+                        height: 48
                         background_color: 1, 1, 1, 1
-                        foreground_color: 0.08, 0.12, 0.28, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.60, 0.63, 0.70, 1
-                        cursor_color: 0.00, 0.04, 0.22, 1
-                        padding: [12, 12]
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: [14, 14]
+                        font_size: 15
 
                     Label:
                         text: "ANOS DE EXPERIENCIA"
-                        font_size: 10
+                        font_size: 11
                         bold: True
                         color: 0.40, 0.45, 0.55, 1
                         size_hint_y: None
@@ -206,16 +224,17 @@
                         hint_text: "Ej: 8 anos"
                         multiline: False
                         size_hint_y: None
-                        height: 46
+                        height: 48
                         background_color: 1, 1, 1, 1
-                        foreground_color: 0.08, 0.12, 0.28, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.60, 0.63, 0.70, 1
-                        cursor_color: 0.00, 0.04, 0.22, 1
-                        padding: [12, 12]
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: [14, 14]
+                        font_size: 15
 
                     Label:
                         text: "BIO / DESCRIPCION"
-                        font_size: 10
+                        font_size: 11
                         bold: True
                         color: 0.40, 0.45, 0.55, 1
                         size_hint_y: None
@@ -230,33 +249,67 @@
                         size_hint_y: None
                         height: 90
                         background_color: 1, 1, 1, 1
-                        foreground_color: 0.08, 0.12, 0.28, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.60, 0.63, 0.70, 1
-                        cursor_color: 0.00, 0.04, 0.22, 1
-                        padding: [12, 12]
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: [14, 12]
+                        font_size: 15
 
-                    # RESENAS
-                    Widget:
+                    BoxLayout:
                         size_hint_y: None
-                        height: 12
+                        height: 36
+                        padding: [0, 10, 0, 0]
+                        Label:
+                            text: "DATOS BANCARIOS"
+                            font_size: 12
+                            bold: True
+                            color: 0.35, 0.40, 0.50, 1
+                            halign: "left"
+                            text_size: self.size
 
                     Label:
-                        text: "OPINIONES DE CLIENTES"
+                        text: "CBU / ALIAS"
                         font_size: 11
                         bold: True
                         color: 0.40, 0.45, 0.55, 1
                         size_hint_y: None
-                        height: 22
+                        height: 18
                         halign: "left"
                         text_size: self.size
+
+                    TextInput:
+                        id: cuenta_bancaria
+                        hint_text: "CBU o alias de tu cuenta"
+                        multiline: False
+                        size_hint_y: None
+                        height: 48
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: [14, 14]
+                        font_size: 15
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: 36
+                        padding: [0, 10, 0, 0]
+                        Label:
+                            text: "OPINIONES DE CLIENTES"
+                            font_size: 12
+                            bold: True
+                            color: 0.35, 0.40, 0.50, 1
+                            halign: "left"
+                            text_size: self.size
 
                     Label:
                         id: lbl_promedio
                         text: "-"
                         font_size: 14
                         bold: True
+                        color: 0.85, 0.55, 0.05, 1
                         size_hint_y: None
-                        height: 26
+                        height: 28
                         halign: "left"
                         text_size: self.size
 
@@ -274,9 +327,10 @@
                 Button:
                     text: "GUARDAR CAMBIOS"
                     size_hint_y: None
-                    height: 52
+                    height: 54
                     bold: True
-                    font_size: 15
-                    background_color: 0.00, 0.04, 0.22, 1
+                    font_size: 16
+                    background_normal: ""
+                    background_color: 0.10, 0.12, 0.18, 1
                     color: 1, 1, 1, 1
                     on_release: root.guardar()

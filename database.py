@@ -25,7 +25,8 @@ def create_tables():
         matricula TEXT,
         experiencia TEXT,
         descripcion TEXT,
-        estado_abogado TEXT DEFAULT 'disponible'
+        estado_abogado TEXT DEFAULT 'disponible',
+        cuenta_bancaria TEXT
     )""")
 
     c.execute("""
@@ -66,16 +67,23 @@ def actualizar_db():
     conn = get_connection()
     c = conn.cursor()
 
+    # mensajes.archivo
     c.execute("PRAGMA table_info(mensajes)")
     if "archivo" not in [r[1] for r in c.fetchall()]:
         c.execute("ALTER TABLE mensajes ADD COLUMN archivo TEXT")
 
+    # users: migraciones
     c.execute("PRAGMA table_info(users)")
     cols = [r[1] for r in c.fetchall()]
+
     if "estado_abogado" not in cols:
         print("MIGRACION: agregando estado_abogado...")
         c.execute("ALTER TABLE users ADD COLUMN estado_abogado TEXT DEFAULT 'disponible'")
         c.execute("UPDATE users SET estado_abogado='disponible' WHERE estado_abogado IS NULL")
+
+    if "cuenta_bancaria" not in cols:
+        print("MIGRACION: agregando cuenta_bancaria...")
+        c.execute("ALTER TABLE users ADD COLUMN cuenta_bancaria TEXT")
 
     conn.commit()
     conn.close()

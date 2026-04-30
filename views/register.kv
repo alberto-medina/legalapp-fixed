@@ -4,111 +4,173 @@
 
         canvas.before:
             Color:
-                rgba: 0.05, 0.06, 0.08, 1
+                rgba: 0.96, 0.97, 0.98, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
-        padding: 30
-        spacing: 20
-
-        Widget:
-            size_hint_y: None
-            height: 30
-
-        # TITULO
-        Label:
-            text: "Crear cuenta"
-            font_size: 30
-            bold: True
-            color: 1,1,1,1
-            size_hint_y: None
-            height: 50
-
-        Label:
-            text: "Registrate en Legal App"
-            color: 0.7,0.7,0.7,1
-            size_hint_y: None
-            height: 30
-
-        Widget:
-            size_hint_y: None
-            height: 20
-
-        # CARD FORM
         BoxLayout:
-            orientation: "vertical"
-            padding: 20
-            spacing: 12
             size_hint_y: None
-            height: 320
-
+            height: 60
+            padding: [20, 12]
             canvas.before:
                 Color:
-                    rgba: 0.12, 0.14, 0.18, 1
-                RoundedRectangle:
+                    rgba: 0.10, 0.12, 0.18, 1
+                Rectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [15]
-
-            TextInput:
-                id: username
-                hint_text: "Nombre"
-                multiline: False
-                size_hint_y: None
-                height: 45
-                background_color: 0.2,0.2,0.25,1
-                foreground_color: 1,1,1,1
-
-            TextInput:
-                id: email
-                hint_text: "Email"
-                multiline: False
-                size_hint_y: None
-                height: 45
-                background_color: 0.2,0.2,0.25,1
-                foreground_color: 1,1,1,1
-
-            TextInput:
-                id: telefono
-                hint_text: "Telefono"
-                multiline: False
-                size_hint_y: None
-                height: 45
-                background_color: 0.2,0.2,0.25,1
-                foreground_color: 1,1,1,1
-
-            TextInput:
-                id: password
-                hint_text: "Contrasena"
-                password: True
-                multiline: False
-                size_hint_y: None
-                height: 45
-                background_color: 0.2,0.2,0.25,1
-                foreground_color: 1,1,1,1
 
             Label:
-                id: error
-                text: ""
-                color: 1,0.3,0.3,1
+                text: "Crear cuenta"
+                font_size: 20
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                text_size: self.size
+
+        ScrollView:
+            BoxLayout:
+                orientation: "vertical"
+                padding: [24, 24, 24, 24]
+                spacing: 14
                 size_hint_y: None
-                height: 20
+                height: self.minimum_height
 
-            Button:
-                text: "Registrarse"
-                size_hint_y: None
-                height: 50
-                background_color: 0.2, 0.6, 1, 1
-                on_release: root.register()
+                Label:
+                    text: "Registrate en Legal App"
+                    font_size: 14
+                    color: 0.45, 0.50, 0.58, 1
+                    size_hint_y: None
+                    height: 28
+                    halign: "left"
+                    text_size: self.size
 
-        Widget:
-            size_hint_y: None
-            height: 10
+                Widget:
+                    size_hint_y: None
+                    height: 8
 
-        Button:
-            text: "< Volver al login"
-            size_hint_y: None
-            height: 45
-            background_color: 0.2,0.2,0.25,1
-            on_release: root.go_back()
+                Label:
+                    text: "NOMBRE"
+                    font_size: 11
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: 18
+                    halign: "left"
+                    text_size: self.size
+
+                TextInput:
+                    id: username
+                    hint_text: "Tu nombre completo"
+                    multiline: False
+                    size_hint_y: None
+                    height: 48
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [14, 14]
+                    font_size: 15
+
+                Label:
+                    text: "EMAIL"
+                    font_size: 11
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: 18
+                    halign: "left"
+                    text_size: self.size
+
+                TextInput:
+                    id: email
+                    hint_text: "tu@email.com"
+                    multiline: False
+                    size_hint_y: None
+                    height: 48
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [14, 14]
+                    font_size: 15
+
+                Label:
+                    text: "TELEFONO"
+                    font_size: 11
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: 18
+                    halign: "left"
+                    text_size: self.size
+
+                TextInput:
+                    id: telefono
+                    hint_text: "+54 9 xxx-xxx"
+                    multiline: False
+                    size_hint_y: None
+                    height: 48
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [14, 14]
+                    font_size: 15
+
+                Label:
+                    text: "CONTRASENA"
+                    font_size: 11
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: 18
+                    halign: "left"
+                    text_size: self.size
+
+                TextInput:
+                    id: password
+                    hint_text: "Minimo 6 caracteres"
+                    password: True
+                    multiline: False
+                    size_hint_y: None
+                    height: 48
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [14, 14]
+                    font_size: 15
+
+                Label:
+                    id: error
+                    text: ""
+                    color: 0.90, 0.25, 0.25, 1
+                    size_hint_y: None
+                    height: 22
+                    halign: "left"
+                    text_size: self.size
+
+                Widget:
+                    size_hint_y: None
+                    height: 8
+
+                Button:
+                    text: "Crear cuenta"
+                    size_hint_y: None
+                    height: 52
+                    bold: True
+                    font_size: 16
+                    background_normal: ""
+                    background_color: 0.18, 0.80, 0.44, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.register()
+
+                Button:
+                    text: "Ya tengo cuenta"
+                    size_hint_y: None
+                    height: 44
+                    font_size: 14
+                    background_color: 0, 0, 0, 0
+                    color: 0.45, 0.50, 0.58, 1
+                    on_release: root.go_back()

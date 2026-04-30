@@ -1,4 +1,4 @@
-<PagoScreen>:
+<PagoMPScreen>:
 
     BoxLayout:
         orientation: "vertical"
@@ -10,6 +10,7 @@
                 pos: self.pos
                 size: self.size
 
+        # TOPBAR
         BoxLayout:
             size_hint_y: None
             height: 58
@@ -29,11 +30,11 @@
                 bold: True
                 background_color: 0, 0, 0, 0
                 color: 1, 1, 1, 1
-                on_release: root.manager.current = "tipo"
+                on_release: root.volver()
 
             Label:
-                text: "CONFIRMAR PAGO"
-                font_size: 16
+                text: "PAGAR CON MERCADOPAGO"
+                font_size: 14
                 bold: True
                 color: 1, 1, 1, 1
                 halign: "left"
@@ -42,7 +43,7 @@
         # INFO ABOGADO
         BoxLayout:
             size_hint_y: None
-            height: 52
+            height: 50
             padding: [20, 12]
             canvas.before:
                 Color:
@@ -57,7 +58,7 @@
                     width: 0.8
 
             Label:
-                id: lbl_abogado_info
+                id: lbl_abogado_mp
                 text: ""
                 font_size: 13
                 color: 0.40, 0.45, 0.55, 1
@@ -67,48 +68,86 @@
         # CARD PRECIO
         BoxLayout:
             orientation: "vertical"
-            padding: [24, 32, 24, 20]
-            spacing: 16
+            padding: [24, 30, 24, 20]
+            spacing: 14
 
+            # Logo MP simulado
             Label:
-                id: lbl_precio_grande
-                text: "$0"
-                font_size: 60
+                text: "MercadoPago"
+                font_size: 22
                 bold: True
-                color: 0.10, 0.12, 0.18, 1
+                color: 0.00, 0.60, 0.88, 1
                 size_hint_y: None
-                height: 84
+                height: 40
                 halign: "center"
                 text_size: self.size
 
             Label:
-                id: lbl_tipo_desc
+                id: lbl_precio_mp
+                text: "$0"
+                font_size: 58
+                bold: True
+                color: 0.10, 0.12, 0.18, 1
+                size_hint_y: None
+                height: 80
+                halign: "center"
+                text_size: self.size
+
+            Label:
+                id: lbl_tipo_mp
                 text: ""
                 font_size: 14
                 color: 0.45, 0.50, 0.58, 1
                 size_hint_y: None
-                height: 34
+                height: 28
+                halign: "center"
+                text_size: self.size
+
+            # Estado de la preferencia
+            Label:
+                id: lbl_estado_mp
+                text: ""
+                font_size: 12
+                color: 0.55, 0.58, 0.65, 1
+                size_hint_y: None
+                height: 24
                 halign: "center"
                 text_size: self.size
 
             Widget:
                 size_hint_y: None
-                height: 12
+                height: 8
 
+            # BOTON IR A MERCADOPAGO
             Button:
-                id: btn_pago_unico
-                text: "Confirmar pago"
+                id: btn_ir_mp
+                text: "Ir a pagar en MercadoPago"
                 size_hint_y: None
-                height: 60
+                height: 58
                 bold: True
-                font_size: 17
+                font_size: 16
+                background_normal: ""
+                background_color: 0.00, 0.60, 0.88, 1
+                color: 1, 1, 1, 1
+                disabled: True
+                on_release: root.ir_a_pagar()
+
+            # BOTON CONFIRMAR (post-pago o demo)
+            Button:
+                id: btn_confirmar
+                text: "Ya pague - Continuar"
+                size_hint_y: None
+                height: 52
+                bold: True
+                font_size: 15
                 background_normal: ""
                 background_color: 0.18, 0.80, 0.44, 1
                 color: 1, 1, 1, 1
-                on_release: root.pagar()
+                disabled: True
+                on_release: root.confirmar_pago()
 
             Label:
-                text: "Pago seguro. Se acredita al instante."
+                text: "Pagos procesados de forma segura por MercadoPago"
                 font_size: 11
                 color: 0.60, 0.63, 0.70, 1
                 size_hint_y: None
@@ -117,12 +156,3 @@
                 text_size: self.size
 
             Widget:
-
-        Button:
-            text: "Cambiar tipo de consulta"
-            size_hint_y: None
-            height: 46
-            font_size: 13
-            background_color: 0, 0, 0, 0
-            color: 0.45, 0.50, 0.58, 1
-            on_release: root.manager.current = "tipo"

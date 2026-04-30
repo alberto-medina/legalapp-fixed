@@ -13,11 +13,11 @@
         # TOPBAR
         BoxLayout:
             size_hint_y: None
-            height: 60
+            height: 62
             padding: [12, 10, 16, 10]
             canvas.before:
                 Color:
-                    rgba: 0.00, 0.04, 0.22, 1
+                    rgba: 0.12, 0.16, 0.23, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -29,14 +29,14 @@
                 font_size: 22
                 bold: True
                 background_color: 0, 0, 0, 0
-                color: 0.99, 0.84, 0.00, 1
+                color: 1,1,1,1
                 on_release: root.volver()
 
             BoxLayout:
                 orientation: "vertical"
                 Label:
                     text: "ABOGADOS"
-                    font_size: 16
+                    font_size: 18
                     bold: True
                     color: 1, 1, 1, 1
                     halign: "left"
@@ -44,19 +44,20 @@
                 Label:
                     id: lbl_area
                     text: ""
-                    font_size: 11
-                    color: 0.99, 0.84, 0.00, 1
+                    font_size: 12
+                    color: 0.70, 0.75, 0.85, 1
                     halign: "left"
                     text_size: self.size
 
         # BUSCADOR
         BoxLayout:
             size_hint_y: None
-            height: 48
-            padding: [16, 8, 16, 4]
+            height: 54
+            padding: [16, 10, 16, 6]
+
             canvas.before:
                 Color:
-                    rgba: 0.00, 0.04, 0.22, 1
+                    rgba: 0.12, 0.16, 0.23, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -66,13 +67,13 @@
                 hint_text: "Buscar abogado..."
                 multiline: False
                 size_hint_y: None
-                height: 34
-                background_color: 0.08, 0.12, 0.35, 1
-                foreground_color: 1, 1, 1, 1
-                hint_text_color: 0.50, 0.55, 0.70, 1
-                cursor_color: 0.99, 0.84, 0.00, 1
-                padding: [10, 8]
-                font_size: 13
+                height: 38
+                background_color: 1, 1, 1, 1
+                foreground_color: 0.1, 0.1, 0.1, 1
+                hint_text_color: 0.50, 0.55, 0.65, 1
+                cursor_color: 0.12, 0.16, 0.23, 1
+                padding: [12, 10]
+                font_size: 14
                 on_text: root.filtrar(self.text)
 
         # LISTA
@@ -80,7 +81,7 @@
             BoxLayout:
                 id: lista
                 orientation: "vertical"
-                padding: [14, 12, 14, 80]
-                spacing: 10
+                padding: [16, 16, 16, 90]
+                spacing: 14
                 size_hint_y: None
                 height: self.minimum_height

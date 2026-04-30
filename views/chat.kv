@@ -13,12 +13,13 @@
         # TOPBAR
         BoxLayout:
             size_hint_y: None
-            height: 62
+            height: 64
             padding: [12, 8, 12, 8]
-            spacing: 8
+            spacing: 10
+
             canvas.before:
                 Color:
-                    rgba: 0.00, 0.04, 0.22, 1
+                    rgba: 0.12, 0.16, 0.23, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -30,8 +31,14 @@
                 font_size: 22
                 bold: True
                 background_color: 0, 0, 0, 0
-                color: 0.99, 0.84, 0.00, 1
+                color: 1,1,1,1
                 on_release: root.volver()
+
+            # Avatar
+            AsyncImage:
+                source: "assets/avatar_default.png"
+                size_hint: None, None
+                size: 40, 40
 
             BoxLayout:
                 orientation: "vertical"
@@ -40,7 +47,7 @@
                 Label:
                     id: lbl_chat_titulo
                     text: ""
-                    font_size: 14
+                    font_size: 15
                     bold: True
                     color: 1, 1, 1, 1
                     halign: "left"
@@ -49,7 +56,7 @@
                 Label:
                     id: lbl_chat_tipo
                     text: ""
-                    font_size: 10
+                    font_size: 11
                     color: 0.75, 0.80, 0.95, 1
                     halign: "left"
                     text_size: self.size
@@ -67,21 +74,23 @@
                 id: btn_finalizar
                 text: "Finalizar"
                 size_hint_x: None
-                width: 86
+                width: 90
                 font_size: 12
                 bold: True
+                background_normal: ""
                 background_color: 0.85, 0.18, 0.18, 1
                 color: 1, 1, 1, 1
                 on_release: root.finalizar_consulta()
                 opacity: 0
                 disabled: True
 
-        # BANNER FINALIZADO - height=0 cuando no esta finalizado
+        # BANNER
         BoxLayout:
             id: banner_finalizado
             size_hint_y: None
             height: 0
             padding: [14, 6]
+
             canvas.before:
                 Color:
                     rgba: 0.95, 0.92, 0.82, 1
@@ -98,14 +107,15 @@
                 halign: "center"
                 text_size: self.size
 
-        # MENSAJES
+        # CHAT
         ScrollView:
             id: scroll_chat
+
             GridLayout:
                 id: chat_box
                 cols: 1
-                spacing: 6
-                padding: [12, 10, 12, 10]
+                spacing: 10
+                padding: [12, 12, 12, 12]
                 size_hint_y: None
                 height: self.minimum_height
 
@@ -113,9 +123,10 @@
         BoxLayout:
             id: input_area
             size_hint_y: None
-            height: 54
-            spacing: 6
+            height: 60
+            spacing: 8
             padding: [10, 8]
+
             canvas.before:
                 Color:
                     rgba: 1, 1, 1, 1
@@ -126,24 +137,25 @@
                     rgba: 0.88, 0.89, 0.91, 1
                 Line:
                     points: [self.x, self.top, self.right, self.top]
-                    width: 0.8
+                    width: 1
 
             TextInput:
                 id: input_mensaje
-                hint_text: "Escribi un mensaje..."
+                hint_text: "Escribí un mensaje..."
                 multiline: False
                 background_color: 0.95, 0.96, 0.97, 1
                 foreground_color: 0.10, 0.14, 0.28, 1
                 hint_text_color: 0.60, 0.63, 0.70, 1
                 cursor_color: 0.00, 0.04, 0.22, 1
-                padding: [10, 10]
-                font_size: 13
+                padding: [12, 10]
+                font_size: 14
 
             Button:
-                text: "Adj"
+                text: "+"
                 size_hint_x: None
                 width: 44
-                font_size: 12
+                font_size: 18
+                background_normal: ""
                 background_color: 0.92, 0.93, 0.95, 1
                 color: 0.30, 0.35, 0.50, 1
                 on_release: root.adjuntar()
@@ -151,9 +163,9 @@
             Button:
                 text: "Enviar"
                 size_hint_x: None
-                width: 72
-                font_size: 13
+                width: 80
                 bold: True
-                background_color: 0.00, 0.04, 0.22, 1
+                background_normal: ""
+                background_color: 0.13, 0.77, 0.37, 1
                 color: 1, 1, 1, 1
                 on_release: root.enviar()
