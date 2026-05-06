@@ -1,8 +1,28 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Entornos
 .env
 .venv/
+
+# IDE
 .idea/
+.vscode/
+
+# Base de datos
 *.db
+
+# Kivy
+.kivy/
+*.log
+
+# Build Android
+bin/
+.buildozer/
+
+# Sistema
+.DS_Store
+Thumbs.db
