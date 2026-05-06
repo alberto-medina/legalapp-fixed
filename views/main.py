@@ -1,4 +1,3 @@
-import database
 print("DB INICIALIZADA")
 
 from kivy.app import App

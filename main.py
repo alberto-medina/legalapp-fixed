@@ -5,8 +5,11 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, FadeTransition
 from kivy.lang import Builder
 from kivy.core.window import Window
+from kivy.utils import platform
 
-Window.size = (360, 640)
+# 👇 SOLO para escritorio
+if platform != "android":
+    Window.size = (360, 640)
 
 from views.login import LoginScreen
 from views.register import RegisterScreen
@@ -27,6 +30,10 @@ from views.resena import ResenaScreen
 class LegalAppPro(App):
 
     def build(self):
+        # 👇 Inicializar DB acá (mejor práctica Android)
+        database.create_tables()
+        database.actualizar_db()
+
         self.sm = ScreenManager(transition=FadeTransition())
 
         Builder.load_file("views/login.kv")

@@ -4,60 +4,89 @@
 
         canvas.before:
             Color:
-                rgba: 0.96, 0.97, 0.98, 1
+                rgba: 0.96, 0.95, 0.98, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
-        padding: 30
-        spacing: 20
-
-        Widget:
-            size_hint_y: None
-            height: 40
-
-        Label:
-            text: "Legal App"
-            font_size: 30
-            bold: True
-            color: 0.12, 0.16, 0.23, 1
-            size_hint_y: None
-            height: 50
-
-        Label:
-            text: "Accede a tu cuenta"
-            color: 0.45,0.45,0.45,1
-            size_hint_y: None
-            height: 30
-
-        Widget:
-            size_hint_y: None
-            height: 20
-
+        # HERO SUPERIOR - violeta oscuro del mockup
         BoxLayout:
             orientation: "vertical"
-            padding: 20
-            spacing: 15
             size_hint_y: None
-            height: 260
+            height: 240
+            padding: [30, 40, 30, 20]
+            spacing: 10
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                text: "LEGAL APP"
+                font_size: 36
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "center"
+                text_size: self.size
+                size_hint_y: None
+                height: 52
+
+            Label:
+                text: "Tu consulta legal en minutos"
+                font_size: 16
+                color: 0.80, 0.76, 0.95, 1
+                halign: "center"
+                text_size: self.size
+                size_hint_y: None
+                height: 30
+
+        # FORM CARD
+        BoxLayout:
+            orientation: "vertical"
+            padding: [24, 28, 24, 20]
+            spacing: 16
+            size_hint_y: None
+            height: 290
+            pos_hint: {"center_x": 0.5}
 
             canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.08
+                RoundedRectangle:
+                    pos: self.x, self.y - 4
+                    size: self.size
+                    radius: [20]
                 Color:
                     rgba: 1, 1, 1, 1
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
-                    radius: [15]
+                    radius: [20]
+
+            Label:
+                text: "Iniciar sesion"
+                font_size: 20
+                bold: True
+                color: 0.10, 0.06, 0.14, 1
+                halign: "left"
+                text_size: self.size
+                size_hint_y: None
+                height: 32
 
             TextInput:
                 id: email
-                hint_text: "Email"
+                hint_text: "ejemplo@correo.com"
                 multiline: False
                 size_hint_y: None
-                height: 48
-                background_color: 1,1,1,1
-                foreground_color: 0.1,0.1,0.1,1
-                font_size: 16
+                height: 50
+                background_color: 0.96, 0.95, 0.98, 1
+                foreground_color: 0.10, 0.06, 0.14, 1
+                hint_text_color: 0.60, 0.57, 0.68, 1
+                cursor_color: 0.30, 0.23, 0.67, 1
+                padding: [14, 14]
+                font_size: 15
 
             TextInput:
                 id: password
@@ -65,31 +94,43 @@
                 password: True
                 multiline: False
                 size_hint_y: None
-                height: 48
-                background_color: 1,1,1,1
-                foreground_color: 0.1,0.1,0.1,1
-                font_size: 16
+                height: 50
+                background_color: 0.96, 0.95, 0.98, 1
+                foreground_color: 0.10, 0.06, 0.14, 1
+                hint_text_color: 0.60, 0.57, 0.68, 1
+                cursor_color: 0.30, 0.23, 0.67, 1
+                padding: [14, 14]
+                font_size: 15
 
             Label:
                 id: error
                 text: ""
-                color: 1,0.3,0.3,1
+                color: 0.85, 0.22, 0.22, 1
                 size_hint_y: None
                 height: 20
+                font_size: 13
 
             Button:
                 text: "Ingresar"
                 size_hint_y: None
-                height: 50
-                background_color: 0.12, 0.16, 0.23, 1
-                color: 1,1,1,1
-                font_size: 16
+                height: 52
+                bold: True
+                font_size: 17
+                background_normal: ""
+                background_color: 0.30, 0.23, 0.67, 1
+                color: 1, 1, 1, 1
                 on_release: root.login()
 
+        Widget:
+
+        # BOTON CREAR CUENTA
         Button:
             text: "Crear cuenta"
             size_hint_y: None
-            height: 45
-            background_color: 0.13, 0.77, 0.37, 1
-            color: 1,1,1,1
+            height: 52
+            bold: True
+            font_size: 16
+            background_normal: ""
+            background_color: 1, 1, 1, 1
+            color: 0.30, 0.23, 0.67, 1
             on_release: root.go_register()

@@ -5,7 +5,7 @@
 
         canvas.before:
             Color:
-                rgba: 0.96, 0.97, 0.98, 1
+                rgba: 0.96, 0.95, 0.98, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -13,11 +13,11 @@
         # TOPBAR
         BoxLayout:
             size_hint_y: None
-            height: 60
-            padding: [16, 10, 16, 10]
+            height: 66
+            padding: [20, 14, 20, 14]
             canvas.before:
                 Color:
-                    rgba: 0.00, 0.04, 0.22, 1
+                    rgba: 0.24, 0.17, 0.55, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -26,15 +26,15 @@
                 orientation: "vertical"
                 Label:
                     text: "LEGAL APP"
-                    font_size: 18
+                    font_size: 22
                     bold: True
-                    color: 0.99, 0.84, 0.00, 1
+                    color: 1, 1, 1, 1
                     halign: "left"
                     text_size: self.size
                 Label:
                     text: "Panel Profesional"
-                    font_size: 10
-                    color: 0.70, 0.75, 0.90, 1
+                    font_size: 11
+                    color: 0.75, 0.72, 0.92, 1
                     halign: "left"
                     text_size: self.size
 
@@ -43,15 +43,15 @@
                 Label:
                     id: lbl_nombre_abogado
                     text: ""
-                    font_size: 13
+                    font_size: 14
                     bold: True
                     color: 1, 1, 1, 1
                     halign: "right"
                     text_size: self.size
                 Label:
                     text: "Abogado"
-                    font_size: 10
-                    color: 0.70, 0.75, 0.90, 1
+                    font_size: 11
+                    color: 0.75, 0.72, 0.92, 1
                     halign: "right"
                     text_size: self.size
 
@@ -60,97 +60,109 @@
             id: btn_estado
             text: "DISPONIBLE"
             size_hint_y: None
-            height: 42
+            height: 46
             bold: True
-            font_size: 14
+            font_size: 16
+            background_normal: ""
             on_release: root.cambiar_estado()
 
         # STATS
         BoxLayout:
             size_hint_y: None
-            height: 100
+            height: 116
             spacing: 12
             padding: [16, 10, 16, 4]
 
+            # Card Consultas
             BoxLayout:
                 orientation: "vertical"
-                padding: [14, 10]
-                spacing: 2
+                padding: [14, 12]
+                spacing: 4
                 canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 0.07
+                    RoundedRectangle:
+                        pos: self.x + 2, self.y - 4
+                        size: self.width - 4, self.height
+                        radius: [18]
                     Color:
                         rgba: 1, 1, 1, 1
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [14]
-                    Color:
-                        rgba: 0.88, 0.90, 0.93, 1
-                    Line:
-                        rounded_rectangle: [self.x+1, self.y+1, self.width-2, self.height-2, 14]
-                        width: 0.8
+                        radius: [18]
 
                 Label:
                     text: "CONSULTAS"
-                    font_size: 10
+                    font_size: 11
                     bold: True
-                    color: 0.45, 0.50, 0.60, 1
+                    color: 0.50, 0.45, 0.62, 1
                     halign: "center"
                     text_size: self.size
 
                 Label:
                     id: lbl_consultas
                     text: "0"
-                    font_size: 30
+                    font_size: 36
                     bold: True
-                    color: 0.00, 0.04, 0.22, 1
+                    color: 0.24, 0.17, 0.55, 1
                     halign: "center"
                     text_size: self.size
 
+            # Card Honorarios - ButtonBehavior en BoxLayout
             BoxLayout:
                 orientation: "vertical"
                 padding: [14, 10]
                 spacing: 2
+                on_touch_down: self.collide_point(*args[1].pos) and root.solicitar_retiro_popup()
                 canvas.before:
                     Color:
-                        rgba: 1, 1, 1, 1
+                        rgba: 0, 0, 0, 0.12
+                    RoundedRectangle:
+                        pos: self.x + 2, self.y - 4
+                        size: self.width - 4, self.height
+                        radius: [18]
+                    Color:
+                        rgba: 0.24, 0.17, 0.55, 1
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [14]
-                    Color:
-                        rgba: 0.88, 0.90, 0.93, 1
-                    Line:
-                        rounded_rectangle: [self.x+1, self.y+1, self.width-2, self.height-2, 14]
-                        width: 0.8
+                        radius: [18]
 
                 Label:
                     text: "HONORARIOS"
-                    font_size: 10
+                    font_size: 11
                     bold: True
-                    color: 0.45, 0.50, 0.60, 1
+                    color: 0.75, 0.72, 0.92, 1
                     halign: "center"
                     text_size: self.size
 
                 Label:
                     id: lbl_honorarios
                     text: "$0"
-                    font_size: 22
+                    font_size: 24
                     bold: True
-                    color: 0.10, 0.55, 0.28, 1
+                    color: 0.18, 0.90, 0.50, 1
                     halign: "center"
                     text_size: self.size
 
-        # LABEL
+                Label:
+                    text: "Toca para retirar"
+                    font_size: 10
+                    color: 0.60, 0.65, 0.85, 1
+                    halign: "center"
+                    text_size: self.size
+
+        # LABEL SECCION
         BoxLayout:
             size_hint_y: None
-            height: 30
-            padding: [16, 4]
-
+            height: 36
+            padding: [18, 8]
             Label:
                 text: "CONSULTAS RECIENTES"
-                font_size: 11
+                font_size: 13
                 bold: True
-                color: 0.40, 0.45, 0.55, 1
+                color: 0.35, 0.30, 0.50, 1
                 halign: "left"
                 text_size: self.size
 
@@ -159,15 +171,16 @@
             GridLayout:
                 id: lista_consultas
                 cols: 1
-                spacing: 8
-                padding: [14, 0, 14, 70]
+                spacing: 10
+                padding: [14, 0, 14, 10]
                 size_hint_y: None
                 height: self.minimum_height
 
         # BOTTOM NAV
         BoxLayout:
             size_hint_y: None
-            height: 58
+            height: 72
+            spacing: 0
             canvas.before:
                 Color:
                     rgba: 1, 1, 1, 1
@@ -175,28 +188,51 @@
                     pos: self.pos
                     size: self.size
                 Color:
-                    rgba: 0.88, 0.89, 0.91, 1
+                    rgba: 0.85, 0.82, 0.94, 1
                 Line:
                     points: [self.x, self.top, self.right, self.top]
-                    width: 0.8
+                    width: 1.2
 
+            # PANEL - activo
+            BoxLayout:
+                orientation: "vertical"
+                padding: [4, 6, 4, 4]
+                spacing: 0
+                canvas.before:
+                    Color:
+                        rgba: 0.92, 0.89, 0.98, 1
+                    RoundedRectangle:
+                        pos: [self.x + 3, self.y + 3]
+                        size: [self.width - 6, self.height - 6]
+                        radius: [14]
+
+                Label:
+                    text: "Panel"
+                    font_size: 14
+                    bold: True
+                    color: 0.30, 0.23, 0.67, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+
+            # PERFIL
             Button:
-                text: "Panel"
-                font_size: 11
+                size_hint_x: 1
+                font_size: 13
                 bold: True
+                text: "Perfil"
+                background_normal: ""
                 background_color: 0, 0, 0, 0
-                color: 0.00, 0.04, 0.22, 1
-
-            Button:
-                text: "Mi Perfil"
-                font_size: 11
-                background_color: 0, 0, 0, 0
-                color: 0.55, 0.58, 0.65, 1
+                color: 0.50, 0.46, 0.62, 1
                 on_release: root.ir_perfil()
 
+            # SALIR
             Button:
+                size_hint_x: 1
+                font_size: 13
+                bold: True
                 text: "Salir"
-                font_size: 11
+                background_normal: ""
                 background_color: 0, 0, 0, 0
-                color: 0.75, 0.30, 0.30, 1
+                color: 0.80, 0.25, 0.25, 1
                 on_release: root.logout()

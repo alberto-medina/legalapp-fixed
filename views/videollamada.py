@@ -6,8 +6,8 @@ Genera una sala unica por consulta y la abre en el navegador
 
 URL de sala: https://meet.jit.si/legalapp-consulta-{consulta_id}
 
-El abogado y el cliente ven el mismo ID de sala porque ambos
-acceden desde la misma consulta_id guardada en session.
+El ABOGADO invita al cliente desde el chat.
+El CLIENTE puede unirse cuando el abogado lo invite.
 """
 
 import session
@@ -21,8 +21,6 @@ def _get_sala_url(consulta_id):
 
 
 def _abrir_url(url):
-    """Intenta abrir en webview Android, sino usa navegador del sistema."""
-    # Android
     try:
         from jnius import autoclass
         Intent   = autoclass("android.content.Intent")
@@ -33,7 +31,6 @@ def _abrir_url(url):
         return
     except Exception:
         pass
-    # Desktop fallback
     try:
         import webbrowser
         webbrowser.open(url)
@@ -54,7 +51,6 @@ class VideollamadaScreen(Screen):
         self.ids.lbl_url.text    = url
         self._url = url
 
-        # Obtener nombre del interlocutor
         conn = get_connection()
         c = conn.cursor()
         c.execute("SELECT abogado, user_email, tipo_servicio FROM consultas WHERE id=?",
@@ -69,11 +65,7 @@ class VideollamadaScreen(Screen):
             self.ids.lbl_con_quien.text = f"Videollamada con: {otro}"
 
     def unirse(self):
-        """Abre la sala Jitsi."""
         _abrir_url(self._url)
 
     def volver(self):
-        if session.current_user and session.current_user[4] == "abogado":
-            self.manager.current = "chat"
-        else:
-            self.manager.current = "chat"
+        self.manager.current = "chat"

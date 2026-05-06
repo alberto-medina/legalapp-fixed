@@ -5,19 +5,18 @@
 
         canvas.before:
             Color:
-                rgba: 0.96, 0.97, 0.98, 1
+                rgba: 0.96, 0.95, 0.98, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
-        # TOPBAR
         BoxLayout:
             size_hint_y: None
-            height: 58
-            padding: [12, 10, 16, 10]
+            height: 60
+            padding: [12, 12, 16, 12]
             canvas.before:
                 Color:
-                    rgba: 0.10, 0.12, 0.18, 1
+                    rgba: 0.24, 0.17, 0.55, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -34,7 +33,7 @@
 
             Label:
                 text: "PAGAR CON MERCADOPAGO"
-                font_size: 14
+                font_size: 15
                 bold: True
                 color: 1, 1, 1, 1
                 halign: "left"
@@ -43,7 +42,7 @@
         # INFO ABOGADO
         BoxLayout:
             size_hint_y: None
-            height: 50
+            height: 48
             padding: [20, 12]
             canvas.before:
                 Color:
@@ -51,64 +50,57 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
-                Color:
-                    rgba: 0.88, 0.90, 0.93, 1
-                Line:
-                    points: [self.x, self.y, self.right, self.y]
-                    width: 0.8
 
             Label:
                 id: lbl_abogado_mp
                 text: ""
                 font_size: 13
-                color: 0.40, 0.45, 0.55, 1
+                color: 0.45, 0.40, 0.58, 1
                 halign: "left"
                 text_size: self.size
 
-        # CARD PRECIO
+        # CARD PAGO
         BoxLayout:
             orientation: "vertical"
-            padding: [24, 30, 24, 20]
+            padding: [24, 28, 24, 20]
             spacing: 14
 
-            # Logo MP simulado
             Label:
                 text: "MercadoPago"
-                font_size: 22
+                font_size: 24
                 bold: True
-                color: 0.00, 0.60, 0.88, 1
+                color: 0.00, 0.55, 0.88, 1
                 size_hint_y: None
-                height: 40
+                height: 44
                 halign: "center"
                 text_size: self.size
 
             Label:
                 id: lbl_precio_mp
                 text: "$0"
-                font_size: 58
+                font_size: 60
                 bold: True
-                color: 0.10, 0.12, 0.18, 1
+                color: 0.24, 0.17, 0.55, 1
                 size_hint_y: None
-                height: 80
+                height: 84
                 halign: "center"
                 text_size: self.size
 
             Label:
                 id: lbl_tipo_mp
                 text: ""
-                font_size: 14
-                color: 0.45, 0.50, 0.58, 1
+                font_size: 15
+                color: 0.45, 0.40, 0.58, 1
                 size_hint_y: None
-                height: 28
+                height: 30
                 halign: "center"
                 text_size: self.size
 
-            # Estado de la preferencia
             Label:
                 id: lbl_estado_mp
                 text: ""
                 font_size: 12
-                color: 0.55, 0.58, 0.65, 1
+                color: 0.55, 0.50, 0.65, 1
                 size_hint_y: None
                 height: 24
                 halign: "center"
@@ -116,9 +108,8 @@
 
             Widget:
                 size_hint_y: None
-                height: 8
+                height: 6
 
-            # BOTON IR A MERCADOPAGO
             Button:
                 id: btn_ir_mp
                 text: "Ir a pagar en MercadoPago"
@@ -127,12 +118,11 @@
                 bold: True
                 font_size: 16
                 background_normal: ""
-                background_color: 0.00, 0.60, 0.88, 1
+                background_color: 0.00, 0.55, 0.88, 1
                 color: 1, 1, 1, 1
                 disabled: True
                 on_release: root.ir_a_pagar()
 
-            # BOTON CONFIRMAR (post-pago o demo)
             Button:
                 id: btn_confirmar
                 text: "Ya pague - Continuar"
@@ -141,15 +131,15 @@
                 bold: True
                 font_size: 15
                 background_normal: ""
-                background_color: 0.18, 0.80, 0.44, 1
+                background_color: 0.30, 0.23, 0.67, 1
                 color: 1, 1, 1, 1
                 disabled: True
                 on_release: root.confirmar_pago()
 
             Label:
-                text: "Pagos procesados de forma segura por MercadoPago"
+                text: "Pagos procesados de forma segura"
                 font_size: 11
-                color: 0.60, 0.63, 0.70, 1
+                color: 0.60, 0.57, 0.68, 1
                 size_hint_y: None
                 height: 22
                 halign: "center"

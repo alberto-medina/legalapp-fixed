@@ -5,7 +5,7 @@
 
         canvas.before:
             Color:
-                rgba: 0.96, 0.97, 0.98, 1
+                rgba: 0.96, 0.95, 0.98, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -13,13 +13,12 @@
         # TOPBAR
         BoxLayout:
             size_hint_y: None
-            height: 64
-            padding: [12, 8, 12, 8]
+            height: 68
+            padding: [12, 10, 12, 10]
             spacing: 10
-
             canvas.before:
                 Color:
-                    rgba: 0.12, 0.16, 0.23, 1
+                    rgba: 0.24, 0.17, 0.55, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -31,14 +30,13 @@
                 font_size: 22
                 bold: True
                 background_color: 0, 0, 0, 0
-                color: 1,1,1,1
+                color: 1, 1, 1, 1
                 on_release: root.volver()
 
-            # Avatar
             AsyncImage:
                 source: "assets/avatar_default.png"
                 size_hint: None, None
-                size: 40, 40
+                size: 44, 44
 
             BoxLayout:
                 orientation: "vertical"
@@ -57,7 +55,7 @@
                     id: lbl_chat_tipo
                     text: ""
                     font_size: 11
-                    color: 0.75, 0.80, 0.95, 1
+                    color: 0.75, 0.72, 0.92, 1
                     halign: "left"
                     text_size: self.size
 
@@ -66,9 +64,23 @@
                     text: ""
                     font_size: 11
                     bold: True
-                    color: 0.10, 0.72, 0.38, 1
+                    color: 0.18, 0.90, 0.50, 1
                     halign: "left"
                     text_size: self.size
+
+            Button:
+                id: btn_invitar_video
+                text: "Video"
+                size_hint_x: None
+                width: 62
+                font_size: 11
+                bold: True
+                background_normal: ""
+                background_color: 0.10, 0.55, 0.85, 1
+                color: 1, 1, 1, 1
+                on_release: root.invitar_videollamada()
+                opacity: 0
+                disabled: True
 
             Button:
                 id: btn_finalizar
@@ -90,10 +102,9 @@
             size_hint_y: None
             height: 0
             padding: [14, 6]
-
             canvas.before:
                 Color:
-                    rgba: 0.95, 0.92, 0.82, 1
+                    rgba: 0.97, 0.94, 0.85, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -103,29 +114,36 @@
                 text: ""
                 font_size: 12
                 bold: True
-                color: 0.55, 0.38, 0.00, 1
+                color: 0.55, 0.38, 0.05, 1
                 halign: "center"
                 text_size: self.size
 
-        # CHAT
+        # MENSAJES
         ScrollView:
             id: scroll_chat
+            canvas.before:
+                Color:
+                    rgba: 0.96, 0.95, 0.98, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
             GridLayout:
                 id: chat_box
                 cols: 1
                 spacing: 10
-                padding: [12, 12, 12, 12]
+                padding: [14, 14, 14, 14]
                 size_hint_y: None
                 height: self.minimum_height
 
         # INPUT
         BoxLayout:
             id: input_area
+            orientation: "vertical"
             size_hint_y: None
-            height: 60
-            spacing: 8
-            padding: [10, 8]
+            height: 100
+            spacing: 6
+            padding: [12, 10]
 
             canvas.before:
                 Color:
@@ -134,38 +152,57 @@
                     pos: self.pos
                     size: self.size
                 Color:
-                    rgba: 0.88, 0.89, 0.91, 1
+                    rgba: 0.88, 0.86, 0.94, 1
                 Line:
                     points: [self.x, self.top, self.right, self.top]
                     width: 1
 
-            TextInput:
-                id: input_mensaje
-                hint_text: "Escribí un mensaje..."
-                multiline: False
-                background_color: 0.95, 0.96, 0.97, 1
-                foreground_color: 0.10, 0.14, 0.28, 1
-                hint_text_color: 0.60, 0.63, 0.70, 1
-                cursor_color: 0.00, 0.04, 0.22, 1
-                padding: [12, 10]
-                font_size: 14
-
+            # 🔴 BOTON NUEVO (cliente se une a videollamada)
             Button:
-                text: "+"
-                size_hint_x: None
-                width: 44
-                font_size: 18
+                id: btn_unirse_video
+                text: "Unirse a videollamada"
+                size_hint_y: None
+                height: 44
+                opacity: 0
+                disabled: True
                 background_normal: ""
-                background_color: 0.92, 0.93, 0.95, 1
-                color: 0.30, 0.35, 0.50, 1
-                on_release: root.adjuntar()
-
-            Button:
-                text: "Enviar"
-                size_hint_x: None
-                width: 80
-                bold: True
-                background_normal: ""
-                background_color: 0.13, 0.77, 0.37, 1
+                background_color: 0.18, 0.70, 0.40, 1
                 color: 1, 1, 1, 1
-                on_release: root.enviar()
+                on_release: root.ir_video()
+
+            # INPUT ORIGINAL (NO TOCADO)
+            BoxLayout:
+                spacing: 8
+
+                TextInput:
+                    id: input_mensaje
+                    hint_text: "Escribi tu mensaje..."
+                    multiline: False
+                    background_normal: ""
+                    background_color: 0.96, 0.95, 0.98, 1
+                    foreground_color: 0.10, 0.06, 0.14, 1
+                    hint_text_color: 0.60, 0.57, 0.68, 1
+                    cursor_color: 0.30, 0.23, 0.67, 1
+                    padding: [14, 12]
+                    font_size: 14
+
+                Button:
+                    text: "+"
+                    size_hint_x: None
+                    width: 44
+                    font_size: 20
+                    background_normal: ""
+                    background_color: 0.92, 0.89, 0.98, 1
+                    color: 0.30, 0.23, 0.67, 1
+                    on_release: root.adjuntar()
+
+                Button:
+                    text: ">"
+                    size_hint_x: None
+                    width: 50
+                    bold: True
+                    font_size: 20
+                    background_normal: ""
+                    background_color: 0.30, 0.23, 0.67, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.enviar()

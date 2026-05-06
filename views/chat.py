@@ -16,15 +16,10 @@ except Exception:
     PLYER_OK = False
 
 UPLOAD_DIR = "assets/uploads"
-BUBBLE_W   = 230   # ancho maximo de burbuja en pixeles
+BUBBLE_W   = 230
 
 
 def _make_bubble(texto, es_mio):
-    """
-    Crea wrapper + bubble con altura correcta calculada despues
-    de que texture_size este disponible via bind.
-    """
-    # Label con text_size fijo para que Kivy calcule el wrapping
     label = Label(
         text=texto,
         font_size=14,
@@ -54,26 +49,23 @@ def _make_bubble(texto, es_mio):
     )
     bubble.add_widget(label)
 
-    # wrapper alinea la burbuja a la derecha o izquierda
     wrapper = BoxLayout(
         size_hint_y=None,
-        height=60,   # altura provisional, se ajusta en el bind de abajo
+        height=60,
     )
     if es_mio:
-        wrapper.add_widget(BoxLayout())   # spacer izquierdo
+        wrapper.add_widget(BoxLayout())
     wrapper.add_widget(bubble)
     if not es_mio:
-        wrapper.add_widget(BoxLayout())   # spacer derecho
+        wrapper.add_widget(BoxLayout())
 
-    # FIX: ajustar altura DESPUES de que texture_size este calculado
     def _on_texture(lbl, tex_size):
-        h = tex_size[1] + 24          # padding vertical
+        h = tex_size[1] + 24
         lbl.height   = tex_size[1]
         bubble.height  = h
-        wrapper.height = h + 8        # margen entre burbujas
+        wrapper.height = h + 8
 
     label.bind(texture_size=_on_texture)
-    # Forzar recalculo si el texto ya esta renderizado
     label.texture_update()
 
     return wrapper
@@ -84,6 +76,37 @@ class ChatScreen(Screen):
     def on_enter(self):
         self._setup_ui()
         self.cargar_mensajes()
+
+        # 🔴 NUEVO: detectar videollamada
+        Clock.schedule_interval(self.check_videollamada, 2)
+
+    def on_leave(self):
+        Clock.unschedule(self.check_videollamada)
+
+    # 🔴 NUEVO
+    def check_videollamada(self, dt):
+        if not session.current_consulta_id:
+            return
+
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT estado FROM consultas WHERE id=?", (session.current_consulta_id,))
+        row = c.fetchone()
+        conn.close()
+
+        if "btn_unirse_video" not in self.ids:
+            return
+
+        if row and row[0] == "videollamada":
+            self.ids.btn_unirse_video.opacity = 1
+            self.ids.btn_unirse_video.disabled = False
+        else:
+            self.ids.btn_unirse_video.opacity = 0
+            self.ids.btn_unirse_video.disabled = True
+
+    # 🔴 NUEVO
+    def ir_video(self):
+        self.manager.current = "videollamada"
 
     def _get_estado_consulta(self):
         conn = get_connection()
@@ -135,9 +158,17 @@ class ChatScreen(Screen):
         if es_abogado and not finalizado:
             self.ids.btn_finalizar.opacity  = 1
             self.ids.btn_finalizar.disabled = False
+            if tipo == "video":
+                self.ids.btn_invitar_video.opacity = 1
+                self.ids.btn_invitar_video.disabled = False
+            else:
+                self.ids.btn_invitar_video.opacity = 0
+                self.ids.btn_invitar_video.disabled = True
         else:
             self.ids.btn_finalizar.opacity  = 0
             self.ids.btn_finalizar.disabled = True
+            self.ids.btn_invitar_video.opacity = 0
+            self.ids.btn_invitar_video.disabled = True
 
         if finalizado:
             self.ids.banner_finalizado.height  = 36
@@ -165,7 +196,6 @@ class ChatScreen(Screen):
 
         for emisor, texto, archivo in mensajes:
 
-            # Mensaje de sistema
             if emisor == "SISTEMA":
                 self.ids.chat_box.add_widget(Label(
                     text=texto,
@@ -271,21 +301,30 @@ class ChatScreen(Screen):
         self._setup_ui()
         self.cargar_mensajes()
 
+    def invitar_videollamada(self):
+        conn = get_connection()
+        c = conn.cursor()
+
+        # 🔴 CLAVE: cambiar estado
+        c.execute(
+            "UPDATE consultas SET estado='videollamada' WHERE id=?",
+            (session.current_consulta_id,)
+        )
+
+        c.execute(
+            "INSERT INTO mensajes (consulta_id, emisor, mensaje) VALUES (?,?,?)",
+            (session.current_consulta_id, "SISTEMA",
+             "El abogado ha iniciado una videollamada. Unite desde el boton de arriba.")
+        )
+
+        conn.commit()
+        conn.close()
+
+        self.cargar_mensajes()
+        self.manager.current = "videollamada"
+
     def volver(self):
         if session.current_user and session.current_user[4] == "abogado":
             self.manager.current = "abogado_panel"
         else:
-            row = self._get_estado_consulta()
-            if row and row[0] == "finalizado":
-                conn = get_connection()
-                c = conn.cursor()
-                c.execute(
-                    "SELECT id FROM resenas WHERE consulta_id=?",
-                    (session.current_consulta_id,)
-                )
-                tiene = c.fetchone()
-                conn.close()
-                if not tiene:
-                    self.manager.current = "resena"
-                    return
             self.manager.current = "historial"

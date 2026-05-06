@@ -42,32 +42,32 @@ class PerfilScreen(Screen):
         self.ids.nombre.text   = nombre   or ""
         self.ids.telefono.text = telefono or ""
         self.ids.foto.text     = foto     or ""
-
-        # Avatar
         self.ids.img_avatar.source = get_avatar_source(foto)
 
         if rol == "abogado":
             self.ids.lbl_rol_badge.text  = "ABOGADO / A"
             self.ids.lbl_rol_badge.color = (1, 1, 1, 1)
-            # Mostrar seccion abogado
             self.ids.seccion_abogado.opacity  = 1
             self.ids.seccion_abogado.disabled = False
-
-            # ✅ FIX (único cambio)
-            self.ids.seccion_abogado.height = self.ids.seccion_abogado.minimum_height
-
-            self.ids.matricula.text         = matricula         or ""
-            self.ids.experiencia.text       = experiencia       or ""
-            self.ids.descripcion.text       = descripcion       or ""
-            self.ids.cuenta_bancaria.text   = cuenta_bancaria   or ""
+            # FIX: recalcular altura despues de que los hijos esten listos
+            from kivy.clock import Clock
+            Clock.schedule_once(lambda dt: self._recalc_seccion(), 0.05)
+            self.ids.matricula.text        = matricula        or ""
+            self.ids.experiencia.text      = experiencia      or ""
+            self.ids.descripcion.text      = descripcion      or ""
+            self.ids.cuenta_bancaria.text  = cuenta_bancaria  or ""
             self._cargar_resenas(email)
         else:
             self.ids.lbl_rol_badge.text  = "CLIENTE"
             self.ids.lbl_rol_badge.color = (0.60, 0.85, 1.00, 1)
-            # Ocultar seccion abogado completamente
             self.ids.seccion_abogado.opacity  = 0
             self.ids.seccion_abogado.disabled = True
             self.ids.seccion_abogado.height   = 0
+
+    def _recalc_seccion(self):
+        """Fuerza recalculo de altura de la seccion abogado."""
+        sec = self.ids.seccion_abogado
+        sec.height = sec.minimum_height
 
     # -- FOTO --------------------------------------------------------
 
@@ -104,7 +104,6 @@ class PerfilScreen(Screen):
             dest = _copiar_foto(selection[0])
             self.ids.foto.text         = dest
             self.ids.img_avatar.source = dest
-            print("FOTO:", dest)
         except Exception as e:
             print("ERROR foto:", e)
 
@@ -113,7 +112,6 @@ class PerfilScreen(Screen):
     def _cargar_resenas(self, email_abogado):
         box = self.ids.resenas_box
         box.clear_widgets()
-
         conn = get_connection()
         c = conn.cursor()
         c.execute("""
@@ -122,17 +120,15 @@ class PerfilScreen(Screen):
             ORDER BY id DESC LIMIT 20
         """, (email_abogado,))
         resenas = c.fetchall()
-        c.execute(
-            "SELECT AVG(puntaje), COUNT(*) FROM resenas WHERE abogado_email=?",
-            (email_abogado,)
-        )
+        c.execute("SELECT AVG(puntaje), COUNT(*) FROM resenas WHERE abogado_email=?",
+                  (email_abogado,))
         avg = c.fetchone()
         conn.close()
 
         promedio = avg[0] or 0
         total    = avg[1] or 0
         stars    = "*" * round(promedio) + "o" * (5 - round(promedio))
-        self.ids.lbl_promedio.text  = f"{promedio:.1f}/5  {stars}  ({total} resenas)"
+        self.ids.lbl_promedio.text = f"{promedio:.1f}/5  {stars}  ({total} resenas)"
 
         if not resenas:
             box.add_widget(Label(
@@ -144,8 +140,7 @@ class PerfilScreen(Screen):
 
         for puntaje, comentario, cliente, fecha in resenas:
             card = BoxLayout(
-                orientation="vertical",
-                size_hint_y=None,
+                orientation="vertical", size_hint_y=None,
                 height=72 if comentario else 48,
                 padding=[14, 8], spacing=2,
             )
@@ -158,8 +153,7 @@ class PerfilScreen(Screen):
             )
             st = "*" * puntaje + "o" * (5 - puntaje)
             card.add_widget(Label(
-                text=f"{st}  {fecha or ''}",
-                font_size=13, bold=True,
+                text=f"{st}  {fecha or ''}", font_size=13, bold=True,
                 color=(0.80, 0.55, 0.05, 1),
                 halign="left", text_size=(None, None),
             ))
@@ -194,7 +188,6 @@ class PerfilScreen(Screen):
         ))
         conn.commit()
         conn.close()
-        print("PERFIL GUARDADO")
         self.volver()
 
     def volver(self):

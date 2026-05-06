@@ -1,5 +1,4 @@
 import session
-from database import get_connection
 from kivy.uix.screenmanager import Screen
 
 SERVICIOS_HABILITADOS = {
