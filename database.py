@@ -100,6 +100,53 @@ def actualizar_db():
     print("DB OK")
 
 
+# 🔥 USUARIOS DEMO (ANDROID + PC)
+def crear_usuarios_demo():
+    import hashlib
+
+    def hash_password(p):
+        return hashlib.sha256(p.encode()).hexdigest()
+
+    conn = get_connection()
+    c = conn.cursor()
+
+    c.execute("SELECT email FROM users WHERE email=?", ("abogado@test.com",))
+    abogado = c.fetchone()
+
+    c.execute("SELECT email FROM users WHERE email=?", ("cliente@test.com",))
+    cliente = c.fetchone()
+
+    if not abogado:
+        c.execute("""
+            INSERT INTO users (username, email, password, rol, telefono, saldo)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            "Dr Test",
+            "abogado@test.com",
+            hash_password("1234"),
+            "abogado",
+            "",
+            0.0
+        ))
+
+    if not cliente:
+        c.execute("""
+            INSERT INTO users (username, email, password, rol, telefono)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            "Cliente Test",
+            "cliente@test.com",
+            hash_password("1234"),
+            "cliente",
+            "123456"
+        ))
+
+    conn.commit()
+    conn.close()
+
+    print("USUARIOS DEMO OK")
+
+
 def acreditar_honorario(abogado_email, tipo_servicio):
     monto_total = PRECIOS_CONSULTA.get(tipo_servicio, 1000.0)
     comision = round(monto_total * COMISION_PLATAFORMA, 2)

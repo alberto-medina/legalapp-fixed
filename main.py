@@ -7,7 +7,7 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.utils import platform
 
-# 👇 SOLO para escritorio
+# 👇 SOLO escritorio
 if platform != "android":
     Window.size = (360, 640)
 
@@ -30,9 +30,10 @@ from views.resena import ResenaScreen
 class LegalAppPro(App):
 
     def build(self):
-        # 👇 Inicializar DB acá (mejor práctica Android)
+        # 🔥 DB + DEMO USERS
         database.create_tables()
         database.actualizar_db()
+        database.crear_usuarios_demo()
 
         self.sm = ScreenManager(transition=FadeTransition())
 

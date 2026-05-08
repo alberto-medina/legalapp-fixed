@@ -1,28 +1,59 @@
+# -------------------------
 # Python
+# -------------------------
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
 
-# Entornos
-.env
+# Virtual environments
+venv/
 .venv/
+env/
 
-# IDE
+# Environment variables
+.env
+
+# -------------------------
+# IDE / Editor
+# -------------------------
 .idea/
 .vscode/
 
-# Base de datos
-*.db
-
-# Kivy
-.kivy/
+# -------------------------
+# Logs
+# -------------------------
 *.log
 
-# Build Android
-bin/
-.buildozer/
+# -------------------------
+# Database
+# -------------------------
+*.db
+*.sqlite3
 
-# Sistema
+# -------------------------
+# Kivy
+# -------------------------
+.kivy/
+
+# -------------------------
+# Android / Buildozer
+# -------------------------
+.buildozer/
+bin/
+.gradle/
+
+# APKs temporales
+*.apk
+*.aab
+
+# -------------------------
+# Build files
+# -------------------------
+build/
+dist/
+
+# -------------------------
+# OS files
+# -------------------------
 .DS_Store
 Thumbs.db
