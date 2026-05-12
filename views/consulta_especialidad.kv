@@ -3,21 +3,24 @@
 <EspecialidadCard@ButtonBehavior+BoxLayout>:
     orientation: "horizontal"
     size_hint_y: None
-    height: 88
-    padding: [14, 12]
-    spacing: 14
+    height: "120dp"
+    padding: ["14dp", "12dp"]
+    spacing: "14dp"
+
     canvas.before:
         Color:
             rgba: 1, 1, 1, 1
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [14]
+            radius: [18]
+
         Color:
-            rgba: 0.88, 0.90, 0.93, 1
+            rgba: 0, 0, 0, 0.05
         Line:
-            rounded_rectangle: [self.x+1, self.y+1, self.width-2, self.height-2, 14]
-            width: 0.8
+            rounded_rectangle:
+                [self.x + 1, self.y + 1, self.width - 2, self.height - 2, 18]
+            width: 1
 
 <ConsultaEspecialidadScreen>:
 
@@ -31,13 +34,18 @@
                 pos: self.pos
                 size: self.size
 
+        # =========================
+        # TOPBAR
+        # =========================
         BoxLayout:
             size_hint_y: None
-            height: 58
-            padding: [12, 10, 16, 10]
+            height: "64dp"
+            padding: ["12dp", "10dp", "16dp", "10dp"]
+            spacing: "10dp"
+
             canvas.before:
                 Color:
-                    rgba: 0.00, 0.04, 0.22, 1
+                    rgba: 0.24, 0.17, 0.55, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -45,126 +53,128 @@
             Button:
                 text: "<"
                 size_hint_x: None
-                width: 36
-                font_size: 22
+                width: "42dp"
+                font_size: "22sp"
                 bold: True
+                background_normal: ""
                 background_color: 0, 0, 0, 0
-                color: 0.99, 0.84, 0.00, 1
+                color: 1, 1, 1, 1
                 on_release: root.volver()
 
             Label:
                 text: "AREA LEGAL"
-                font_size: 16
+                font_size: "18sp"
                 bold: True
                 color: 1, 1, 1, 1
                 halign: "left"
+                valign: "middle"
                 text_size: self.size
 
+        # =========================
+        # TITULO
+        # =========================
         Label:
-            text: "Selecciona tu especialidad"
-            font_size: 13
+            text: "Selecciona la especialidad para tu consulta"
+            font_size: "14sp"
             color: 0.45, 0.50, 0.60, 1
             size_hint_y: None
-            height: 34
+            height: "42dp"
             halign: "center"
+            valign: "middle"
             text_size: self.size
 
+        # =========================
+        # BUSCADOR
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: "62dp"
+            padding: ["16dp", "4dp", "16dp", "10dp"]
+
+            TextInput:
+                id: buscador
+                hint_text: "Buscar: divorcio, despido, herencia, mediacion..."
+                multiline: False
+                font_size: "15sp"
+                background_color: 1, 1, 1, 1
+                foreground_color: 0.10, 0.12, 0.18, 1
+                hint_text_color: 0.55, 0.58, 0.66, 1
+                cursor_color: 0.30, 0.23, 0.67, 1
+                padding: ["14dp", "14dp"]
+                on_text: root.filtrar_especialidades(self.text)
+
+        # =========================
+        # FILTROS
+        # =========================
         ScrollView:
+            size_hint_y: None
+            height: "56dp"
+            do_scroll_y: False
+            bar_width: 0
+
             BoxLayout:
+                size_hint_x: None
+                width: self.minimum_width
+                spacing: "10dp"
+                padding: ["16dp", "0dp", "16dp", "0dp"]
+
+                Button:
+                    text: "Todas"
+                    size_hint_x: None
+                    width: "110dp"
+                    background_normal: ""
+                    background_color: 0.24, 0.17, 0.55, 1
+                    color: 1, 1, 1, 1
+                    bold: True
+                    on_release: root.aplicar_filtro("Todas")
+
+                Button:
+                    text: "Familia"
+                    size_hint_x: None
+                    width: "110dp"
+                    background_normal: ""
+                    background_color: 0.90, 0.92, 0.96, 1
+                    color: 0.20, 0.22, 0.30, 1
+                    on_release: root.aplicar_filtro("Familia")
+
+                Button:
+                    text: "Trabajo"
+                    size_hint_x: None
+                    width: "110dp"
+                    background_normal: ""
+                    background_color: 0.90, 0.92, 0.96, 1
+                    color: 0.20, 0.22, 0.30, 1
+                    on_release: root.aplicar_filtro("Laboral")
+
+                Button:
+                    text: "Urgencias"
+                    size_hint_x: None
+                    width: "110dp"
+                    background_normal: ""
+                    background_color: 0.90, 0.92, 0.96, 1
+                    color: 0.20, 0.22, 0.30, 1
+                    on_release: root.aplicar_filtro("Penal")
+
+                Button:
+                    text: "Mediacion"
+                    size_hint_x: None
+                    width: "120dp"
+                    background_normal: ""
+                    background_color: 0.90, 0.92, 0.96, 1
+                    color: 0.20, 0.22, 0.30, 1
+                    on_release: root.aplicar_filtro("Mediacion")
+
+        # =========================
+        # LISTA
+        # =========================
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "6dp"
+
+            BoxLayout:
+                id: lista_especialidades
                 orientation: "vertical"
-                padding: [16, 8, 16, 16]
-                spacing: 12
+                padding: ["16dp", "8dp", "16dp", "20dp"]
+                spacing: "12dp"
                 size_hint_y: None
                 height: self.minimum_height
-
-                EspecialidadCard:
-                    on_release: root.seleccionar("Familiar")
-                    AsyncImage:
-                        source: "assets/familia.png"
-                        size_hint_x: None
-                        width: 60
-                        allow_stretch: True
-                    BoxLayout:
-                        orientation: "vertical"
-                        Label:
-                            text: "Derecho Familiar"
-                            bold: True
-                            font_size: 15
-                            color: 0.08, 0.12, 0.28, 1
-                            halign: "left"
-                            text_size: self.size
-                        Label:
-                            text: "Divorcios, custodia, herencias"
-                            font_size: 12
-                            color: 0.45, 0.50, 0.60, 1
-                            halign: "left"
-                            text_size: self.size
-
-                EspecialidadCard:
-                    on_release: root.seleccionar("Laboral")
-                    AsyncImage:
-                        source: "assets/laboral.png"
-                        size_hint_x: None
-                        width: 60
-                        allow_stretch: True
-                    BoxLayout:
-                        orientation: "vertical"
-                        Label:
-                            text: "Derecho Laboral"
-                            bold: True
-                            font_size: 15
-                            color: 0.08, 0.12, 0.28, 1
-                            halign: "left"
-                            text_size: self.size
-                        Label:
-                            text: "Despidos, contratos, ART"
-                            font_size: 12
-                            color: 0.45, 0.50, 0.60, 1
-                            halign: "left"
-                            text_size: self.size
-
-                EspecialidadCard:
-                    on_release: root.seleccionar("Penal")
-                    AsyncImage:
-                        source: "assets/penal.png"
-                        size_hint_x: None
-                        width: 60
-                        allow_stretch: True
-                    BoxLayout:
-                        orientation: "vertical"
-                        Label:
-                            text: "Derecho Penal"
-                            bold: True
-                            font_size: 15
-                            color: 0.08, 0.12, 0.28, 1
-                            halign: "left"
-                            text_size: self.size
-                        Label:
-                            text: "Denuncias, defensa, causas"
-                            font_size: 12
-                            color: 0.45, 0.50, 0.60, 1
-                            halign: "left"
-                            text_size: self.size
-
-                EspecialidadCard:
-                    on_release: root.seleccionar("Civil")
-                    AsyncImage:
-                        source: "assets/civil.png"
-                        size_hint_x: None
-                        width: 60
-                        allow_stretch: True
-                    BoxLayout:
-                        orientation: "vertical"
-                        Label:
-                            text: "Derecho Civil"
-                            bold: True
-                            font_size: 15
-                            color: 0.08, 0.12, 0.28, 1
-                            halign: "left"
-                            text_size: self.size
-                        Label:
-                            text: "Danos, contratos, inmuebles"
-                            font_size: 12
-                            color: 0.45, 0.50, 0.60, 1
-                            halign: "left"
-                            text_size: self.size

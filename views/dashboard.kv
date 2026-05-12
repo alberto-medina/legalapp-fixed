@@ -10,11 +10,15 @@
                 pos: self.pos
                 size: self.size
 
-        # TOPBAR violeta
+        # =========================
+        # TOPBAR
+        # =========================
         BoxLayout:
             size_hint_y: None
-            height: 66
-            padding: [20, 14, 20, 14]
+            height: min(root.height * 0.11, 82)
+            padding: [dp(18), dp(10), dp(18), dp(10)]
+            spacing: dp(10)
+
             canvas.before:
                 Color:
                     rgba: 0.24, 0.17, 0.55, 1
@@ -24,304 +28,454 @@
 
             Label:
                 text: "LEGAL APP"
-                font_size: 22
                 bold: True
                 color: 1, 1, 1, 1
+                font_size: min(root.width * 0.05, 26)
+
                 halign: "left"
-                text_size: self.size
+                valign: "middle"
+
+                text_size: self.width, self.height
 
             BoxLayout:
                 orientation: "vertical"
+                size_hint_x: .55
+
                 Label:
                     id: lbl_bienvenida
+
                     text: ""
-                    font_size: 14
                     bold: True
+
                     color: 1, 1, 1, 1
+                    font_size: min(root.width * 0.03, 15)
+
                     halign: "right"
-                    text_size: self.size
+                    valign: "bottom"
+
+                    text_size: self.width, self.height
+
                 Label:
                     text: "Cliente"
-                    font_size: 11
+
                     color: 0.75, 0.72, 0.92, 1
+                    font_size: min(root.width * 0.026, 12)
+
                     halign: "right"
-                    text_size: self.size
+                    valign: "top"
 
-        # HERO CARD
-        BoxLayout:
-            size_hint_y: None
-            height: 150
-            padding: [16, 14, 16, 10]
-            canvas.before:
-                Color:
-                    rgba: 0, 0, 0, 0.10
-                RoundedRectangle:
-                    pos: self.x + 4, self.y - 5
-                    size: self.width - 8, self.height
-                    radius: [0, 0, 20, 20]
-                Color:
-                    rgba: 0.30, 0.23, 0.67, 1
-                RoundedRectangle:
-                    pos: self.pos
-                    size: self.size
-                    radius: [0, 0, 20, 20]
+                    text_size: self.width, self.height
 
-            BoxLayout:
-                orientation: "vertical"
-                spacing: 8
-
-                Label:
-                    text: "Hola, bienvenido"
-                    font_size: 14
-                    color: 0.80, 0.76, 0.95, 1
-                    halign: "left"
-                    text_size: self.size
-
-                Label:
-                    text: "Como podemos ayudarte?"
-                    font_size: 20
-                    bold: True
-                    color: 1, 1, 1, 1
-                    halign: "left"
-                    text_size: self.size
-
-                Button:
-                    text: "Nueva Consulta"
-                    size_hint_y: None
-                    height: 50
-                    bold: True
-                    font_size: 16
-                    background_normal: ""
-                    background_color: 1, 1, 1, 1
-                    color: 0.30, 0.23, 0.67, 1
-                    on_release: root.nueva_consulta()
-
-        # BOTON VIDEOLLAMADA
-        Button:
-            id: btn_video
-            text: "Unirse a videollamada"
-            size_hint_y: None
-            height: 50
-            opacity: 0
-            disabled: True
-            background_normal: ""
-            background_color: 0.85, 0.18, 0.18, 1
-            color: 1, 1, 1, 1
-            on_release: root.ir_video(0)
-
-        # ACCIONES
+        # =========================
+        # CONTENIDO
+        # =========================
         ScrollView:
+            do_scroll_x: False
+
             BoxLayout:
                 orientation: "vertical"
-                padding: [16, 18, 16, 10]
-                spacing: 14
+
+                spacing: dp(16)
+
+                padding:
+                    [
+                    dp(16),
+                    dp(16),
+                    dp(16),
+                    dp(20)
+                    ]
+
                 size_hint_y: None
                 height: self.minimum_height
 
-                Label:
-                    text: "Acciones rapidas"
-                    font_size: 13
-                    bold: True
-                    color: 0.45, 0.40, 0.55, 1
-                    size_hint_y: None
-                    height: 26
-                    halign: "left"
-                    text_size: self.size
-
-                # CARD Consultas
+                # =========================
+                # HERO CARD
+                # =========================
                 BoxLayout:
+                    orientation: "vertical"
+
                     size_hint_y: None
-                    height: 84
-                    padding: [18, 14]
-                    spacing: 14
+                    height: max(dp(170), root.height * 0.24)
+
+                    padding: dp(22)
+                    spacing: dp(12)
+
                     canvas.before:
                         Color:
-                            rgba: 0, 0, 0, 0.07
+                            rgba: 0, 0, 0, 0.08
                         RoundedRectangle:
-                            pos: self.x + 2, self.y - 4
+                            pos: self.x + 3, self.y - 4
+                            size: self.width - 6, self.height
+                            radius: [24]
+
+                        Color:
+                            rgba: 0.30, 0.23, 0.67, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [24]
+
+                    Label:
+                        text: "Hola, bienvenido"
+
+                        size_hint_y: None
+                        height: self.texture_size[1]
+
+                        color: 0.82, 0.79, 0.96, 1
+                        font_size: min(root.width * 0.035, 16)
+
+                        halign: "left"
+                        valign: "middle"
+
+                        text_size: self.width, None
+
+                    Label:
+                        text: "Como podemos ayudarte?"
+
+                        bold: True
+
+                        color: 1, 1, 1, 1
+                        font_size: min(root.width * 0.055, 30)
+
+                        halign: "left"
+                        valign: "middle"
+
+                        text_size: self.width, None
+
+                    Widget:
+
+                    Button:
+                        text: "Nueva Consulta"
+
+                        size_hint_y: None
+                        height: dp(54)
+
+                        bold: True
+
+                        font_size: min(root.width * 0.04, 18)
+
+                        background_normal: ""
+                        background_color: 1, 1, 1, 1
+
+                        color: 0.30, 0.23, 0.67, 1
+
+                        on_release:
+                            root.nueva_consulta()
+
+                # =========================
+                # VIDEOLLAMADA
+                # =========================
+                Button:
+                    id: btn_video
+
+                    text: "Unirse a videollamada"
+
+                    size_hint_y: None
+                    height: dp(54)
+
+                    opacity: 0
+                    disabled: True
+
+                    bold: True
+
+                    font_size: min(root.width * 0.04, 17)
+
+                    background_normal: ""
+                    background_color: 0.85, 0.18, 0.18, 1
+
+                    color: 1, 1, 1, 1
+
+                    on_release:
+                        root.ir_video(0)
+
+                # =========================
+                # TITULO
+                # =========================
+                Label:
+                    text: "Acciones rapidas"
+
+                    size_hint_y: None
+                    height: self.texture_size[1]
+
+                    bold: True
+
+                    color: 0.45, 0.40, 0.55, 1
+                    font_size: min(root.width * 0.032, 15)
+
+                    halign: "left"
+                    valign: "middle"
+
+                    text_size: self.width, None
+
+                # =========================
+                # CARD CONSULTAS
+                # =========================
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(92)
+
+                    padding: dp(16)
+                    spacing: dp(14)
+
+                    canvas.before:
+                        Color:
+                            rgba: 0, 0, 0, 0.06
+                        RoundedRectangle:
+                            pos: self.x + 2, self.y - 3
                             size: self.width - 4, self.height
-                            radius: [18]
+                            radius: [20]
+
                         Color:
                             rgba: 1, 1, 1, 1
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [18]
+                            radius: [20]
 
                     BoxLayout:
                         size_hint_x: None
-                        width: 46
+                        width: dp(52)
+
                         canvas.before:
                             Color:
                                 rgba: 0.92, 0.89, 0.98, 1
                             Ellipse:
                                 pos: self.pos
-                                size: [46, 46]
+                                size: self.size
+
                         Label:
                             text: "="
-                            font_size: 20
+
                             bold: True
                             color: 0.30, 0.23, 0.67, 1
 
+                            font_size: min(root.width * 0.05, 24)
+
                     BoxLayout:
                         orientation: "vertical"
+
                         Label:
                             text: "Mis Consultas"
-                            font_size: 15
+
                             bold: True
+
                             color: 0.10, 0.06, 0.14, 1
+                            font_size: min(root.width * 0.038, 17)
+
                             halign: "left"
-                            text_size: self.size
+                            valign: "bottom"
+
+                            text_size: self.width, self.height
+
                         Label:
                             text: "Ver historial y estado"
-                            font_size: 12
+
                             color: 0.55, 0.50, 0.65, 1
+                            font_size: min(root.width * 0.03, 13)
+
                             halign: "left"
-                            text_size: self.size
+                            valign: "top"
+
+                            text_size: self.width, self.height
 
                     Button:
                         text: "Ver"
+
                         size_hint_x: None
-                        width: 72
+                        width: dp(84)
+
                         bold: True
-                        font_size: 14
+
+                        font_size: min(root.width * 0.034, 15)
+
                         background_normal: ""
                         background_color: 0.30, 0.23, 0.67, 1
-                        color: 1, 1, 1, 1
-                        on_release: root.ver_historial()
 
-                # CARD Perfil
+                        color: 1, 1, 1, 1
+
+                        on_release:
+                            root.ver_historial()
+
+                # =========================
+                # CARD PERFIL
+                # =========================
                 BoxLayout:
                     size_hint_y: None
-                    height: 84
-                    padding: [18, 14]
-                    spacing: 14
+                    height: dp(92)
+
+                    padding: dp(16)
+                    spacing: dp(14)
+
                     canvas.before:
                         Color:
-                            rgba: 0, 0, 0, 0.07
+                            rgba: 0, 0, 0, 0.06
                         RoundedRectangle:
-                            pos: self.x + 2, self.y - 4
+                            pos: self.x + 2, self.y - 3
                             size: self.width - 4, self.height
-                            radius: [18]
+                            radius: [20]
+
                         Color:
                             rgba: 1, 1, 1, 1
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [18]
+                            radius: [20]
 
                     BoxLayout:
                         size_hint_x: None
-                        width: 46
+                        width: dp(52)
+
                         canvas.before:
                             Color:
                                 rgba: 0.92, 0.89, 0.98, 1
                             Ellipse:
                                 pos: self.pos
-                                size: [46, 46]
+                                size: self.size
+
                         Label:
                             text: "O"
-                            font_size: 20
+
                             bold: True
                             color: 0.30, 0.23, 0.67, 1
 
+                            font_size: min(root.width * 0.05, 24)
+
                     BoxLayout:
                         orientation: "vertical"
+
                         Label:
                             text: "Mi Perfil"
-                            font_size: 15
+
                             bold: True
+
                             color: 0.10, 0.06, 0.14, 1
+                            font_size: min(root.width * 0.038, 17)
+
                             halign: "left"
-                            text_size: self.size
+                            valign: "bottom"
+
+                            text_size: self.width, self.height
+
                         Label:
                             text: "Editar datos personales"
-                            font_size: 12
+
                             color: 0.55, 0.50, 0.65, 1
+                            font_size: min(root.width * 0.03, 13)
+
                             halign: "left"
-                            text_size: self.size
+                            valign: "top"
+
+                            text_size: self.width, self.height
 
                     Button:
                         text: "Editar"
+
                         size_hint_x: None
-                        width: 72
+                        width: dp(84)
+
                         bold: True
-                        font_size: 14
+
+                        font_size: min(root.width * 0.034, 15)
+
                         background_normal: ""
                         background_color: 0.30, 0.23, 0.67, 1
-                        color: 1, 1, 1, 1
-                        on_release: root.ir_perfil()
 
-        # -- BOTTOM NAV FIJO -----------------------------------------
-        # FIX: cada item es un Button directo con text multilinea,
-        # sin BoxLayout anidado adentro del Button (eso rompe el layout)
+                        color: 1, 1, 1, 1
+
+                        on_release:
+                            root.ir_perfil()
+
+        # =========================
+        # BOTTOM NAV
+        # =========================
         BoxLayout:
             size_hint_y: None
-            height: 72
-            spacing: 0
+            height: dp(74)
+
             canvas.before:
                 Color:
                     rgba: 1, 1, 1, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
+
                 Color:
                     rgba: 0.85, 0.82, 0.94, 1
                 Line:
                     points: [self.x, self.top, self.right, self.top]
                     width: 1.2
 
-            # INICIO - activo
+            # INICIO
             BoxLayout:
                 orientation: "vertical"
-                padding: [4, 6, 4, 4]
-                spacing: 0
+
+                padding: dp(6)
+
                 canvas.before:
                     Color:
                         rgba: 0.92, 0.89, 0.98, 1
                     RoundedRectangle:
-                        pos: [self.x + 3, self.y + 3]
-                        size: [self.width - 6, self.height - 6]
-                        radius: [14]
+                        pos: self.x + 4, self.y + 4
+                        size: self.width - 8, self.height - 8
+                        radius: [16]
 
                 Label:
                     text: "Inicio"
-                    font_size: 14
+
                     bold: True
+
                     color: 0.30, 0.23, 0.67, 1
+                    font_size: min(root.width * 0.032, 15)
+
                     halign: "center"
                     valign: "middle"
-                    text_size: self.size
+
+                    text_size: self.width, self.height
 
             # CONSULTAS
             Button:
-                size_hint_x: 1
-                font_size: 13
-                bold: True
                 text: "Consultas"
+
+                bold: True
+
+                font_size: min(root.width * 0.03, 14)
+
                 background_normal: ""
                 background_color: 0, 0, 0, 0
+
                 color: 0.50, 0.46, 0.62, 1
-                on_release: root.ver_historial()
+
+                on_release:
+                    root.ver_historial()
 
             # PERFIL
             Button:
-                size_hint_x: 1
-                font_size: 13
-                bold: True
                 text: "Perfil"
+
+                bold: True
+
+                font_size: min(root.width * 0.03, 14)
+
                 background_normal: ""
                 background_color: 0, 0, 0, 0
+
                 color: 0.50, 0.46, 0.62, 1
-                on_release: root.ir_perfil()
+
+                on_release:
+                    root.ir_perfil()
 
             # SALIR
             Button:
-                size_hint_x: 1
-                font_size: 13
-                bold: True
                 text: "Salir"
+
+                bold: True
+
+                font_size: min(root.width * 0.03, 14)
+
                 background_normal: ""
                 background_color: 0, 0, 0, 0
+
                 color: 0.80, 0.25, 0.25, 1
-                on_release: root.cerrar_sesion()
+
+                on_release:
+                    root.cerrar_sesion()

@@ -10,7 +10,10 @@ class LoginScreen(Screen):
         email = self.ids.email.text.strip().lower()
         password = self.ids.password.text.strip()
 
+        self.ids.error.text = ""
+
         if not email or not password:
+            self.ids.error.text = "Completa email y contrasena"
             print("LOGIN ERROR - campos vacios")
             return
 
@@ -22,33 +25,35 @@ class LoginScreen(Screen):
         conn = get_connection()
         cursor = conn.cursor()
 
-        # 🔥 Buscar SOLO por email
         cursor.execute("""
             SELECT * FROM users WHERE LOWER(email)=?
         """, (email,))
 
         user = cursor.fetchone()
 
-        # DEBUG (te va a mostrar qué hay realmente)
         cursor.execute("SELECT email, password FROM users")
         print("USERS DB:", cursor.fetchall())
 
         conn.close()
 
         if user:
-            print("HASH DB:", user[3])  # columna password
+            print("HASH DB:", user[3])
 
-            # 🔥 Comparación directa de hash
             if user[3].strip() == password_hash.strip():
                 session.current_user = user
                 print("LOGIN OK:", user)
+
+                self.ids.email.text = ""
+                self.ids.password.text = ""
 
                 if user[4] == "abogado":
                     self.manager.current = "abogado_panel"
                 else:
                     self.manager.current = "dashboard"
+
                 return
 
+        self.ids.error.text = "Email o contrasena incorrectos"
         print("LOGIN ERROR - password incorrecta o usuario no existe")
 
     def go_register(self):

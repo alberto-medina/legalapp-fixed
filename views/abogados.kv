@@ -10,14 +10,17 @@
                 pos: self.pos
                 size: self.size
 
+        # =========================
         # TOPBAR
+        # =========================
         BoxLayout:
             size_hint_y: None
-            height: 62
-            padding: [12, 10, 16, 10]
+            height: 72
+            padding: [14, 12, 18, 12]
+
             canvas.before:
                 Color:
-                    rgba: 0.12, 0.16, 0.23, 1
+                    rgba: 0.24, 0.17, 0.55, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -25,59 +28,112 @@
             Button:
                 text: "<"
                 size_hint_x: None
-                width: 36
-                font_size: 22
+                width: 42
+                font_size: 24
                 bold: True
+                background_normal: ""
                 background_color: 0, 0, 0, 0
-                color: 1,1,1,1
+                color: 1, 1, 1, 1
                 on_release: root.volver()
 
             BoxLayout:
                 orientation: "vertical"
+
                 Label:
                     text: "ABOGADOS"
-                    font_size: 18
+                    font_size: "22sp"
                     bold: True
                     color: 1, 1, 1, 1
                     halign: "left"
+                    valign: "middle"
                     text_size: self.size
+
                 Label:
                     id: lbl_area
                     text: ""
-                    font_size: 12
-                    color: 0.70, 0.75, 0.85, 1
+                    font_size: "13sp"
+                    color: 0.82, 0.80, 0.95, 1
                     halign: "left"
+                    valign: "middle"
                     text_size: self.size
 
+        # =========================
         # BUSCADOR
+        # =========================
         BoxLayout:
             size_hint_y: None
-            height: 54
-            padding: [16, 10, 16, 6]
+            height: 74
+            padding: [16, 14, 16, 10]
 
             canvas.before:
                 Color:
-                    rgba: 0.12, 0.16, 0.23, 1
+                    rgba: 0.24, 0.17, 0.55, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
 
             TextInput:
                 id: buscador
-                hint_text: "Buscar abogado..."
+                hint_text: "Buscar por nombre, experiencia o especialidad..."
                 multiline: False
                 size_hint_y: None
-                height: 38
+                height: 46
+                background_normal: ""
+                background_active: ""
                 background_color: 1, 1, 1, 1
-                foreground_color: 0.1, 0.1, 0.1, 1
-                hint_text_color: 0.50, 0.55, 0.65, 1
-                cursor_color: 0.12, 0.16, 0.23, 1
-                padding: [12, 10]
-                font_size: 14
-                on_text: root.filtrar(self.text)
+                foreground_color: 0.10, 0.06, 0.14, 1
+                hint_text_color: 0.55, 0.52, 0.66, 1
+                cursor_color: 0.30, 0.23, 0.67, 1
+                padding: [16, 12]
+                font_size: "15sp"
+                on_text: root.filtrar()
 
+        # =========================
+        # FILTROS
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: 64
+            padding: [14, 8, 14, 10]
+            spacing: 10
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Spinner:
+                id: filtro_estado
+                text: "Todos"
+                values: ["Todos", "disponible", "guardia", "ocupado"]
+                font_size: "13sp"
+                background_normal: ""
+                background_color: 0.92, 0.90, 0.98, 1
+                color: 0.18, 0.12, 0.40, 1
+                on_text: root.filtrar()
+
+            Spinner:
+                id: filtro_orden
+                text: "Mejor valorados"
+                values:
+                    [
+                    "Mejor valorados",
+                    "Mayor experiencia",
+                    "Nombre A-Z"
+                    ]
+                font_size: "13sp"
+                background_normal: ""
+                background_color: 0.92, 0.90, 0.98, 1
+                color: 0.18, 0.12, 0.40, 1
+                on_text: root.filtrar()
+
+        # =========================
         # LISTA
+        # =========================
         ScrollView:
+
             BoxLayout:
                 id: lista
                 orientation: "vertical"

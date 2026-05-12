@@ -12,128 +12,357 @@ PRECIOS_CONSULTA = {
 }
 
 
-# 🔥 RUTA CORRECTA PC + ANDROID
+# =========================================================
+# RUTA DB
+# =========================================================
+
 def get_db_path():
+
     if platform == "android":
+
         app = App.get_running_app()
-        return os.path.join(app.user_data_dir, "legal_app.db")
+
+        return os.path.join(
+            app.user_data_dir,
+            "legal_app.db"
+        )
+
     else:
-        return os.path.join(os.path.dirname(os.path.abspath(__file__)), "legal_app.db")
+
+        return os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "legal_app.db"
+        )
 
 
 def get_connection():
+
     return sqlite3.connect(get_db_path())
 
 
+# =========================================================
+# CREATE TABLES
+# =========================================================
+
 def create_tables():
+
     conn = get_connection()
     c = conn.cursor()
+
+    # =====================================================
+    # USERS
+    # =====================================================
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS users (
+
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT, email TEXT UNIQUE, password TEXT, rol TEXT,
-        telefono TEXT, foto TEXT, matricula TEXT, experiencia TEXT,
-        descripcion TEXT, estado_abogado TEXT DEFAULT 'disponible',
-        cuenta_bancaria TEXT, saldo REAL DEFAULT 0.0
-    )""")
+
+        username TEXT,
+        email TEXT UNIQUE,
+        password TEXT,
+        rol TEXT,
+
+        telefono TEXT,
+        foto TEXT,
+
+        matricula TEXT,
+        experiencia TEXT,
+        descripcion TEXT,
+
+        estado_abogado TEXT DEFAULT 'disponible',
+
+        cuenta_bancaria TEXT,
+
+        saldo REAL DEFAULT 0.0,
+
+        especialidad TEXT
+    )
+    """)
+
+    # =====================================================
+    # CONSULTAS
+    # =====================================================
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS consultas (
+
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_email TEXT, abogado TEXT, estado TEXT,
-        tipo_servicio TEXT, fecha TEXT, monto REAL DEFAULT 0.0
-    )""")
+
+        user_email TEXT,
+        abogado TEXT,
+
+        estado TEXT,
+
+        tipo_servicio TEXT,
+
+        fecha TEXT,
+
+        monto REAL DEFAULT 0.0
+    )
+    """)
+
+    # =====================================================
+    # MENSAJES
+    # =====================================================
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS mensajes (
+
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        consulta_id INTEGER, emisor TEXT, mensaje TEXT, archivo TEXT
-    )""")
+
+        consulta_id INTEGER,
+
+        emisor TEXT,
+
+        mensaje TEXT,
+
+        archivo TEXT
+    )
+    """)
+
+    # =====================================================
+    # RESEÑAS
+    # =====================================================
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS resenas (
+
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        consulta_id INTEGER UNIQUE, abogado_email TEXT,
-        cliente_email TEXT, puntaje INTEGER, comentario TEXT, fecha TEXT
-    )""")
+
+        consulta_id INTEGER UNIQUE,
+
+        abogado_email TEXT,
+
+        cliente_email TEXT,
+
+        puntaje INTEGER,
+
+        comentario TEXT,
+
+        fecha TEXT
+    )
+    """)
+
+    # =====================================================
+    # RETIROS
+    # =====================================================
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS retiros (
+
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        abogado_email TEXT, monto_bruto REAL,
-        comision_plataforma REAL, monto_neto REAL,
-        cuenta_destino TEXT, estado TEXT DEFAULT 'pendiente', fecha TEXT
-    )""")
+
+        abogado_email TEXT,
+
+        monto_bruto REAL,
+
+        comision_plataforma REAL,
+
+        monto_neto REAL,
+
+        cuenta_destino TEXT,
+
+        estado TEXT DEFAULT 'pendiente',
+
+        fecha TEXT
+    )
+    """)
 
     conn.commit()
     conn.close()
 
 
+# =========================================================
+# ACTUALIZAR DB
+# =========================================================
+
 def actualizar_db():
+
     conn = get_connection()
     c = conn.cursor()
 
+    # =====================================================
+    # MENSAJES
+    # =====================================================
+
     c.execute("PRAGMA table_info(mensajes)")
-    if "archivo" not in [r[1] for r in c.fetchall()]:
-        c.execute("ALTER TABLE mensajes ADD COLUMN archivo TEXT")
+
+    cols_msg = [r[1] for r in c.fetchall()]
+
+    if "archivo" not in cols_msg:
+
+        c.execute("""
+            ALTER TABLE mensajes
+            ADD COLUMN archivo TEXT
+        """)
+
+    # =====================================================
+    # USERS
+    # =====================================================
 
     c.execute("PRAGMA table_info(users)")
+
     cols = [r[1] for r in c.fetchall()]
 
     if "estado_abogado" not in cols:
-        c.execute("ALTER TABLE users ADD COLUMN estado_abogado TEXT DEFAULT 'disponible'")
-        c.execute("UPDATE users SET estado_abogado='disponible' WHERE estado_abogado IS NULL")
+
+        c.execute("""
+            ALTER TABLE users
+            ADD COLUMN estado_abogado TEXT DEFAULT 'disponible'
+        """)
+
+        c.execute("""
+            UPDATE users
+            SET estado_abogado='disponible'
+            WHERE estado_abogado IS NULL
+        """)
 
     if "cuenta_bancaria" not in cols:
-        c.execute("ALTER TABLE users ADD COLUMN cuenta_bancaria TEXT")
+
+        c.execute("""
+            ALTER TABLE users
+            ADD COLUMN cuenta_bancaria TEXT
+        """)
 
     if "saldo" not in cols:
-        c.execute("ALTER TABLE users ADD COLUMN saldo REAL DEFAULT 0.0")
+
+        c.execute("""
+            ALTER TABLE users
+            ADD COLUMN saldo REAL DEFAULT 0.0
+        """)
+
+    # 🔥 NUEVO
+    if "especialidad" not in cols:
+
+        c.execute("""
+            ALTER TABLE users
+            ADD COLUMN especialidad TEXT
+        """)
+
+    # =====================================================
+    # CONSULTAS
+    # =====================================================
 
     c.execute("PRAGMA table_info(consultas)")
-    if "monto" not in [r[1] for r in c.fetchall()]:
-        c.execute("ALTER TABLE consultas ADD COLUMN monto REAL DEFAULT 0.0")
+
+    cols_consulta = [r[1] for r in c.fetchall()]
+
+    if "monto" not in cols_consulta:
+
+        c.execute("""
+            ALTER TABLE consultas
+            ADD COLUMN monto REAL DEFAULT 0.0
+        """)
+
+    # =====================================================
+    # ABOGADO DEMO
+    # =====================================================
+
+    c.execute("""
+        UPDATE users
+        SET especialidad='Civil'
+        WHERE email='abogado@test.com'
+    """)
 
     conn.commit()
     conn.close()
+
     print("DB OK")
 
 
-# 🔥 USUARIOS DEMO (ANDROID + PC)
+# =========================================================
+# USUARIOS DEMO
+# =========================================================
+
 def crear_usuarios_demo():
+
     import hashlib
 
     def hash_password(p):
-        return hashlib.sha256(p.encode()).hexdigest()
+
+        return hashlib.sha256(
+            p.encode()
+        ).hexdigest()
 
     conn = get_connection()
     c = conn.cursor()
 
-    c.execute("SELECT email FROM users WHERE email=?", ("abogado@test.com",))
+    # =====================================================
+    # ABOGADO
+    # =====================================================
+
+    c.execute("""
+        SELECT email
+        FROM users
+        WHERE email=?
+    """, ("abogado@test.com",))
+
     abogado = c.fetchone()
 
-    c.execute("SELECT email FROM users WHERE email=?", ("cliente@test.com",))
-    cliente = c.fetchone()
-
     if not abogado:
+
         c.execute("""
-            INSERT INTO users (username, email, password, rol, telefono, saldo)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO users (
+
+                username,
+                email,
+                password,
+                rol,
+                telefono,
+                saldo,
+                especialidad,
+                experiencia,
+                descripcion,
+                estado_abogado
+
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
+
             "Dr Test",
             "abogado@test.com",
             hash_password("1234"),
             "abogado",
             "",
-            0.0
+            0.0,
+
+            "Civil",
+
+            "8 años",
+
+            "Especialista en daños, contratos y asesoramiento legal.",
+
+            "disponible"
         ))
 
+    # =====================================================
+    # CLIENTE
+    # =====================================================
+
+    c.execute("""
+        SELECT email
+        FROM users
+        WHERE email=?
+    """, ("cliente@test.com",))
+
+    cliente = c.fetchone()
+
     if not cliente:
+
         c.execute("""
-            INSERT INTO users (username, email, password, rol, telefono)
+            INSERT INTO users (
+
+                username,
+                email,
+                password,
+                rol,
+                telefono
+
+            )
             VALUES (?, ?, ?, ?, ?)
         """, (
+
             "Cliente Test",
             "cliente@test.com",
             hash_password("1234"),
@@ -147,71 +376,168 @@ def crear_usuarios_demo():
     print("USUARIOS DEMO OK")
 
 
-def acreditar_honorario(abogado_email, tipo_servicio):
-    monto_total = PRECIOS_CONSULTA.get(tipo_servicio, 1000.0)
-    comision = round(monto_total * COMISION_PLATAFORMA, 2)
-    monto_neto = round(monto_total - comision, 2)
+# =========================================================
+# ACREDITAR HONORARIO
+# =========================================================
+
+def acreditar_honorario(
+    abogado_email,
+    tipo_servicio
+):
+
+    monto_total = PRECIOS_CONSULTA.get(
+        tipo_servicio,
+        1000.0
+    )
+
+    comision = round(
+        monto_total * COMISION_PLATAFORMA,
+        2
+    )
+
+    monto_neto = round(
+        monto_total - comision,
+        2
+    )
 
     conn = get_connection()
     c = conn.cursor()
 
-    c.execute(
-        "UPDATE users SET saldo = saldo + ? WHERE email=?",
-        (monto_neto, abogado_email)
-    )
+    c.execute("""
+        UPDATE users
+        SET saldo = saldo + ?
+        WHERE email=?
+    """, (
+
+        monto_neto,
+        abogado_email
+    ))
 
     conn.commit()
     conn.close()
 
-    print(f"COBRO 5%: total=${monto_total} comision=${comision} neto_abogado=${monto_neto}")
+    print(
+        f"COBRO 5%: total=${monto_total} "
+        f"comision=${comision} "
+        f"neto_abogado=${monto_neto}"
+    )
+
     return monto_neto, comision
 
 
-def solicitar_retiro(abogado_email, monto_bruto, cuenta=None):
+# =========================================================
+# RETIRO
+# =========================================================
+
+def solicitar_retiro(
+    abogado_email,
+    monto_bruto,
+    cuenta=None
+):
+
     from datetime import datetime
 
     conn = get_connection()
     c = conn.cursor()
 
-    c.execute("SELECT saldo, cuenta_bancaria FROM users WHERE email=?",
-              (abogado_email,))
+    c.execute("""
+        SELECT saldo, cuenta_bancaria
+        FROM users
+        WHERE email=?
+    """, (abogado_email,))
+
     row = c.fetchone()
 
     if not row:
+
         conn.close()
-        return False, "Usuario no encontrado", 0
+
+        return (
+            False,
+            "Usuario no encontrado",
+            0
+        )
 
     saldo_actual = row[0] or 0.0
-    cuenta_dest = cuenta or row[1] or ""
+
+    cuenta_dest = (
+        cuenta
+        or row[1]
+        or ""
+    )
 
     if not cuenta_dest:
+
         conn.close()
-        return False, "Carga tu CBU/alias en Perfil antes de retirar", 0
+
+        return (
+            False,
+            "Carga tu CBU/alias en Perfil antes de retirar",
+            0
+        )
 
     if monto_bruto <= 0:
+
         conn.close()
-        return False, "El monto debe ser mayor a 0", 0
+
+        return (
+            False,
+            "El monto debe ser mayor a 0",
+            0
+        )
 
     if monto_bruto > saldo_actual:
+
         conn.close()
-        return False, f"Saldo insuficiente. Disponible: ${saldo_actual:,.0f}", 0
 
-    fecha = datetime.now().strftime("%Y-%m-%d %H:%M")
+        return (
+            False,
+            f"Saldo insuficiente. Disponible: ${saldo_actual:,.0f}",
+            0
+        )
 
-    c.execute("UPDATE users SET saldo = saldo - ? WHERE email=?",
-              (monto_bruto, abogado_email))
+    fecha = datetime.now().strftime(
+        "%Y-%m-%d %H:%M"
+    )
 
     c.execute("""
-        INSERT INTO retiros
-            (abogado_email, monto_bruto, comision_plataforma,
-             monto_neto, cuenta_destino, estado, fecha)
+        UPDATE users
+        SET saldo = saldo - ?
+        WHERE email=?
+    """, (
+
+        monto_bruto,
+        abogado_email
+    ))
+
+    c.execute("""
+        INSERT INTO retiros (
+
+            abogado_email,
+            monto_bruto,
+            comision_plataforma,
+            monto_neto,
+            cuenta_destino,
+            estado,
+            fecha
+
+        )
         VALUES (?, ?, 0, ?, ?, 'pendiente', ?)
-    """, (abogado_email, monto_bruto, monto_bruto, cuenta_dest, fecha))
+    """, (
+
+        abogado_email,
+        monto_bruto,
+        monto_bruto,
+        cuenta_dest,
+        fecha
+    ))
 
     conn.commit()
     conn.close()
 
-    msg = (f"Retiro de ${monto_bruto:,.0f} solicitado\n"
-           f"Se depositara en: {cuenta_dest}")
+    msg = (
+        f"Retiro de ${monto_bruto:,.0f} solicitado\n"
+        f"Se depositara en: {cuenta_dest}"
+    )
 
     return True, msg, monto_bruto
