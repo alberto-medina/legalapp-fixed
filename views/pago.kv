@@ -10,10 +10,15 @@
                 pos: self.pos
                 size: self.size
 
+        # =================================================
+        # TOPBAR
+        # =================================================
+
         BoxLayout:
             size_hint_y: None
-            height: 58
+            height: 60
             padding: [12, 10, 16, 10]
+
             canvas.before:
                 Color:
                     rgba: 0.10, 0.12, 0.18, 1
@@ -27,34 +32,33 @@
                 width: 36
                 font_size: 22
                 bold: True
-                background_color: 0, 0, 0, 0
-                color: 1, 1, 1, 1
-                on_release: root.manager.current = "tipo"
+                background_color: 0,0,0,0
+                color: 1,1,1,1
+                on_release: root.volver()
 
             Label:
                 text: "CONFIRMAR PAGO"
                 font_size: 16
                 bold: True
-                color: 1, 1, 1, 1
+                color: 1,1,1,1
                 halign: "left"
                 text_size: self.size
 
+        # =================================================
         # INFO ABOGADO
+        # =================================================
+
         BoxLayout:
             size_hint_y: None
-            height: 52
-            padding: [20, 12]
+            height: 74
+            padding: [18, 12]
+
             canvas.before:
                 Color:
-                    rgba: 1, 1, 1, 1
+                    rgba: 1,1,1,1
                 Rectangle:
                     pos: self.pos
                     size: self.size
-                Color:
-                    rgba: 0.88, 0.90, 0.93, 1
-                Line:
-                    points: [self.x, self.y, self.right, self.y]
-                    width: 0.8
 
             Label:
                 id: lbl_abogado_info
@@ -62,67 +66,139 @@
                 font_size: 13
                 color: 0.40, 0.45, 0.55, 1
                 halign: "left"
+                valign: "middle"
                 text_size: self.size
 
-        # CARD PRECIO
-        BoxLayout:
-            orientation: "vertical"
-            padding: [24, 32, 24, 20]
-            spacing: 16
+        # =================================================
+        # CONTENIDO
+        # =================================================
 
-            Label:
-                id: lbl_precio_grande
-                text: "$0"
-                font_size: 60
-                bold: True
-                color: 0.10, 0.12, 0.18, 1
+        ScrollView:
+
+            BoxLayout:
+                orientation: "vertical"
                 size_hint_y: None
-                height: 84
-                halign: "center"
-                text_size: self.size
+                height: self.minimum_height
+                padding: [22, 26]
+                spacing: 18
 
-            Label:
-                id: lbl_tipo_desc
-                text: ""
-                font_size: 14
-                color: 0.45, 0.50, 0.58, 1
-                size_hint_y: None
-                height: 34
-                halign: "center"
-                text_size: self.size
+                # =========================================
+                # PRECIO
+                # =========================================
 
-            Widget:
-                size_hint_y: None
-                height: 12
+                Label:
+                    id: lbl_precio_grande
+                    text: "$0"
+                    font_size: 58
+                    bold: True
+                    color: 0.10, 0.12, 0.18, 1
+                    size_hint_y: None
+                    height: 84
+                    halign: "center"
+                    text_size: self.size
 
-            Button:
-                id: btn_pago_unico
-                text: "Confirmar pago"
-                size_hint_y: None
-                height: 60
-                bold: True
-                font_size: 17
-                background_normal: ""
-                background_color: 0.18, 0.80, 0.44, 1
-                color: 1, 1, 1, 1
-                on_release: root.pagar()
+                Label:
+                    id: lbl_tipo_desc
+                    text: ""
+                    font_size: 14
+                    color: 0.45, 0.50, 0.58, 1
+                    size_hint_y: None
+                    height: 52
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
 
-            Label:
-                text: "Pago seguro. Se acredita al instante."
-                font_size: 11
-                color: 0.60, 0.63, 0.70, 1
-                size_hint_y: None
-                height: 22
-                halign: "center"
-                text_size: self.size
+                # =========================================
+                # RESUMEN
+                # =========================================
 
-            Widget:
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: 120
+                    padding: [18, 16]
+
+                    canvas.before:
+                        Color:
+                            rgba: 1,1,1,1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [18]
+
+                    Label:
+                        text: "Resumen"
+                        font_size: 15
+                        bold: True
+                        color: 0.10, 0.12, 0.18, 1
+                        size_hint_y: None
+                        height: 24
+                        halign: "left"
+                        text_size: self.size
+
+                    Label:
+                        id: lbl_resumen
+                        text: ""
+                        font_size: 12
+                        color: 0.45, 0.50, 0.58, 1
+                        halign: "left"
+                        valign: "top"
+                        text_size: self.size
+
+                # =========================================
+                # ERROR MP
+                # =========================================
+
+                Label:
+                    id: lbl_error_mp
+                    text: ""
+                    font_size: 12
+                    bold: True
+                    color: 0.85, 0.30, 0.30, 1
+                    size_hint_y: None
+                    height: 24
+                    halign: "center"
+                    text_size: self.size
+
+                # =========================================
+                # BOTON PAGO
+                # =========================================
+
+                Button:
+                    id: btn_pago_unico
+                    text: "CONFIRMAR PAGO"
+                    size_hint_y: None
+                    height: 62
+                    font_size: 16
+                    bold: True
+                    background_normal: ""
+                    background_color: 0.18, 0.80, 0.44, 1
+                    color: 1,1,1,1
+                    on_release: root.pagar()
+
+                Label:
+                    text: "Pago seguro • MercadoPago • Acreditacion inmediata"
+                    font_size: 11
+                    color: 0.60, 0.63, 0.70, 1
+                    size_hint_y: None
+                    height: 22
+                    halign: "center"
+                    text_size: self.size
+
+                Widget:
+                    size_hint_y: None
+                    height: 16
+
+        # =================================================
+        # FOOTER
+        # =================================================
 
         Button:
             text: "Cambiar tipo de consulta"
             size_hint_y: None
-            height: 46
+            height: 48
             font_size: 13
-            background_color: 0, 0, 0, 0
+            background_color: 0,0,0,0
             color: 0.45, 0.50, 0.58, 1
-            on_release: root.manager.current = "tipo"
+            on_release:
+                root.manager.current = "tipo"

@@ -13,8 +13,9 @@
         # TOPBAR
         BoxLayout:
             size_hint_y: None
-            height: 66
-            padding: [20, 14, 20, 14]
+            height: 72
+            padding: [20, 12, 20, 12]
+            spacing: 10
             canvas.before:
                 Color:
                     rgba: 0.24, 0.17, 0.55, 1
@@ -24,22 +25,30 @@
 
             BoxLayout:
                 orientation: "vertical"
+                spacing: 2
                 Label:
                     text: "LEGAL APP"
                     font_size: 22
                     bold: True
                     color: 1, 1, 1, 1
                     halign: "left"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 28
                 Label:
                     text: "Panel Profesional"
                     font_size: 11
                     color: 0.75, 0.72, 0.92, 1
                     halign: "left"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 16
 
             BoxLayout:
                 orientation: "vertical"
+                spacing: 2
                 Label:
                     id: lbl_nombre_abogado
                     text: ""
@@ -47,13 +56,19 @@
                     bold: True
                     color: 1, 1, 1, 1
                     halign: "right"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 28
                 Label:
                     text: "Abogado"
                     font_size: 11
                     color: 0.75, 0.72, 0.92, 1
                     halign: "right"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 16
 
         # BOTON ESTADO
         Button:
@@ -98,7 +113,10 @@
                     bold: True
                     color: 0.50, 0.45, 0.62, 1
                     halign: "center"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 16
 
                 Label:
                     id: lbl_consultas
@@ -107,13 +125,16 @@
                     bold: True
                     color: 0.24, 0.17, 0.55, 1
                     halign: "center"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 44
 
-            # Card Honorarios - ButtonBehavior en BoxLayout
+            # Card Honorarios
             BoxLayout:
                 orientation: "vertical"
-                padding: [14, 10]
-                spacing: 2
+                padding: [14, 8]
+                spacing: 4
                 on_touch_down: self.collide_point(*args[1].pos) and root.solicitar_retiro_popup()
                 canvas.before:
                     Color:
@@ -135,7 +156,10 @@
                     bold: True
                     color: 0.75, 0.72, 0.92, 1
                     halign: "center"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 16
 
                 Label:
                     id: lbl_honorarios
@@ -144,14 +168,20 @@
                     bold: True
                     color: 0.18, 0.90, 0.50, 1
                     halign: "center"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 34
 
                 Label:
                     text: "Toca para retirar"
                     font_size: 10
                     color: 0.60, 0.65, 0.85, 1
                     halign: "center"
+                    valign: "middle"
                     text_size: self.size
+                    size_hint_y: None
+                    height: 14
 
         # LABEL SECCION
         BoxLayout:

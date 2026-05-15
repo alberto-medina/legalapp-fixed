@@ -1,79 +1,209 @@
 from kivy.uix.screenmanager import Screen
-from kivy.app import App
+from database import get_connection
 import session
 
 
-# Reglas por estado del abogado:
-#   disponible -> chat, video, urgente  (todo habilitado)
-#   guardia    -> solo urgente
-#   ocupado    -> nada habilitado
 SERVICIOS_HABILITADOS = {
     "disponible": {"chat", "video", "urgente"},
-    "guardia":    {"urgente"},
-    "ocupado":    set(),
+    "guardia": {"urgente"},
+    "ocupado": set(),
+}
+
+PRECIOS = {
+    "chat": "$1000",
+    "video": "$3000",
+    "urgente": "$5000",
 }
 
 
 class ConsultaTipoScreen(Screen):
 
+    # =====================================================
+    # ENTER
+    # =====================================================
+
     def on_enter(self):
-        """Refresca los botones segun el estado del abogado seleccionado."""
-        estado = getattr(session, "estado_abogado", "disponible") or "disponible"
+
+        # =============================================
+        # SEGURIDAD
+        # =============================================
+
+        if not getattr(session, "abogado_seleccionado", None):
+            self.manager.current = "abogados"
+            return
+
+        estado = (
+            getattr(session, "estado_abogado", "disponible")
+            or "disponible"
+        ).lower()
+
         habilitados = SERVICIOS_HABILITADOS.get(estado, set())
 
-        ids = self.ids
+        # =============================================
+        # DATOS ABOGADO
+        # =============================================
 
-        # --- Chat ---
+        conn = get_connection()
+        c = conn.cursor()
+
+        c.execute("""
+            SELECT username, especialidad
+            FROM users
+            WHERE email=?
+        """, (session.abogado_seleccionado,))
+
+        row = c.fetchone()
+
+        conn.close()
+
+        nombre = "Abogado"
+        especialidad = ""
+
+        if row:
+            nombre = row[0] or "Abogado"
+            especialidad = row[1] or ""
+
+        self.ids.lbl_abogado.text = nombre
+        self.ids.lbl_especialidad.text = especialidad
+
+        # =============================================
+        # CHAT
+        # =============================================
+
         chat_ok = "chat" in habilitados
-        ids.btn_chat.disabled = not chat_ok
-        ids.btn_chat.opacity = 1.0 if chat_ok else 0.35
-        ids.lbl_chat_estado.text = (
-            "Disponible" if chat_ok else "Bloqueado - abogado no disponible"
-        )
-        ids.lbl_chat_estado.color = (
-            (0.40, 0.80, 0.40, 1) if chat_ok else (0.85, 0.30, 0.30, 1)
+
+        self.ids.btn_chat.disabled = not chat_ok
+        self.ids.btn_chat.opacity = 1 if chat_ok else 0.45
+
+        self.ids.btn_chat.background_color = (
+            (0.18, 0.80, 0.44, 1)
+            if chat_ok
+            else
+            (0.55, 0.55, 0.55, 1)
         )
 
-        # --- Video ---
+        self.ids.lbl_chat_estado.text = (
+            f"Disponible • {PRECIOS['chat']}"
+            if chat_ok
+            else
+            "No disponible"
+        )
+
+        self.ids.lbl_chat_estado.color = (
+            (0.18, 0.80, 0.44, 1)
+            if chat_ok
+            else
+            (0.85, 0.30, 0.30, 1)
+        )
+
+        # =============================================
+        # VIDEO
+        # =============================================
+
         video_ok = "video" in habilitados
-        ids.btn_video.disabled = not video_ok
-        ids.btn_video.opacity = 1.0 if video_ok else 0.35
-        ids.lbl_video_estado.text = (
-            "Disponible" if video_ok else "Bloqueado - abogado no disponible"
-        )
-        ids.lbl_video_estado.color = (
-            (0.40, 0.80, 0.40, 1) if video_ok else (0.85, 0.30, 0.30, 1)
+
+        self.ids.btn_video.disabled = not video_ok
+        self.ids.btn_video.opacity = 1 if video_ok else 0.45
+
+        self.ids.btn_video.background_color = (
+            (0.18, 0.80, 0.44, 1)
+            if video_ok
+            else
+            (0.55, 0.55, 0.55, 1)
         )
 
-        # --- Urgente ---
+        self.ids.lbl_video_estado.text = (
+            f"Disponible • {PRECIOS['video']}"
+            if video_ok
+            else
+            "No disponible"
+        )
+
+        self.ids.lbl_video_estado.color = (
+            (0.18, 0.80, 0.44, 1)
+            if video_ok
+            else
+            (0.85, 0.30, 0.30, 1)
+        )
+
+        # =============================================
+        # URGENTE
+        # =============================================
+
         urgente_ok = "urgente" in habilitados
-        ids.btn_urgente.disabled = not urgente_ok
-        ids.btn_urgente.opacity = 1.0 if urgente_ok else 0.35
-        ids.lbl_urgente_estado.text = (
-            "Disponible" if urgente_ok else "Bloqueado - abogado ocupado"
-        )
-        ids.lbl_urgente_estado.color = (
-            (0.40, 0.80, 0.40, 1) if urgente_ok else (0.85, 0.30, 0.30, 1)
+
+        self.ids.btn_urgente.disabled = not urgente_ok
+        self.ids.btn_urgente.opacity = 1 if urgente_ok else 0.45
+
+        self.ids.btn_urgente.background_color = (
+            (0.91, 0.30, 0.24, 1)
+            if urgente_ok
+            else
+            (0.55, 0.55, 0.55, 1)
         )
 
-        # Banner informativo
+        self.ids.lbl_urgente_estado.text = (
+            f"Disponible • {PRECIOS['urgente']}"
+            if urgente_ok
+            else
+            "No disponible"
+        )
+
+        self.ids.lbl_urgente_estado.color = (
+            (0.91, 0.30, 0.24, 1)
+            if urgente_ok
+            else
+            (0.85, 0.30, 0.30, 1)
+        )
+
+        # =============================================
+        # BANNER
+        # =============================================
+
         if estado == "guardia":
-            ids.lbl_banner.text = (
-                "Abogado en GUARDIA: solo consultas urgentes permitidas"
+
+            self.ids.lbl_banner.text = (
+                "Abogado en guardia • Solo urgencias habilitadas"
             )
-            ids.lbl_banner.color = (0.90, 0.70, 0.10, 1)
+
+            self.ids.lbl_banner.color = (
+                0.90, 0.70, 0.10, 1
+            )
+
         elif estado == "ocupado":
-            ids.lbl_banner.text = (
-                "Abogado OCUPADO: no acepta consultas en este momento"
+
+            self.ids.lbl_banner.text = (
+                "Abogado ocupado • No disponible actualmente"
             )
-            ids.lbl_banner.color = (0.85, 0.30, 0.30, 1)
+
+            self.ids.lbl_banner.color = (
+                0.85, 0.30, 0.30, 1
+            )
+
         else:
-            ids.lbl_banner.text = "Abogado DISPONIBLE: todos los servicios activos"
-            ids.lbl_banner.color = (0.40, 0.80, 0.40, 1)
+
+            self.ids.lbl_banner.text = (
+                "Abogado disponible • Todos los servicios habilitados"
+            )
+
+            self.ids.lbl_banner.color = (
+                0.18, 0.80, 0.44, 1
+            )
+
+    # =====================================================
+    # SELECCIONAR
+    # =====================================================
 
     def seleccionar(self, servicio):
+
         session.tipo_servicio = servicio
+
         self.manager.current = "pago"
 
+    # =====================================================
+    # VOLVER
+    # =====================================================
+
     def volver(self):
+
         self.manager.current = "abogados"

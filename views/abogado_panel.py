@@ -32,7 +32,7 @@ class AbogadoPanelScreen(Screen):
         self.cargar_datos()
         self._actualizar_btn_estado()
 
-        # 🔧 FIX ANDROID: refresca layout para evitar superposición
+        # FIX ANDROID: refresca layout para evitar superposición
         from kivy.clock import Clock
         Clock.schedule_once(lambda dt: self._refresh_layout(), 0.1)
 
@@ -207,8 +207,83 @@ class AbogadoPanelScreen(Screen):
         conn.close()
 
         saldo = row[0] if row and row[0] else 0.0
-        cuenta = row[1] if row and row[1] else "Sin cuenta cargada"
+        cuenta = row[1] if row and row[1] else ""
 
+        # =================================================
+        # VALIDACION: SIN CUENTA BANCARIA
+        # =================================================
+        if not cuenta:
+            content = BoxLayout(orientation="vertical", padding=20, spacing=12)
+
+            content.add_widget(Label(
+                text="Retiro no disponible",
+                font_size=16,
+                bold=True,
+                color=(0.85, 0.18, 0.18, 1),
+                size_hint_y=None,
+                height=24,
+            ))
+
+            content.add_widget(Label(
+                text="Falta CBU / Alias",
+                font_size=14,
+                bold=True,
+                color=(0.85, 0.30, 0.30, 1),
+                size_hint_y=None,
+                height=20,
+            ))
+
+            content.add_widget(Label(
+                text="Debes cargar tu cuenta bancaria en Perfil antes de retirar.",
+                font_size=13,
+                color=(0.55, 0.58, 0.65, 1),
+                size_hint_y=None,
+                height=40,
+                halign="center",
+                valign="middle",
+                text_size=(None, None),
+            ))
+
+            popup = Popup(
+                title="",
+                content=content,
+                size_hint=(0.85, None),
+                height=240,
+                auto_dismiss=False,
+            )
+
+            btn_ir = Button(
+                text="Ir a Perfil",
+                size_hint_y=None,
+                height=48,
+                bold=True,
+                font_size=15,
+                background_normal="",
+                background_color=(0.24, 0.17, 0.55, 1),
+                color=(1, 1, 1, 1),
+            )
+            btn_ir.bind(on_release=lambda x: (popup.dismiss(), self.ir_perfil()))
+
+            btn_cancel = Button(
+                text="Cancelar",
+                size_hint_y=None,
+                height=40,
+                font_size=13,
+                background_normal="",
+                background_color=(0, 0, 0, 0),
+                color=(0.55, 0.58, 0.65, 1),
+            )
+            btn_cancel.bind(on_release=popup.dismiss)
+
+            content.add_widget(btn_ir)
+            content.add_widget(btn_cancel)
+
+            popup.open()
+            return
+
+        # =================================================
+        # RETIRO NORMAL
+        # =================================================
         content = BoxLayout(orientation="vertical", padding=20, spacing=14)
 
         content.add_widget(Label(

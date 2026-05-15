@@ -10,12 +10,16 @@
                 pos: self.pos
                 size: self.size
 
+        # ==================================================
         # TOPBAR
+        # ==================================================
         BoxLayout:
             size_hint_y: None
-            height: 68
-            padding: [12, 10, 12, 10]
+            height: 82
+
+            padding: [12, 10]
             spacing: 10
+
             canvas.before:
                 Color:
                     rgba: 0.24, 0.17, 0.55, 1
@@ -25,83 +29,195 @@
 
             Button:
                 text: "<"
+
                 size_hint_x: None
-                width: 36
-                font_size: 22
+                width: 40
+
+                font_size: "22sp"
                 bold: True
+
+                background_normal: ""
                 background_color: 0, 0, 0, 0
+
                 color: 1, 1, 1, 1
+
                 on_release: root.volver()
 
-            AsyncImage:
-                source: "assets/avatar_default.png"
-                size_hint: None, None
-                size: 44, 44
+            BoxLayout:
+                size_hint_x: None
+                width: 46
 
+                Image:
+                    source: "assets/avatar_default.png"
+
+                    size_hint: None, None
+                    size: 46, 46
+
+                    pos_hint: {"center_y": 0.5}
+
+                    allow_stretch: True
+                    keep_ratio: True
+
+            # ==================================================
+            # INFO CHAT
+            # ==================================================
             BoxLayout:
                 orientation: "vertical"
-                spacing: 1
+
+                size_hint_x: 1
+                size_hint_y: 1
+
+                spacing: 2
+                padding: [0, 6]
 
                 Label:
                     id: lbl_chat_titulo
+
                     text: ""
-                    font_size: 15
+
+                    size_hint_y: None
+                    height: 22
+
+                    font_size: "16sp"
                     bold: True
+
                     color: 1, 1, 1, 1
+
                     halign: "left"
-                    text_size: self.size
+                    valign: "middle"
+
+                    text_size: (self.width, None)
+
+                    shorten: True
+                    shorten_from: "right"
 
                 Label:
                     id: lbl_chat_tipo
+
                     text: ""
-                    font_size: 11
-                    color: 0.75, 0.72, 0.92, 1
+
+                    size_hint_y: None
+                    height: 16
+
+                    font_size: "11sp"
+
+                    color: 0.82, 0.80, 0.95, 1
+
                     halign: "left"
-                    text_size: self.size
+                    valign: "middle"
+
+                    text_size: (self.width, None)
 
                 Label:
                     id: lbl_estado_linea
-                    text: ""
-                    font_size: 11
-                    bold: True
-                    color: 0.18, 0.90, 0.50, 1
-                    halign: "left"
-                    text_size: self.size
 
+                    text: ""
+
+                    size_hint_y: None
+                    height: 16
+
+                    font_size: "11sp"
+                    bold: True
+
+                    color: 0.18, 0.90, 0.50, 1
+
+                    halign: "left"
+                    valign: "middle"
+
+                    text_size: (self.width, None)
+
+            # ==================================================
+            # BOTON UNIRSE
+            # ==================================================
+            Button:
+                id: btn_unirse_video
+
+                text: "Unirse"
+
+                size_hint_x: None
+                width: 86 if self.opacity else 0
+
+                size_hint_y: None
+                height: 42 if self.opacity else 0
+
+                opacity: 0
+                disabled: True
+
+                bold: True
+                font_size: "12sp"
+
+                background_normal: ""
+                background_color: 0.18, 0.70, 0.40, 1
+
+                color: 1, 1, 1, 1
+
+                on_release: root.ir_video()
+
+            # ==================================================
+            # BOTON VIDEO
+            # ==================================================
             Button:
                 id: btn_invitar_video
+
                 text: "Video"
+
                 size_hint_x: None
-                width: 62
-                font_size: 11
+                width: 74 if self.opacity else 0
+
+                size_hint_y: None
+                height: 42 if self.opacity else 0
+
+                opacity: 0
+                disabled: True
+
                 bold: True
+                font_size: "12sp"
+
                 background_normal: ""
                 background_color: 0.10, 0.55, 0.85, 1
-                color: 1, 1, 1, 1
-                on_release: root.invitar_videollamada()
-                opacity: 0
-                disabled: True
 
+                color: 1, 1, 1, 1
+
+                on_release: root.invitar_videollamada()
+
+            # ==================================================
+            # BOTON FINALIZAR
+            # ==================================================
             Button:
                 id: btn_finalizar
+
                 text: "Finalizar"
+
                 size_hint_x: None
-                width: 90
-                font_size: 12
-                bold: True
-                background_normal: ""
-                background_color: 0.85, 0.18, 0.18, 1
-                color: 1, 1, 1, 1
-                on_release: root.finalizar_consulta()
+                width: 94 if self.opacity else 0
+
+                size_hint_y: None
+                height: 42 if self.opacity else 0
+
                 opacity: 0
                 disabled: True
 
-        # BANNER
+                bold: True
+                font_size: "12sp"
+
+                background_normal: ""
+                background_color: 0.85, 0.18, 0.18, 1
+
+                color: 1, 1, 1, 1
+
+                on_release: root.finalizar_consulta()
+
+        # ==================================================
+        # BANNER FINALIZADO
+        # ==================================================
         BoxLayout:
             id: banner_finalizado
+
             size_hint_y: None
             height: 0
+
             padding: [14, 6]
+
             canvas.before:
                 Color:
                     rgba: 0.97, 0.94, 0.85, 1
@@ -111,98 +227,131 @@
 
             Label:
                 id: lbl_banner_fin
+
                 text: ""
-                font_size: 12
+
+                font_size: "12sp"
                 bold: True
+
                 color: 0.55, 0.38, 0.05, 1
+
                 halign: "center"
+                valign: "middle"
+
                 text_size: self.size
 
-        # MENSAJES
-        ScrollView:
-            id: scroll_chat
-            canvas.before:
-                Color:
-                    rgba: 0.96, 0.95, 0.98, 1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-
-            GridLayout:
-                id: chat_box
-                cols: 1
-                spacing: 10
-                padding: [14, 14, 14, 14]
-                size_hint_y: None
-                height: self.minimum_height
-
-        # INPUT
+        # ==================================================
+        # CONTENIDO CHAT
+        # ==================================================
         BoxLayout:
-            id: input_area
             orientation: "vertical"
-            size_hint_y: None
-            height: 100
-            spacing: 6
-            padding: [12, 10]
 
-            canvas.before:
-                Color:
-                    rgba: 1, 1, 1, 1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-                Color:
-                    rgba: 0.88, 0.86, 0.94, 1
-                Line:
-                    points: [self.x, self.top, self.right, self.top]
-                    width: 1
+            # ==================================================
+            # MENSAJES
+            # ==================================================
+            ScrollView:
+                id: scroll_chat
 
-            # 🔴 BOTON NUEVO (cliente se une a videollamada)
-            Button:
-                id: btn_unirse_video
-                text: "Unirse a videollamada"
-                size_hint_y: None
-                height: 44
-                opacity: 0
-                disabled: True
-                background_normal: ""
-                background_color: 0.18, 0.70, 0.40, 1
-                color: 1, 1, 1, 1
-                on_release: root.ir_video()
+                do_scroll_x: False
+                bar_width: 6
 
-            # INPUT ORIGINAL (NO TOCADO)
+                canvas.before:
+                    Color:
+                        rgba: 0.96, 0.95, 0.98, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                GridLayout:
+                    id: chat_box
+
+                    cols: 1
+
+                    spacing: 10
+                    padding: [14, 14, 14, 14]
+
+                    size_hint_y: None
+                    height: self.minimum_height
+
+            # ==================================================
+            # INPUT
+            # ==================================================
             BoxLayout:
-                spacing: 8
+                id: input_area
 
-                TextInput:
-                    id: input_mensaje
-                    hint_text: "Escribi tu mensaje..."
-                    multiline: False
-                    background_normal: ""
-                    background_color: 0.96, 0.95, 0.98, 1
-                    foreground_color: 0.10, 0.06, 0.14, 1
-                    hint_text_color: 0.60, 0.57, 0.68, 1
-                    cursor_color: 0.30, 0.23, 0.67, 1
-                    padding: [14, 12]
-                    font_size: 14
+                orientation: "horizontal"
+
+                size_hint_y: None
+                height: 72
+
+                spacing: 8
+                padding: [10, 8]
+
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                    Color:
+                        rgba: 0.88, 0.86, 0.94, 1
+                    Line:
+                        points: [self.x, self.top, self.right, self.top]
+                        width: 1
 
                 Button:
                     text: "+"
+
                     size_hint_x: None
-                    width: 44
-                    font_size: 20
+                    width: 48
+
+                    font_size: "22sp"
+
                     background_normal: ""
                     background_color: 0.92, 0.89, 0.98, 1
+
                     color: 0.30, 0.23, 0.67, 1
+
                     on_release: root.adjuntar()
+
+                TextInput:
+                    id: input_mensaje
+
+                    hint_text: "Escribí un mensaje..."
+                    multiline: False
+
+                    size_hint_y: None
+                    height: 56
+
+                    background_normal: ""
+                    background_active: ""
+
+                    background_color: 0.96, 0.95, 0.98, 1
+
+                    foreground_color: 0.10, 0.10, 0.10, 1
+                    hint_text_color: 0.55, 0.55, 0.62, 1
+
+                    cursor_color: 0.30, 0.23, 0.67, 1
+
+                    padding: [14, 12]
+
+                    font_size: "15sp"
+
+                    on_text_validate: root.enviar()
 
                 Button:
                     text: ">"
+
                     size_hint_x: None
-                    width: 50
+                    width: 52
+
                     bold: True
-                    font_size: 20
+                    font_size: "20sp"
+
                     background_normal: ""
                     background_color: 0.30, 0.23, 0.67, 1
+
                     color: 1, 1, 1, 1
+
                     on_release: root.enviar()

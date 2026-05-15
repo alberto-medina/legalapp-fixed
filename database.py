@@ -98,7 +98,9 @@ def create_tables():
 
         fecha TEXT,
 
-        monto REAL DEFAULT 0.0
+        monto REAL DEFAULT 0.0,
+
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
     """)
 
@@ -232,7 +234,7 @@ def actualizar_db():
             ADD COLUMN saldo REAL DEFAULT 0.0
         """)
 
-    # 🔥 NUEVO
+    # NUEVO
     if "especialidad" not in cols:
 
         c.execute("""
@@ -254,6 +256,25 @@ def actualizar_db():
             ALTER TABLE consultas
             ADD COLUMN monto REAL DEFAULT 0.0
         """)
+
+    # NUEVO: created_at para timestamp real
+    if "created_at" not in cols_consulta:
+
+        # SQLite no permite DEFAULT con ALTER TABLE, hacer en dos pasos
+        c.execute("""
+            ALTER TABLE consultas
+            ADD COLUMN created_at TEXT
+        """)
+
+        # Actualizar registros existentes con timestamp actual
+        from datetime import datetime
+        ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        c.execute("""
+            UPDATE consultas
+            SET created_at = ?
+            WHERE created_at IS NULL
+        """, (ahora,))
 
     # =====================================================
     # ABOGADO DEMO
@@ -541,3 +562,25 @@ def solicitar_retiro(
     )
 
     return True, msg, monto_bruto
+
+
+# =========================================================
+# VERIFICAR RESEÑA
+# =========================================================
+
+def tiene_resena(consulta_id):
+
+    conn = get_connection()
+    c = conn.cursor()
+
+    c.execute("""
+        SELECT 1
+        FROM resenas
+        WHERE consulta_id=?
+    """, (consulta_id,))
+
+    row = c.fetchone()
+
+    conn.close()
+
+    return row is not None

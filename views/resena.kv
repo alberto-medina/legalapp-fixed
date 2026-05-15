@@ -10,10 +10,15 @@
                 pos: self.pos
                 size: self.size
 
+        # ==================================================
+        # TOPBAR
+        # ==================================================
         BoxLayout:
             size_hint_y: None
             height: 58
+
             padding: [16, 10]
+
             canvas.before:
                 Color:
                     rgba: 0.10, 0.12, 0.18, 1
@@ -23,87 +28,151 @@
 
             Label:
                 text: "CALIFICA TU CONSULTA"
-                font_size: 16
-                bold: True
-                color: 1, 1, 1, 1
-                halign: "center"
-                text_size: self.size
 
+                font_size: "16sp"
+                bold: True
+
+                color: 1, 1, 1, 1
+
+                halign: "center"
+                valign: "middle"
+
+                text_size: (self.width, None)
+
+        # ==================================================
+        # CONTENIDO
+        # ==================================================
         BoxLayout:
             orientation: "vertical"
+
             padding: [20, 24, 20, 16]
             spacing: 18
 
             Label:
                 id: lbl_abogado_resena
+
                 text: ""
-                font_size: 14
-                color: 0.40, 0.45, 0.55, 1
+
                 size_hint_y: None
                 height: 28
+
+                font_size: "14sp"
+
+                color: 0.40, 0.45, 0.55, 1
+
                 halign: "center"
-                text_size: self.size
+                valign: "middle"
+
+                text_size: (self.width, None)
 
             Label:
                 text: "Puntaje del 1 al 5"
-                font_size: 13
-                bold: True
-                color: 0.35, 0.40, 0.50, 1
+
                 size_hint_y: None
                 height: 24
-                halign: "center"
-                text_size: self.size
 
+                font_size: "13sp"
+                bold: True
+
+                color: 0.35, 0.40, 0.50, 1
+
+                halign: "center"
+                valign: "middle"
+
+                text_size: (self.width, None)
+
+            # ==================================================
+            # ESTRELLAS
+            # ==================================================
             BoxLayout:
                 id: estrellas_box
+
                 size_hint_y: None
                 height: 54
+
                 spacing: 8
                 padding: [20, 2]
 
             Label:
                 text: "Comentario (opcional)"
-                font_size: 13
-                bold: True
-                color: 0.35, 0.40, 0.50, 1
+
                 size_hint_y: None
                 height: 24
-                halign: "left"
-                text_size: self.size
 
+                font_size: "13sp"
+                bold: True
+
+                color: 0.35, 0.40, 0.50, 1
+
+                halign: "left"
+                valign: "middle"
+
+                text_size: (self.width, None)
+
+            # ==================================================
+            # INPUT
+            # ==================================================
             TextInput:
                 id: input_comentario
+
                 hint_text: "Contanos como fue tu experiencia..."
+
                 multiline: True
+
                 size_hint_y: None
                 height: 100
+
+                background_normal: ""
+                background_active: ""
+
                 background_color: 1, 1, 1, 1
+
                 foreground_color: 0.10, 0.12, 0.18, 1
                 hint_text_color: 0.60, 0.63, 0.70, 1
+
                 cursor_color: 0.18, 0.80, 0.44, 1
+
                 padding: [14, 12]
-                font_size: 14
+
+                font_size: "14sp"
 
             Widget:
                 size_hint_y: None
                 height: 8
 
+            # ==================================================
+            # BOTON ENVIAR
+            # ==================================================
             Button:
-                text: "ENVIAR RESENA"
+                text: "ENVIAR RESEÑA"
+
                 size_hint_y: None
                 height: 54
+
                 bold: True
-                font_size: 16
+                font_size: "16sp"
+
                 background_normal: ""
                 background_color: 0.18, 0.80, 0.44, 1
+
                 color: 1, 1, 1, 1
+
                 on_release: root.enviar_resena()
 
+            # ==================================================
+            # OMITIR
+            # ==================================================
             Button:
                 text: "Omitir"
+
                 size_hint_y: None
                 height: 40
-                font_size: 13
+
+                font_size: "13sp"
+
+                background_normal: ""
                 background_color: 0, 0, 0, 0
+
                 color: 0.55, 0.58, 0.65, 1
+
                 on_release: root.omitir()

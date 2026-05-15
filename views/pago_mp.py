@@ -110,8 +110,8 @@ class PagoMPScreen(Screen):
         conn = get_connection()
         c = conn.cursor()
         c.execute("""
-            INSERT INTO consultas (user_email, abogado, estado, tipo_servicio)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO consultas (user_email, abogado, estado, tipo_servicio, created_at)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
         """, (user[2], abogado, "pagado", tipo))
         session.current_consulta_id = c.lastrowid
         conn.commit()

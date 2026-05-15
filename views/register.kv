@@ -11,8 +11,8 @@
 
         BoxLayout:
             size_hint_y: None
-            height: 60
-            padding: [20, 12]
+            height: "60dp"
+            padding: ["20dp", "12dp"]
             canvas.before:
                 Color:
                     rgba: 0.10, 0.12, 0.18, 1
@@ -22,40 +22,43 @@
 
             Label:
                 text: "Crear cuenta"
-                font_size: 20
+                font_size: "20sp"
                 bold: True
                 color: 1, 1, 1, 1
                 halign: "left"
                 text_size: self.size
 
         ScrollView:
+            do_scroll_x: False
+            bar_width: "4dp"
+
             BoxLayout:
                 orientation: "vertical"
-                padding: [24, 24, 24, 24]
-                spacing: 14
+                padding: ["20dp", "20dp", "20dp", "100dp"]
+                spacing: "12dp"
                 size_hint_y: None
                 height: self.minimum_height
 
                 Label:
                     text: "Registrate en Legal App"
-                    font_size: 14
+                    font_size: "14sp"
                     color: 0.45, 0.50, 0.58, 1
                     size_hint_y: None
-                    height: 28
+                    height: "28dp"
                     halign: "left"
                     text_size: self.size
 
                 Widget:
                     size_hint_y: None
-                    height: 8
+                    height: "8dp"
 
                 Label:
                     text: "NOMBRE"
-                    font_size: 11
+                    font_size: "11sp"
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
                     size_hint_y: None
-                    height: 18
+                    height: "18dp"
                     halign: "left"
                     text_size: self.size
 
@@ -64,21 +67,22 @@
                     hint_text: "Tu nombre completo"
                     multiline: False
                     size_hint_y: None
-                    height: 48
+                    height: "48dp"
                     background_color: 1, 1, 1, 1
                     foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
                     cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: [14, 14]
-                    font_size: 15
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
 
                 Label:
                     text: "EMAIL"
-                    font_size: 11
+                    font_size: "11sp"
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
                     size_hint_y: None
-                    height: 18
+                    height: "18dp"
                     halign: "left"
                     text_size: self.size
 
@@ -87,21 +91,22 @@
                     hint_text: "tu@email.com"
                     multiline: False
                     size_hint_y: None
-                    height: 48
+                    height: "48dp"
                     background_color: 1, 1, 1, 1
                     foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
                     cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: [14, 14]
-                    font_size: 15
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
 
                 Label:
                     text: "TELEFONO"
-                    font_size: 11
+                    font_size: "11sp"
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
                     size_hint_y: None
-                    height: 18
+                    height: "18dp"
                     halign: "left"
                     text_size: self.size
 
@@ -110,21 +115,22 @@
                     hint_text: "+54 9 xxx-xxx"
                     multiline: False
                     size_hint_y: None
-                    height: 48
+                    height: "48dp"
                     background_color: 1, 1, 1, 1
                     foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
                     cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: [14, 14]
-                    font_size: 15
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
 
                 Label:
                     text: "CONTRASENA"
-                    font_size: 11
+                    font_size: "11sp"
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
                     size_hint_y: None
-                    height: 18
+                    height: "18dp"
                     halign: "left"
                     text_size: self.size
 
@@ -134,33 +140,34 @@
                     password: True
                     multiline: False
                     size_hint_y: None
-                    height: 48
+                    height: "48dp"
                     background_color: 1, 1, 1, 1
                     foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
                     cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: [14, 14]
-                    font_size: 15
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
 
                 Label:
                     id: error
                     text: ""
                     color: 0.90, 0.25, 0.25, 1
                     size_hint_y: None
-                    height: 22
+                    height: "22dp"
                     halign: "left"
                     text_size: self.size
 
                 Widget:
                     size_hint_y: None
-                    height: 8
+                    height: "8dp"
 
                 Button:
                     text: "Crear cuenta"
                     size_hint_y: None
-                    height: 52
+                    height: "52dp"
                     bold: True
-                    font_size: 16
+                    font_size: "16sp"
                     background_normal: ""
                     background_color: 0.18, 0.80, 0.44, 1
                     color: 1, 1, 1, 1
@@ -169,8 +176,8 @@
                 Button:
                     text: "Ya tengo cuenta"
                     size_hint_y: None
-                    height: 44
-                    font_size: 14
+                    height: "44dp"
+                    font_size: "14sp"
                     background_color: 0, 0, 0, 0
                     color: 0.45, 0.50, 0.58, 1
                     on_release: root.go_back()

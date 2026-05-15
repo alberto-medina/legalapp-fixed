@@ -35,6 +35,14 @@ class LegalAppPro(App):
         database.actualizar_db()
         database.crear_usuarios_demo()
 
+        # 📱 FIX TECLADO: evita que el teclado tape los TextInput
+        # Probar primero 'below_target', si no va bien cambiar a 'pan'
+        Window.softinput_mode = 'below_target'
+
+        # 📱 FIX BOTÓN ATRÁS ANDROID: manejar KEYCODE_BACK
+        if platform == 'android':
+            Window.bind(on_keyboard=self._on_android_back)
+
         self.sm = ScreenManager(transition=FadeTransition())
 
         Builder.load_file("views/login.kv")
@@ -68,6 +76,38 @@ class LegalAppPro(App):
         self.sm.add_widget(ResenaScreen(name="resena"))
 
         return self.sm
+
+    def _on_android_back(self, window, key, scancode, codepoint, modifier):
+        """
+        Maneja el botón "Atrás" de Android (KEYCODE_BACK = 27).
+        Si estamos en login o dashboard, deja que Android cierre la app.
+        En cualquier otra pantalla, vuelve a la anterior sin salir.
+        """
+        if key == 27:  # KEYCODE_BACK
+            pantallas_raiz = {"login", "dashboard", "abogado_panel"}
+
+            if self.sm.current in pantallas_raiz:
+                # En pantalla raíz: salir de la app (comportamiento normal)
+                return False
+            else:
+                # En cualquier otra pantalla: volver atrás
+                # Intentar usar el método volver() de la pantalla actual si existe
+                screen = self.sm.current_screen
+                if hasattr(screen, 'volver') and callable(getattr(screen, 'volver')):
+                    try:
+                        screen.volver()
+                        return True  # Consumir el evento (no salir)
+                    except Exception:
+                        pass
+
+                # Fallback: ir a dashboard (o login si no hay dashboard)
+                if self.sm.has_screen("dashboard"):
+                    self.sm.current = "dashboard"
+                else:
+                    self.sm.current = "login"
+                return True  # Consumir el evento (no salir)
+
+        return False  # Otra tecla: comportamiento por defecto
 
 
 if __name__ == "__main__":

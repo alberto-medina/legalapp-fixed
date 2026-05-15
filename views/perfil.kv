@@ -44,11 +44,13 @@
                 text_size: self.size
 
         ScrollView:
+            do_scroll_x: False
+            bar_width: "4dp"
 
             BoxLayout:
                 orientation: "vertical"
-                padding: ["16dp", "16dp", "16dp", "90dp"]
-                spacing: "14dp"
+                padding: ["16dp", "16dp", "16dp", "120dp"]
+                spacing: "12dp"
                 size_hint_y: None
                 height: self.minimum_height
 
@@ -72,7 +74,7 @@
                         id: img_avatar
                         source: "assets/avatar_default.png"
                         size_hint: None, None
-                        size: "100dp", "100dp"
+                        size: "90dp", "90dp"
                         pos_hint: {"center_x": 0.5}
 
                     Label:
@@ -116,13 +118,14 @@
                     hint_text: "Tu nombre completo"
                     multiline: False
                     size_hint_y: None
-                    height: "54dp"
+                    height: "50dp"
                     background_color: 1, 1, 1, 1
                     foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
                     cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: ["14dp", "16dp"]
-                    font_size: "16sp"
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
 
                 # TELEFONO
                 Label:
@@ -141,13 +144,14 @@
                     hint_text: "+54 9 xxx-xxx"
                     multiline: False
                     size_hint_y: None
-                    height: "54dp"
+                    height: "50dp"
                     background_color: 1, 1, 1, 1
                     foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
                     cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: ["14dp", "16dp"]
-                    font_size: "16sp"
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
 
                 # FOTO
                 Label:
@@ -166,19 +170,20 @@
                     hint_text: "Se completa al elegir foto..."
                     multiline: False
                     size_hint_y: None
-                    height: "54dp"
+                    height: "50dp"
                     background_color: 1, 1, 1, 1
                     foreground_color: 0.10, 0.12, 0.18, 1
                     hint_text_color: 0.60, 0.63, 0.70, 1
                     cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: ["14dp", "16dp"]
-                    font_size: "16sp"
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
 
                 # SECCION ABOGADO
                 BoxLayout:
                     id: seccion_abogado
                     orientation: "vertical"
-                    spacing: "14dp"
+                    spacing: "12dp"
                     size_hint_y: None
                     height: self.minimum_height
 
@@ -212,13 +217,14 @@
                         hint_text: "Numero de matricula"
                         multiline: False
                         size_hint_y: None
-                        height: "54dp"
+                        height: "50dp"
                         background_color: 1, 1, 1, 1
                         foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.60, 0.63, 0.70, 1
                         cursor_color: 0.18, 0.80, 0.44, 1
-                        padding: ["14dp", "16dp"]
-                        font_size: "16sp"
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
 
                     Label:
                         text: "ANOS DE EXPERIENCIA"
@@ -236,13 +242,14 @@
                         hint_text: "Ej: 8 anos"
                         multiline: False
                         size_hint_y: None
-                        height: "54dp"
+                        height: "50dp"
                         background_color: 1, 1, 1, 1
                         foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.60, 0.63, 0.70, 1
                         cursor_color: 0.18, 0.80, 0.44, 1
-                        padding: ["14dp", "16dp"]
-                        font_size: "16sp"
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
 
                     Label:
                         text: "BIO / DESCRIPCION"
@@ -260,13 +267,13 @@
                         hint_text: "Contanos sobre tu especialidad..."
                         multiline: True
                         size_hint_y: None
-                        height: "120dp"
+                        height: "100dp"
                         background_color: 1, 1, 1, 1
                         foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.60, 0.63, 0.70, 1
                         cursor_color: 0.18, 0.80, 0.44, 1
                         padding: ["14dp", "12dp"]
-                        font_size: "16sp"
+                        font_size: "15sp"
 
                     BoxLayout:
                         size_hint_y: None
@@ -298,13 +305,14 @@
                         hint_text: "CBU o alias de tu cuenta"
                         multiline: False
                         size_hint_y: None
-                        height: "54dp"
+                        height: "50dp"
                         background_color: 1, 1, 1, 1
                         foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.60, 0.63, 0.70, 1
                         cursor_color: 0.18, 0.80, 0.44, 1
-                        padding: ["14dp", "16dp"]
-                        font_size: "16sp"
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
 
                     BoxLayout:
                         size_hint_y: None
@@ -346,9 +354,9 @@
                 Button:
                     text: "GUARDAR CAMBIOS"
                     size_hint_y: None
-                    height: "58dp"
+                    height: "54dp"
                     bold: True
-                    font_size: "17sp"
+                    font_size: "16sp"
                     background_normal: ""
                     background_color: 0.10, 0.12, 0.18, 1
                     color: 1, 1, 1, 1

@@ -4,10 +4,10 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
-from database import get_connection
+from database import get_connection, tiene_resena
 import session
 
-ESTADOS_FILTRO = ["Todos", "pagado", "finalizado"]
+ESTADOS_FILTRO = ["Todos", "pagado", "videollamada", "finalizado"]
 
 TIPO_COLOR = {
     "chat":    (0.18, 0.80, 0.44, 1),
@@ -16,8 +16,9 @@ TIPO_COLOR = {
 }
 
 ESTADO_COLOR = {
-    "pagado":     (0.85, 0.62, 0.05, 1),
-    "finalizado": (0.18, 0.80, 0.44, 1),
+    "pagado":        (0.85, 0.62, 0.05, 1),
+    "videollamada":  (0.18, 0.55, 0.85, 1),
+    "finalizado":    (0.18, 0.80, 0.44, 1),
 }
 
 
@@ -26,18 +27,25 @@ class HistorialScreen(Screen):
     _filtro = "Todos"
 
     def on_enter(self):
+
         self.ids.filtro_spinner.values = ESTADOS_FILTRO
+
         self.ids.filtro_spinner.text = self._filtro
+
         self.cargar_historial()
 
     def aplicar_filtro(self, valor):
+
         self._filtro = valor
+
         self.cargar_historial()
 
-    # =========================
-    # CARGAR CONSULTAS
-    # =========================
+    # =====================================================
+    # CARGAR
+    # =====================================================
+
     def cargar_historial(self):
+
         self.ids.lista.clear_widgets()
 
         if not session.current_user:
@@ -47,36 +55,47 @@ class HistorialScreen(Screen):
         c = conn.cursor()
 
         if self._filtro == "Todos":
+
             c.execute("""
                 SELECT id, abogado, estado, tipo_servicio
                 FROM consultas
                 WHERE user_email=?
                 ORDER BY id DESC
             """, (session.current_user[2],))
+
         else:
+
             c.execute("""
                 SELECT id, abogado, estado, tipo_servicio
                 FROM consultas
-                WHERE user_email=? AND estado=?
+                WHERE user_email=?
+                AND estado=?
                 ORDER BY id DESC
-            """, (session.current_user[2], self._filtro))
+            """, (
+                session.current_user[2],
+                self._filtro
+            ))
 
         consultas = c.fetchall()
+
         conn.close()
 
         if not consultas:
+
             self.ids.lista.add_widget(
                 Label(
-                    text="No hay consultas en este filtro",
+                    text="No hay consultas",
                     color=(0.50, 0.55, 0.65, 1),
                     font_size="15sp",
                     size_hint_y=None,
                     height=dp(70),
                 )
             )
+
             return
 
         for cid, abogado, estado, tipo in consultas:
+
             self._add_card(
                 cid,
                 abogado,
@@ -84,9 +103,10 @@ class HistorialScreen(Screen):
                 tipo or "chat"
             )
 
-    # =========================
+    # =====================================================
     # CARD
-    # =========================
+    # =====================================================
+
     def _add_card(self, cid, abogado, estado, tipo):
 
         card = BoxLayout(
@@ -98,7 +118,9 @@ class HistorialScreen(Screen):
         )
 
         with card.canvas.before:
+
             Color(rgba=(1, 1, 1, 1))
+
             card._bg = RoundedRectangle(
                 pos=card.pos,
                 size=card.size,
@@ -110,9 +132,6 @@ class HistorialScreen(Screen):
             size=lambda w, v: setattr(w._bg, "size", v),
         )
 
-        # =========================
-        # TIPO
-        # =========================
         tipo_box = BoxLayout(
             orientation="vertical",
             size_hint_x=None,
@@ -128,13 +147,12 @@ class HistorialScreen(Screen):
             valign="middle",
         )
 
-        tipo_lbl.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
+        tipo_lbl.bind(
+            size=lambda s, *_: setattr(s, "text_size", s.size)
+        )
 
         tipo_box.add_widget(tipo_lbl)
 
-        # =========================
-        # INFO
-        # =========================
         info = BoxLayout(
             orientation="vertical",
             spacing=dp(4),
@@ -170,11 +188,9 @@ class HistorialScreen(Screen):
         )
 
         info.add_widget(abogado_lbl)
+
         info.add_widget(estado_lbl)
 
-        # =========================
-        # BOTONES
-        # =========================
         btns = BoxLayout(
             orientation="vertical",
             size_hint_x=None,
@@ -199,61 +215,50 @@ class HistorialScreen(Screen):
 
         btns.add_widget(btn_chat)
 
-        # =========================
-        # RESEÑA
-        # =========================
-        if estado == "finalizado":
+        # =================================================
+        # BOTON RESENA
+        # =================================================
+        if estado == "finalizado" and not tiene_resena(cid):
 
-            conn = get_connection()
-            cur = conn.cursor()
+            btn_resena = Button(
+                text="Reseña",
+                font_size="12sp",
+                bold=True,
+                size_hint_y=None,
+                height=dp(36),
+                background_normal="",
+                background_color=(0.91, 0.30, 0.24, 1),
+                color=(1, 1, 1, 1),
+            )
 
-            cur.execute("""
-                SELECT id
-                FROM resenas
-                WHERE consulta_id=?
-            """, (cid,))
+            btn_resena.bind(
+                on_release=lambda x, c=cid: self.ir_resena(c)
+            )
 
-            tiene = cur.fetchone()
-            conn.close()
+            btns.add_widget(btn_resena)
 
-            if not tiene:
-
-                btn_r = Button(
-                    text="Reseñar",
-                    font_size="12sp",
-                    bold=True,
-                    size_hint_y=None,
-                    height=dp(36),
-                    background_normal="",
-                    background_color=(0.18, 0.80, 0.44, 1),
-                    color=(1, 1, 1, 1),
-                )
-
-                btn_r.bind(
-                    on_release=lambda x, c=cid: self.ir_resena(c)
-                )
-
-                btns.add_widget(btn_r)
-
-        # =========================
-        # ADD
-        # =========================
         card.add_widget(tipo_box)
         card.add_widget(info)
         card.add_widget(btns)
 
         self.ids.lista.add_widget(card)
 
-    # =========================
-    # NAVEGACION
-    # =========================
+    # =====================================================
+    # NAV
+    # =====================================================
+
     def abrir_chat(self, cid):
+
         session.current_consulta_id = cid
+
         self.manager.current = "chat"
 
     def ir_resena(self, cid):
+
         session.current_consulta_id = cid
+
         self.manager.current = "resena"
 
     def volver(self):
+
         self.manager.current = "dashboard"
