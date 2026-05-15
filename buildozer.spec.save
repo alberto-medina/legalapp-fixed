@@ -1,9 +1,8 @@
 [app]
-
 title = Legal App
 package.name = legalapp
 package.domain = com.legalapp.app
-version = 1.0.1
+version = 1.0.0
 
 source.dir = .
 source.include_exts = py,kv,png,jpg,jpeg,svg,ttf,otf,json,sql
@@ -20,7 +19,7 @@ android.targetapi = 34
 android.ndk = 25c
 
 # AAB para Google Play
-android.release_artifact = apk
+android.release_artifact = aab
 
 # HTTPS forzado
 android.network_security_config = network_security_config.xml
