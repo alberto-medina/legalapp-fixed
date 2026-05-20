@@ -6,10 +6,10 @@ package.domain = com.legalapp.app
 version = 1.0.1
 
 source.dir = .
-source.include_exts = py,kv,png,jpg,jpeg,svg,ttf,otf,json,sql,xml,txt
+source.include_exts = py,kv,png,jpg,jpeg,svg,ttf,otf,json,sql
 source.exclude_patterns = legal_app.db,.env,*.pyc,__pycache__,*.spec,tests/*,*.md
 
-requirements = python3,kivy,kivymd,pillow,requests,firebase-admin,pyjnius,certifi,urllib3,charset-normalizer,idna,plyer,android
+requirements = python3,kivy,kivymd,pillow,requests,firebase-admin,pyjnius,certifi,urllib3,charset-normalizer,idna
 
 orientation = portrait
 
@@ -19,12 +19,16 @@ android.minapi = 26
 android.targetapi = 34
 android.ndk = 25c
 
+# AAB para Google Play
 android.release_artifact = apk
 
+# HTTPS forzado
 android.network_security_config = network_security_config.xml
 
+# Dependencias de Gradle para FCM
 android.gradle_dependencies = com.google.firebase:firebase-messaging:23.4.0,com.google.firebase:firebase-analytics:21.5.0
 
+# Plugin de Google Services
 android.gradle_plugins = com.google.gms.google-services
 
 icon.filename      = assets/icon_512.png

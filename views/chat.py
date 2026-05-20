@@ -9,8 +9,9 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
+from kivy.utils import platform
 
-from database import get_connection, tiene_resena
+import firebase_config as fb
 import session
 
 try:
@@ -21,28 +22,16 @@ except Exception:
 
 UPLOAD_DIR = "assets/uploads"
 
-# responsive
 BUBBLE_W_DESKTOP = 420
 BUBBLE_W_MOBILE = 260
 
+# Limite de tamano para archivos: 2MB
+MAX_FILE_SIZE_MB = 2
 
-# =====================================================
-# BUBBLE
-# =====================================================
 
 def _make_bubble(texto, es_mio, ancho_max):
-
-    cor_fondo = (
-        (0.30, 0.23, 0.67, 1)
-        if es_mio else
-        (1, 1, 1, 1)
-    )
-
-    cor_texto = (
-        (1, 1, 1, 1)
-        if es_mio else
-        (0.10, 0.12, 0.18, 1)
-    )
+    cor_fondo = (0.30, 0.23, 0.67, 1) if es_mio else (1, 1, 1, 1)
+    cor_texto = (1, 1, 1, 1) if es_mio else (0.10, 0.12, 0.18, 1)
 
     wrapper = BoxLayout(
         orientation="horizontal",
@@ -62,14 +51,8 @@ def _make_bubble(texto, es_mio, ancho_max):
     )
 
     with bubble.canvas.before:
-
         Color(rgba=cor_fondo)
-
-        bubble.bg = RoundedRectangle(
-            pos=bubble.pos,
-            size=bubble.size,
-            radius=[dp(18)],
-        )
+        bubble.bg = RoundedRectangle(pos=bubble.pos, size=bubble.size, radius=[dp(18)])
 
     bubble.bind(
         pos=lambda w, v: setattr(w.bg, "pos", v),
@@ -85,425 +68,182 @@ def _make_bubble(texto, es_mio, ancho_max):
         size_hint_y=None,
     )
 
-    texto_lbl.bind(
-        width=lambda s, *_: setattr(
-            s,
-            "text_size",
-            (s.width, None)
-        )
-    )
+    texto_lbl.bind(width=lambda s, *_: setattr(s, "text_size", (s.width, None)))
 
     def ajustar(*args):
-
         texto_lbl.texture_update()
-
         altura = max(dp(34), texto_lbl.texture_size[1])
-
         texto_lbl.height = altura
-
         bubble.height = altura + dp(24)
-
         wrapper.height = bubble.height + dp(8)
 
-    texto_lbl.bind(
-        texture_size=ajustar,
-        width=ajustar,
-    )
-
+    texto_lbl.bind(texture_size=ajustar, width=ajustar)
     texto_lbl.width = ancho_max - dp(28)
-
     bubble.add_widget(texto_lbl)
-
     wrapper.add_widget(bubble)
 
     if not es_mio:
         wrapper.add_widget(BoxLayout())
 
     Clock.schedule_once(lambda dt: ajustar(), 0)
-
     return wrapper
 
 
-# =====================================================
-# CHAT
-# =====================================================
-
 class ChatScreen(Screen):
 
-    auto_refresh_event = None
-    video_event = None
-
+    listener = None
+    consulta_listener = None
     ultimo_total_mensajes = -1
 
-    # =====================================================
-    # ENTER
-    # =====================================================
-
     def on_enter(self):
-
         self._setup_ui()
-
         self.cargar_mensajes(scroll_final=True)
 
-        # evita loops
-        if not self.auto_refresh_event:
-
-            self.auto_refresh_event = Clock.schedule_interval(
-                self.auto_refresh,
-                2
+        # Listener de mensajes en tiempo real (eficiente)
+        if session.current_consulta_id and not self.listener:
+            self.listener = fb.escuchar_mensajes(
+                session.current_consulta_id,
+                self.on_new_message
             )
 
-        if not self.video_event:
-
-            self.video_event = Clock.schedule_interval(
-                self.check_videollamada,
-                2
+        # Listener de consulta para detectar cambio de estado (videollamada, finalizado)
+        if session.current_consulta_id and not self.consulta_listener:
+            self.consulta_listener = fb.escuchar_consulta(
+                session.current_consulta_id,
+                self.on_consulta_changed
             )
-
-    # =====================================================
-    # LEAVE
-    # =====================================================
 
     def on_leave(self):
+        if self.listener:
+            self.listener.unsubscribe()
+            self.listener = None
+        if self.consulta_listener:
+            self.consulta_listener.unsubscribe()
+            self.consulta_listener = None
 
-        if self.auto_refresh_event:
+    def on_new_message(self, msg_data):
+        # Solo mostrar notificacion local si NO estoy en primer plano
+        # (evitar duplicado con FCM)
+        emisor_uid = msg_data.get('emisor_uid', '')
+        mi_uid = session.get_uid()
+        if emisor_uid != mi_uid and platform == 'android':
+            from fcm_service import mostrar_notificacion_local
+            emisor = msg_data.get('emisor_email', 'Alguien')
+            texto = msg_data.get('texto', '')[:50]
+            mostrar_notificacion_local(f"Nuevo mensaje de {emisor}", texto, "chat_channel")
 
-            self.auto_refresh_event.cancel()
+        Clock.schedule_once(lambda dt: self.cargar_mensajes(scroll_final=True), 0)
 
-            self.auto_refresh_event = None
-
-        if self.video_event:
-
-            self.video_event.cancel()
-
-            self.video_event = None
-
-    # =====================================================
-    # AUTO REFRESH
-    # =====================================================
-
-    def auto_refresh(self, dt):
-
-        if not session.current_consulta_id:
-            return
-
-        conn = get_connection()
-
-        c = conn.cursor()
-
-        c.execute("""
-            SELECT COUNT(*)
-            FROM mensajes
-            WHERE consulta_id=?
-        """, (session.current_consulta_id,))
-
-        total = c.fetchone()[0]
-
-        conn.close()
-
-        # SOLO refresca si cambió algo
-        if total != self.ultimo_total_mensajes:
-
-            self.cargar_mensajes()
-
-    # =====================================================
-    # CHECK VIDEO
-    # =====================================================
-
-    def check_videollamada(self, dt):
-
-        if not session.current_consulta_id:
-            return
-
-        conn = get_connection()
-
-        c = conn.cursor()
-
-        c.execute("""
-            SELECT estado
-            FROM consultas
-            WHERE id=?
-        """, (session.current_consulta_id,))
-
-        row = c.fetchone()
-
-        conn.close()
-
-        if not row:
-            return
-
-        estado = row[0]
-
-        mostrar = estado == "videollamada"
-
-        self.ids.btn_unirse_video.opacity = 1 if mostrar else 0
-
-        self.ids.btn_unirse_video.disabled = not mostrar
-
-    # =====================================================
-    # VIDEO
-    # =====================================================
-
-    def ir_video(self):
-
-        conn = get_connection()
-
-        c = conn.cursor()
-
-        c.execute("""
-            SELECT estado
-            FROM consultas
-            WHERE id=?
-        """, (session.current_consulta_id,))
-
-        row = c.fetchone()
-
-        conn.close()
-
-        if not row:
-            return
-
-        if row[0] != "videollamada":
-            return
-
-        self.manager.current = "videollamada"
-
-    # =====================================================
-    # ESTADO CONSULTA
-    # =====================================================
-
-    def _get_estado_consulta(self):
-
-        conn = get_connection()
-
-        c = conn.cursor()
-
-        c.execute("""
-            SELECT estado, abogado, user_email, tipo_servicio
-            FROM consultas
-            WHERE id=?
-        """, (session.current_consulta_id,))
-
-        row = c.fetchone()
-
-        conn.close()
-
-        return row
-
-    # =====================================================
-    # UI
-    # =====================================================
+    def on_consulta_changed(self, consulta_data):
+        """Se llama cuando cambia el estado de la consulta (videollamada, finalizado, etc)"""
+        Clock.schedule_once(lambda dt: self._setup_ui(), 0)
 
     def _setup_ui(self):
-
-        row = self._get_estado_consulta()
-
-        if not row:
+        consulta = fb.obtener_consulta(session.current_consulta_id)
+        if not consulta:
             return
 
-        estado, abogado, cliente, tipo = row
+        estado = consulta.get('estado', '')
+        abogado_email = consulta.get('abogado_email', '')
+        cliente_email = consulta.get('cliente_email', '')
+        tipo = consulta.get('tipo_servicio', '')
 
-        es_abogado = (
-            session.current_user and
-            session.current_user[4] == "abogado"
-        )
-
+        es_abogado = session.es_abogado()
         finalizado = estado == "finalizado"
-
-        interlocutor = cliente if es_abogado else abogado
-
-        # evita superposición
-        nombre_corto = (
-            interlocutor[:18] + "..."
-            if len(interlocutor) > 18
-            else interlocutor
-        )
+        interlocutor = cliente_email if es_abogado else abogado_email
+        nombre_corto = interlocutor[:18] + "..." if len(interlocutor) > 18 else interlocutor
 
         self.ids.lbl_chat_titulo.text = nombre_corto
-
         self.ids.lbl_chat_tipo.text = f"Consulta {tipo}"
 
-        # =========================
-        # ESTADO
-        # =========================
-
         if es_abogado:
-
             self.ids.lbl_estado_linea.text = "Cliente conectado"
-
-            self.ids.lbl_estado_linea.color = (
-                0.90, 0.70, 0.10, 1
-            )
-
+            self.ids.lbl_estado_linea.color = (0.90, 0.70, 0.10, 1)
         else:
-
-            conn = get_connection()
-
-            c = conn.cursor()
-
-            c.execute("""
-                SELECT estado_abogado
-                FROM users
-                WHERE email=?
-            """, (abogado,))
-
-            row_estado = c.fetchone()
-
-            conn.close()
-
-            estado_abogado = (
-                row_estado[0]
-                if row_estado else
-                "disponible"
-            )
+            abogado_data = fb.obtener_usuario_por_email(abogado_email)
+            estado_abogado = abogado_data.get('estado_abogado', 'disponible') if abogado_data else 'disponible'
 
             if estado_abogado == "disponible":
-
-                self.ids.lbl_estado_linea.text = "En línea"
-
-                self.ids.lbl_estado_linea.color = (
-                    0.18, 0.80, 0.44, 1
-                )
-
+                self.ids.lbl_estado_linea.text = "En linea"
+                self.ids.lbl_estado_linea.color = (0.18, 0.80, 0.44, 1)
             elif estado_abogado == "guardia":
-
                 self.ids.lbl_estado_linea.text = "En guardia"
-
-                self.ids.lbl_estado_linea.color = (
-                    0.95, 0.65, 0.10, 1
-                )
-
+                self.ids.lbl_estado_linea.color = (0.95, 0.65, 0.10, 1)
             else:
-
                 self.ids.lbl_estado_linea.text = "Ocupado"
-
-                self.ids.lbl_estado_linea.color = (
-                    0.90, 0.25, 0.25, 1
-                )
-
-        # =========================
-        # BOTONES
-        # =========================
+                self.ids.lbl_estado_linea.color = (0.90, 0.25, 0.25, 1)
 
         mostrar_video = estado == "videollamada"
+        self.ids.btn_unirse_video.opacity = 1 if mostrar_video else 0
+        self.ids.btn_unirse_video.disabled = not mostrar_video
 
-        self.ids.btn_unirse_video.opacity = (
-            1 if mostrar_video else 0
-        )
-
-        self.ids.btn_unirse_video.disabled = (
-            not mostrar_video
-        )
-
+        # Botones segun estado y rol
         if es_abogado and not finalizado:
-
             self.ids.btn_finalizar.opacity = 1
             self.ids.btn_finalizar.disabled = False
-
             if tipo == "video":
-
                 self.ids.btn_invitar_video.opacity = 1
                 self.ids.btn_invitar_video.disabled = False
-
             else:
-
                 self.ids.btn_invitar_video.opacity = 0
                 self.ids.btn_invitar_video.disabled = True
-
         else:
-
             self.ids.btn_finalizar.opacity = 0
             self.ids.btn_finalizar.disabled = True
-
             self.ids.btn_invitar_video.opacity = 0
             self.ids.btn_invitar_video.disabled = True
 
-        # =========================
-        # FINALIZADO
-        # =========================
+        # Bloquear chat si no esta en_curso o videollamada
+        chat_bloqueado = estado not in ["en_curso", "videollamada"]
 
-        if finalizado:
-
+        if chat_bloqueado and not finalizado:
             self.ids.banner_finalizado.height = dp(38)
-
-            self.ids.lbl_banner_fin.text = (
-                "Esta consulta fue finalizada"
-            )
-
+            if estado == "pagado":
+                self.ids.lbl_banner_fin.text = "Esperando que el abogado acepte la consulta..."
+            elif estado == "pendiente":
+                self.ids.lbl_banner_fin.text = "Pendiente de pago"
+            else:
+                self.ids.lbl_banner_fin.text = "Consulta no disponible"
+            self.ids.lbl_banner_fin.color = (0.85, 0.62, 0.05, 1)
             self.ids.input_area.disabled = True
-
+            self.ids.input_area.opacity = 0.5
+        elif finalizado:
+            self.ids.banner_finalizado.height = dp(38)
+            self.ids.lbl_banner_fin.text = "Esta consulta fue finalizada"
+            self.ids.lbl_banner_fin.color = (0.55, 0.58, 0.65, 1)
+            self.ids.input_area.disabled = True
             self.ids.input_area.opacity = 0.5
 
-            # =====================================
-            # IR A RESENA CLIENTE (solo si no envió reseña)
-            # =====================================
-
-            if (
-                session.current_user and
-                session.current_user[4] != "abogado" and
-                not tiene_resena(session.current_consulta_id)
-            ):
-
-                Clock.schedule_once(
-                    lambda dt: setattr(
-                        self.manager,
-                        "current",
-                        "resena"
-                    ),
-                    1
-                )
-
+            if not es_abogado and not fb.tiene_resena(session.current_consulta_id):
+                Clock.schedule_once(lambda dt: setattr(self.manager, "current", "resena"), 1)
         else:
-
             self.ids.banner_finalizado.height = 0
-
             self.ids.lbl_banner_fin.text = ""
-
             self.ids.input_area.disabled = False
-
             self.ids.input_area.opacity = 1
-    # =====================================================
-    # MENSAJES
-    # =====================================================
 
     def cargar_mensajes(self, scroll_final=False):
-
         self.ids.chat_box.clear_widgets()
 
-        conn = get_connection()
+        if not session.current_consulta_id:
+            return
 
-        c = conn.cursor()
-
-        c.execute("""
-            SELECT emisor, mensaje, archivo
-            FROM mensajes
-            WHERE consulta_id=?
-            ORDER BY id ASC
-        """, (session.current_consulta_id,))
-
-        mensajes = c.fetchall()
-
-        conn.close()
+        mensajes = fb.obtener_mensajes(session.current_consulta_id)
 
         self.ultimo_total_mensajes = len(mensajes)
+        mi_email = session.get_email() or ""
+        mi_uid = session.get_uid() or ""
 
-        mi_email = (
-            session.current_user[2]
-            if session.current_user else ""
-        )
-
-        # responsive
         ancho_ventana = self.width
+        bubble_w = BUBBLE_W_DESKTOP if ancho_ventana > 700 else BUBBLE_W_MOBILE
 
-        if ancho_ventana > 700:
-            bubble_w = BUBBLE_W_DESKTOP
-        else:
-            bubble_w = BUBBLE_W_MOBILE
+        for msg_data in mensajes:
+            emisor_uid = msg_data.get('emisor_uid', '')
+            emisor_email = msg_data.get('emisor_email', '')
+            texto = msg_data.get('texto', '') or msg_data.get('mensaje', '')
+            archivo = msg_data.get('archivo', '')
 
-        for emisor, texto, archivo in mensajes:
-
-            if emisor == "SISTEMA":
-
+            if emisor_email == "SISTEMA" or emisor_uid == "SISTEMA":
                 lbl = Label(
                     text=texto,
                     font_size="11sp",
@@ -514,30 +254,16 @@ class ChatScreen(Screen):
                     halign="center",
                     valign="middle",
                 )
-
-                lbl.bind(
-                    size=lambda s, *_:
-                    setattr(s, "text_size", s.size)
-                )
-
+                lbl.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
                 self.ids.chat_box.add_widget(lbl)
-
                 continue
 
-            es_mio = emisor == mi_email
+            es_mio = (emisor_uid == mi_uid) or (emisor_email == mi_email)
 
             if texto:
-
-                self.ids.chat_box.add_widget(
-                    _make_bubble(
-                        texto,
-                        es_mio,
-                        bubble_w
-                    )
-                )
+                self.ids.chat_box.add_widget(_make_bubble(texto, es_mio, bubble_w))
 
             if archivo:
-
                 btn = Button(
                     text=f"📎 {os.path.basename(archivo)}",
                     size_hint_y=None,
@@ -547,246 +273,132 @@ class ChatScreen(Screen):
                     color=(0.12, 0.14, 0.22, 1),
                     font_size="12sp",
                 )
-
-                btn.bind(
-                    on_release=lambda x, p=archivo:
-                    self.abrir_archivo(p)
-                )
-
+                btn.bind(on_release=lambda x, p=archivo: self.abrir_archivo(p))
                 self.ids.chat_box.add_widget(btn)
 
         if scroll_final:
-
-            Clock.schedule_once(
-                lambda dt: self.scroll_abajo(),
-                0.1
-            )
-
-    # =====================================================
-    # SCROLL
-    # =====================================================
+            Clock.schedule_once(lambda dt: self.scroll_abajo(), 0.1)
 
     def scroll_abajo(self):
-
         self.ids.scroll_chat.scroll_y = 0
 
-    # =====================================================
-    # ENVIAR
-    # =====================================================
-
     def enviar(self):
-
         texto = self.ids.input_mensaje.text.strip()
-
         if not texto:
             return
 
-        conn = get_connection()
+        mi_uid = session.get_uid()
+        if not mi_uid or not session.current_consulta_id:
+            return
 
-        c = conn.cursor()
-
-        c.execute("""
-            INSERT INTO mensajes
-            (consulta_id, emisor, mensaje)
-            VALUES (?, ?, ?)
-        """, (
-            session.current_consulta_id,
-            session.current_user[2],
-            texto
-        ))
-
-        conn.commit()
-
-        conn.close()
+        fb.enviar_mensaje(session.current_consulta_id, mi_uid, texto)
+        fb.notificar_nuevo_mensaje(session.current_consulta_id, mi_uid, texto)
 
         self.ids.input_mensaje.text = ""
-
         self.ids.input_mensaje.focus = True
-
         self.cargar_mensajes(scroll_final=True)
 
-    # =====================================================
-    # ADJUNTAR
-    # =====================================================
-
     def adjuntar(self):
-
         if PLYER_OK:
-
             try:
-
-                filechooser.open_file(
-                    on_selection=self.seleccionar_archivo
-                )
-
+                filechooser.open_file(on_selection=self.seleccionar_archivo)
                 return
-
             except Exception:
                 pass
 
-    # =====================================================
-    # ARCHIVO
-    # =====================================================
-
     def seleccionar_archivo(self, selection):
-
         if not selection:
             return
 
         origen = selection[0]
 
+        # Validar tamano del archivo
+        tamano_mb = os.path.getsize(origen) / (1024 * 1024)
+        if tamano_mb > MAX_FILE_SIZE_MB:
+            self.mostrar_error(f"Archivo muy grande. Maximo {MAX_FILE_SIZE_MB}MB")
+            return
+
         os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-        nombre = (
-            f"{int(time.time())}_"
-            f"{os.path.basename(origen)}"
-        )
-
-        destino = os.path.join(
-            UPLOAD_DIR,
-            nombre
-        )
-
+        nombre = f"{int(time.time())}_{os.path.basename(origen)}"
+        destino = os.path.join(UPLOAD_DIR, nombre)
         shutil.copy(origen, destino)
 
-        conn = get_connection()
-
-        c = conn.cursor()
-
-        c.execute("""
-            INSERT INTO mensajes
-            (consulta_id, emisor, archivo)
-            VALUES (?, ?, ?)
-        """, (
-            session.current_consulta_id,
-            session.current_user[2],
-            destino
-        ))
-
-        conn.commit()
-
-        conn.close()
+        mi_uid = session.get_uid()
+        if mi_uid and session.current_consulta_id:
+            ok, url = fb.subir_archivo_chat(session.current_consulta_id, destino, nombre)
+            if ok:
+                fb.enviar_mensaje(session.current_consulta_id, mi_uid, f"📎 Archivo: {nombre}")
 
         self.cargar_mensajes(scroll_final=True)
 
-    # =====================================================
-    # ABRIR ARCHIVO
-    # =====================================================
-
     def abrir_archivo(self, path):
-
         if not os.path.exists(path):
             return
-
         try:
-
             os.startfile(path)
-
         except Exception as e:
-
             print("No se pudo abrir:", e)
 
-    # =====================================================
-    # FINALIZAR
-    # =====================================================
-
     def finalizar_consulta(self):
+        if not session.current_consulta_id:
+            return
 
-        conn = get_connection()
+        fb.actualizar_estado_consulta(session.current_consulta_id, 'finalizado')
 
-        c = conn.cursor()
+        # Notificar al cliente que la consulta fue finalizada
+        consulta = fb.obtener_consulta(session.current_consulta_id)
+        if consulta:
+            cliente_uid = consulta.get('cliente_uid')
+            if cliente_uid:
+                fb.notificar_consulta_finalizada(cliente_uid)
 
-        c.execute("""
-            UPDATE consultas
-            SET estado='finalizado'
-            WHERE id=?
-        """, (
-            session.current_consulta_id,
-        ))
-
-        c.execute("""
-            INSERT INTO mensajes
-            (consulta_id, emisor, mensaje)
-            VALUES (?, ?, ?)
-        """, (
-            session.current_consulta_id,
-            "SISTEMA",
-            "El abogado finalizó esta consulta."
-        ))
-
-        conn.commit()
-
-        conn.close()
+        mi_uid = session.get_uid()
+        if mi_uid:
+            fb.enviar_mensaje(session.current_consulta_id, mi_uid,
+                            "El abogado finalizo esta consulta.")
 
         self._setup_ui()
+        self.cargar_mensajes(scroll_final=True)
 
-        self.cargar_mensajes(
-            scroll_final=True
-        )
-
-        # =====================================
-        # IR A RESENA SOLO CLIENTE (solo si no envió reseña)
-        # =====================================
-
-        if (
-                session.current_user and
-                session.current_user[4] != "abogado" and
-                not tiene_resena(session.current_consulta_id)
-        ):
-            Clock.schedule_once(
-                lambda dt: setattr(
-                    self.manager,
-                    "current",
-                    "resena"
-                ),
-                0.5
-            )
-
-    # =====================================================
-    # VIDEO
-    # =====================================================
+        if not session.es_abogado() and not fb.tiene_resena(session.current_consulta_id):
+            Clock.schedule_once(lambda dt: setattr(self.manager, "current", "resena"), 0.5)
 
     def invitar_videollamada(self):
+        if not session.current_consulta_id:
+            return
 
-        conn = get_connection()
+        fb.actualizar_estado_consulta(session.current_consulta_id, 'videollamada')
 
-        c = conn.cursor()
+        # Notificar al cliente que el abogado inicio videollamada
+        consulta = fb.obtener_consulta(session.current_consulta_id)
+        if consulta:
+            cliente_uid = consulta.get('cliente_uid')
+            if cliente_uid:
+                fb.notificar_videollamada(cliente_uid, session.current_consulta_id)
 
-        c.execute("""
-            UPDATE consultas
-            SET estado='videollamada'
-            WHERE id=?
-        """, (session.current_consulta_id,))
-
-        c.execute("""
-            INSERT INTO mensajes
-            (consulta_id, emisor, mensaje)
-            VALUES (?, ?, ?)
-        """, (
-            session.current_consulta_id,
-            "SISTEMA",
-            "El abogado inició una videollamada."
-        ))
-
-        conn.commit()
-
-        conn.close()
+        mi_uid = session.get_uid()
+        if mi_uid:
+            fb.enviar_mensaje(session.current_consulta_id, mi_uid,
+                            "El abogado inicio una videollamada.")
 
         self.manager.current = "videollamada"
 
-    # =====================================================
-    # VOLVER
-    # =====================================================
+    def ir_video(self):
+        consulta = fb.obtener_consulta(session.current_consulta_id)
+        if consulta and consulta.get('estado') == "videollamada":
+            self.manager.current = "videollamada"
+
+    def mostrar_error(self, mensaje):
+        """Mostrar error temporal"""
+        popup = Popup(
+            title='Error',
+            content=Label(text=mensaje, color=(0.9, 0.2, 0.2, 1)),
+            size_hint=(0.8, 0.3)
+        )
+        popup.open()
 
     def volver(self):
-
-        if (
-            session.current_user and
-            session.current_user[4] == "abogado"
-        ):
-
+        if session.es_abogado():
             self.manager.current = "abogado_panel"
-
         else:
-
             self.manager.current = "historial"

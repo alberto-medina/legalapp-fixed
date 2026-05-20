@@ -6,7 +6,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, RoundedRectangle
-from database import get_connection, solicitar_retiro
+from kivy.clock import Clock
+import firebase_config as fb
 import session
 
 ESTADOS = ["disponible", "guardia", "ocupado"]
@@ -23,7 +24,7 @@ TIPO_COLOR = {
 }
 
 FILTRO_BTN_COLORS = {
-    "activo":   (0.24, 0.17, 0.55, 1),   # morado oscuro (fondo), blanco (texto)
+    "activo":   (0.24, 0.17, 0.55, 1),
     "inactivo": {
         "todas":      (0.90, 0.90, 0.96, 1),
         "activas":    (0.90, 0.90, 0.96, 1),
@@ -50,12 +51,11 @@ class AbogadoPanelScreen(Screen):
     def on_enter(self):
         user = session.current_user
         if user:
-            self.ids.lbl_nombre_abogado.text = user[1] or user[2]
+            self.ids.lbl_nombre_abogado.text = user.get('username', '') or user.get('email', '')
 
         self.cargar_datos()
         self._actualizar_btn_estado()
 
-        from kivy.clock import Clock
         Clock.schedule_once(lambda dt: self._refresh_layout(), 0.1)
 
     def _refresh_layout(self):
@@ -66,19 +66,11 @@ class AbogadoPanelScreen(Screen):
         user = session.current_user
         if not user:
             return "disponible"
-
-        conn = get_connection()
-        c = conn.cursor()
-        c.execute("SELECT estado_abogado FROM users WHERE email=?", (user[2],))
-        row = c.fetchone()
-        conn.close()
-
-        est = row[0] if row and row[0] else "disponible"
-        return est if est in ESTADOS else "disponible"
+        return user.get('estado_abogado', 'disponible') or "disponible"
 
     def _actualizar_btn_estado(self):
         estado = self._get_estado_actual()
-        cfg = ESTADO_CFG[estado]
+        cfg = ESTADO_CFG.get(estado, ESTADO_CFG["disponible"])
 
         self.ids.btn_estado.text = cfg["label"]
         self.ids.btn_estado.background_color = cfg["bg"]
@@ -92,17 +84,10 @@ class AbogadoPanelScreen(Screen):
         actual = self._get_estado_actual()
         nuevo = ESTADOS[(ESTADOS.index(actual) + 1) % len(ESTADOS)]
 
-        conn = get_connection()
-        c = conn.cursor()
-        c.execute("UPDATE users SET estado_abogado=? WHERE email=?", (nuevo, user[2]))
-        conn.commit()
-        conn.close()
+        fb.actualizar_usuario(user.get('uid'), {'estado_abogado': nuevo})
+        session.current_user['estado_abogado'] = nuevo
 
         self._actualizar_btn_estado()
-
-    # ============================================================
-    # FILTROS
-    # ============================================================
 
     def filtrar(self, filtro):
         self.filtro_actual = filtro
@@ -134,44 +119,23 @@ class AbogadoPanelScreen(Screen):
         if not user:
             return
 
-        email = user[2]
+        uid = user.get('uid')
+        email = user.get('email', '')
 
-        conn = get_connection()
-        c = conn.cursor()
+        user_data = fb.obtener_usuario(uid)
+        saldo = user_data.get('saldo', 0.0) if user_data else 0.0
 
-        # saldo
-        c.execute("SELECT saldo FROM users WHERE email=?", (email,))
-        saldo_row = c.fetchone()
-        saldo = saldo_row[0] if saldo_row and saldo_row[0] else 0.0
-
-        # total consultas
-        c.execute("SELECT COUNT(*) FROM consultas WHERE abogado=?", (email,))
-        total = c.fetchone()[0]
-
-        self.ids.lbl_consultas.text = str(total)
-        self.ids.lbl_honorarios.text = f"${saldo:,.0f}"
-
-        # consultas con filtro
-        query = """
-            SELECT id, user_email, estado, tipo_servicio
-            FROM consultas WHERE abogado=?
-        """
-        params = [email]
+        consultas = fb.obtener_consultas_usuario(uid, 'abogado')
 
         if self.filtro_actual == "activas":
-            query += " AND estado IN ('pagado', 'pendiente')"
+            consultas = [(cid, c) for cid, c in consultas if c.get('estado') in ['pagado', 'en_curso', 'videollamada']]
         elif self.filtro_actual == "finalizadas":
-            query += " AND estado = 'finalizado'"
+            consultas = [(cid, c) for cid, c in consultas if c.get('estado') == 'finalizado']
         elif self.filtro_actual in ("chat", "video", "urgente"):
-            query += " AND tipo_servicio = ?"
-            params.append(self.filtro_actual)
+            consultas = [(cid, c) for cid, c in consultas if c.get('tipo_servicio') == self.filtro_actual]
 
-        query += " ORDER BY id DESC"
-
-        c.execute(query, tuple(params))
-        consultas = c.fetchall()
-
-        conn.close()
+        self.ids.lbl_consultas.text = str(len(consultas))
+        self.ids.lbl_honorarios.text = f"${saldo:,.0f}"
 
         if not consultas:
             self.ids.lista_consultas.add_widget(Label(
@@ -182,7 +146,11 @@ class AbogadoPanelScreen(Screen):
             ))
             return
 
-        for cid, cliente, estado, tipo in consultas:
+        for cid, cdata in consultas:
+            cliente_email = cdata.get('cliente_email', '')
+            estado = cdata.get('estado', '')
+            tipo = cdata.get('tipo_servicio', '')
+
             card = BoxLayout(
                 orientation="horizontal",
                 size_hint_y=None,
@@ -212,38 +180,84 @@ class AbogadoPanelScreen(Screen):
             info = BoxLayout(orientation="vertical")
 
             info.add_widget(Label(
-                text=cliente,
+                text=cliente_email,
                 font_size=15,
                 bold=True,
                 color=(0.08, 0.12, 0.28, 1),
             ))
 
-            estado_color = (0.10, 0.72, 0.38, 1) if estado == "finalizado" else (0.85, 0.62, 0.05, 1)
+            # Color segun estado
+            if estado == "pagado":
+                estado_color = (0.85, 0.62, 0.05, 1)
+                estado_texto = "PAGADO - Esperando aceptacion"
+            elif estado == "en_curso":
+                estado_color = (0.18, 0.80, 0.44, 1)
+                estado_texto = "EN CURSO"
+            elif estado == "videollamada":
+                estado_color = (0.18, 0.55, 0.85, 1)
+                estado_texto = "VIDEO LLAMADA"
+            elif estado == "finalizado":
+                estado_color = (0.18, 0.80, 0.44, 1)
+                estado_texto = "FINALIZADO"
+            else:
+                estado_color = (0.55, 0.58, 0.65, 1)
+                estado_texto = estado.upper()
 
             info.add_widget(Label(
-                text=estado.upper(),
+                text=estado_texto,
                 font_size=12,
                 color=estado_color,
             ))
 
-            btn = Button(
-                text="Abrir",
-                size_hint_x=None,
-                width=72,
-                bold=True,
-                font_size=14,
-                background_normal="",
-                background_color=(0.10, 0.12, 0.18, 1),
-                color=(1, 1, 1, 1),
-            )
+            btns = BoxLayout(orientation="vertical", size_hint_x=None, width=90, spacing=6)
 
-            btn.bind(on_release=lambda x, c=cid: self.abrir_chat(c))
+            # Boton principal segun estado
+            if estado == "pagado":
+                btn_aceptar = Button(
+                    text="Aceptar",
+                    font_size="12sp",
+                    bold=True,
+                    size_hint_y=None,
+                    height=36,
+                    background_normal="",
+                    background_color=(0.18, 0.80, 0.44, 1),
+                    color=(1, 1, 1, 1),
+                )
+                btn_aceptar.bind(on_release=lambda x, c=cid: self.aceptar_consulta(c))
+                btns.add_widget(btn_aceptar)
+            else:
+                btn_abrir = Button(
+                    text="Abrir",
+                    font_size="13sp",
+                    bold=True,
+                    size_hint_y=None,
+                    height=40,
+                    background_normal="",
+                    background_color=(0.10, 0.12, 0.18, 1),
+                    color=(1, 1, 1, 1),
+                )
+                btn_abrir.bind(on_release=lambda x, c=cid: self.abrir_chat(c))
+                btns.add_widget(btn_abrir)
 
             card.add_widget(tipo_lbl)
             card.add_widget(info)
-            card.add_widget(btn)
+            card.add_widget(btns)
 
             self.ids.lista_consultas.add_widget(card)
+
+    def aceptar_consulta(self, consulta_id):
+        """El abogado acepta una consulta pagada y pasa a 'en_curso'."""
+        fb.actualizar_estado_consulta(consulta_id, 'en_curso')
+
+        # Notificar al cliente que el abogado acepto
+        consulta = fb.obtener_consulta(consulta_id)
+        if consulta:
+            cliente_uid = consulta.get('cliente_uid')
+            tipo = consulta.get('tipo_servicio', 'chat')
+            if cliente_uid:
+                fb.notificar_consulta_aceptada(cliente_uid, tipo)
+
+        self.cargar_datos()
 
     def abrir_chat(self, consulta_id):
         session.current_consulta_id = consulta_id
@@ -256,25 +270,20 @@ class AbogadoPanelScreen(Screen):
         session.current_user = None
         self.manager.current = "login"
 
-    # ============================================================
-    # POPUP RETIRO - ARREGLADO PARA MOVIL
-    # ============================================================
-
     def solicitar_retiro_popup(self):
         user = session.current_user
         if not user:
             return
 
-        conn = get_connection()
-        c = conn.cursor()
-        c.execute("SELECT saldo, cuenta_bancaria FROM users WHERE email=?", (user[2],))
-        row = c.fetchone()
-        conn.close()
+        uid = user.get('uid')
+        user_data = fb.obtener_usuario(uid)
 
-        saldo = row[0] if row and row[0] else 0.0
-        cuenta = row[1] if row and row[1] else ""
+        if not user_data:
+            return
 
-        # --- SIN CUENTA BANCARIA ---
+        saldo = user_data.get('saldo', 0.0)
+        cuenta = user_data.get('cuenta_bancaria', '')
+
         if not cuenta:
             content = BoxLayout(orientation="vertical", padding=["20dp", "20dp"], spacing="12dp")
 
@@ -344,7 +353,6 @@ class AbogadoPanelScreen(Screen):
             popup.open()
             return
 
-        # --- RETIRO NORMAL CON SCROLLVIEW PARA MOVIL ---
         scroll = ScrollView(do_scroll_x=False, bar_width="4dp")
         content = BoxLayout(orientation="vertical", padding=["20dp", "16dp", "20dp", "40dp"], spacing="12dp", size_hint_y=None)
         content.bind(minimum_height=content.setter('height'))
@@ -408,8 +416,6 @@ class AbogadoPanelScreen(Screen):
 
         content.add_widget(btn_ok)
         content.add_widget(btn_cancel)
-
-        # Widget extra para espacio abajo (teclado)
         content.add_widget(Label(size_hint_y=None, height="20dp"))
 
         scroll.add_widget(content)
@@ -434,7 +440,7 @@ class AbogadoPanelScreen(Screen):
                 lbl_resultado.text = "Monto invalido"
                 return
 
-            ok, msg, _ = solicitar_retiro(user[2], monto, cuenta)
+            ok, msg, _ = fb.solicitar_retiro(uid, monto, cuenta)
             lbl_resultado.text = msg
 
             if ok:

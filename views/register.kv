@@ -52,8 +52,9 @@
                     size_hint_y: None
                     height: "8dp"
 
+                # ===== NOMBRE =====
                 Label:
-                    text: "NOMBRE"
+                    text: "NOMBRE COMPLETO *"
                     font_size: "11sp"
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
@@ -76,8 +77,9 @@
                     font_size: "15sp"
                     write_tab: False
 
+                # ===== EMAIL =====
                 Label:
-                    text: "EMAIL"
+                    text: "EMAIL *"
                     font_size: "11sp"
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
@@ -100,6 +102,33 @@
                     font_size: "15sp"
                     write_tab: False
 
+                # ===== DNI =====
+                Label:
+                    text: "DNI"
+                    font_size: "11sp"
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: "18dp"
+                    halign: "left"
+                    text_size: self.size
+
+                TextInput:
+                    id: dni
+                    hint_text: "Tu DNI (7-8 dígitos, opcional)"
+                    multiline: False
+                    input_filter: 'int'
+                    size_hint_y: None
+                    height: "48dp"
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
+
+                # ===== TELÉFONO =====
                 Label:
                     text: "TELEFONO"
                     font_size: "11sp"
@@ -112,7 +141,7 @@
 
                 TextInput:
                     id: telefono
-                    hint_text: "+54 9 xxx-xxx"
+                    hint_text: "+54 9 xxx-xxxxxxx"
                     multiline: False
                     size_hint_y: None
                     height: "48dp"
@@ -124,8 +153,34 @@
                     font_size: "15sp"
                     write_tab: False
 
+                # ===== DIRECCIÓN =====
                 Label:
-                    text: "CONTRASENA"
+                    text: "DIRECCION"
+                    font_size: "11sp"
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: "18dp"
+                    halign: "left"
+                    text_size: self.size
+
+                TextInput:
+                    id: direccion
+                    hint_text: "Tu dirección (opcional)"
+                    multiline: False
+                    size_hint_y: None
+                    height: "48dp"
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
+
+                # ===== CONTRASEÑA =====
+                Label:
+                    text: "CONTRASENA *"
                     font_size: "11sp"
                     bold: True
                     color: 0.40, 0.45, 0.55, 1
@@ -136,7 +191,7 @@
 
                 TextInput:
                     id: password
-                    hint_text: "Minimo 6 caracteres"
+                    hint_text: "Mínimo 8 caracteres, 1 mayúscula, 1 número, 1 especial"
                     password: True
                     multiline: False
                     size_hint_y: None
@@ -149,12 +204,49 @@
                     font_size: "15sp"
                     write_tab: False
 
+                # ===== REPETIR CONTRASEÑA =====
+                Label:
+                    text: "REPETIR CONTRASENA *"
+                    font_size: "11sp"
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: "18dp"
+                    halign: "left"
+                    text_size: self.size
+
+                TextInput:
+                    id: password_confirm
+                    hint_text: "Repetí tu contraseña"
+                    password: True
+                    multiline: False
+                    size_hint_y: None
+                    height: "48dp"
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
+
+                # ===== INFO DE SEGURIDAD =====
+                Label:
+                    text: "La contraseña debe tener: 8+ caracteres, 1 mayúscula, 1 minúscula, 1 número, 1 especial (!@#$...)"
+                    font_size: "10sp"
+                    color: 0.60, 0.63, 0.70, 1
+                    size_hint_y: None
+                    height: "36dp"
+                    halign: "left"
+                    text_size: self.size
+
+                # ===== ERROR =====
                 Label:
                     id: error
                     text: ""
                     color: 0.90, 0.25, 0.25, 1
                     size_hint_y: None
-                    height: "22dp"
+                    height: "40dp"
                     halign: "left"
                     text_size: self.size
 
@@ -162,6 +254,7 @@
                     size_hint_y: None
                     height: "8dp"
 
+                # ===== BOTÓN CREAR CUENTA =====
                 Button:
                     text: "Crear cuenta"
                     size_hint_y: None
@@ -173,6 +266,7 @@
                     color: 1, 1, 1, 1
                     on_release: root.register()
 
+                # ===== BOTÓN VOLVER =====
                 Button:
                     text: "Ya tengo cuenta"
                     size_hint_y: None

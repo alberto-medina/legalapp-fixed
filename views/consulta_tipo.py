@@ -1,5 +1,5 @@
 from kivy.uix.screenmanager import Screen
-from database import get_connection
+import firebase_config as fb
 import session
 
 
@@ -18,192 +18,84 @@ PRECIOS = {
 
 class ConsultaTipoScreen(Screen):
 
-    # =====================================================
-    # ENTER
-    # =====================================================
-
     def on_enter(self):
-
-        # =============================================
-        # SEGURIDAD
-        # =============================================
-
         if not getattr(session, "abogado_seleccionado", None):
             self.manager.current = "abogados"
             return
 
-        estado = (
-            getattr(session, "estado_abogado", "disponible")
-            or "disponible"
-        ).lower()
-
+        estado = (getattr(session, "estado_abogado", "disponible") or "disponible").lower()
         habilitados = SERVICIOS_HABILITADOS.get(estado, set())
 
-        # =============================================
-        # DATOS ABOGADO
-        # =============================================
-
-        conn = get_connection()
-        c = conn.cursor()
-
-        c.execute("""
-            SELECT username, especialidad
-            FROM users
-            WHERE email=?
-        """, (session.abogado_seleccionado,))
-
-        row = c.fetchone()
-
-        conn.close()
-
-        nombre = "Abogado"
-        especialidad = ""
-
-        if row:
-            nombre = row[0] or "Abogado"
-            especialidad = row[1] or ""
+        # Obtener datos del abogado de Firebase
+        abogado_data = fb.obtener_usuario_por_email(session.abogado_seleccionado)
+        nombre = abogado_data.get('username', '') or abogado_data.get('nombre', 'Abogado') if abogado_data else 'Abogado'
+        especialidad = abogado_data.get('especialidad', '') if abogado_data else ''
 
         self.ids.lbl_abogado.text = nombre
         self.ids.lbl_especialidad.text = especialidad
 
-        # =============================================
         # CHAT
-        # =============================================
-
         chat_ok = "chat" in habilitados
-
         self.ids.btn_chat.disabled = not chat_ok
         self.ids.btn_chat.opacity = 1 if chat_ok else 0.45
+        self.ids.btn_chat.background_color = (0.18, 0.80, 0.44, 1) if chat_ok else (0.55, 0.55, 0.55, 1)
+        self.ids.lbl_chat_estado.text = f"Disponible • {PRECIOS['chat']}" if chat_ok else "No disponible"
+        self.ids.lbl_chat_estado.color = (0.18, 0.80, 0.44, 1) if chat_ok else (0.85, 0.30, 0.30, 1)
 
-        self.ids.btn_chat.background_color = (
-            (0.18, 0.80, 0.44, 1)
-            if chat_ok
-            else
-            (0.55, 0.55, 0.55, 1)
-        )
-
-        self.ids.lbl_chat_estado.text = (
-            f"Disponible • {PRECIOS['chat']}"
-            if chat_ok
-            else
-            "No disponible"
-        )
-
-        self.ids.lbl_chat_estado.color = (
-            (0.18, 0.80, 0.44, 1)
-            if chat_ok
-            else
-            (0.85, 0.30, 0.30, 1)
-        )
-
-        # =============================================
         # VIDEO
-        # =============================================
-
         video_ok = "video" in habilitados
-
         self.ids.btn_video.disabled = not video_ok
         self.ids.btn_video.opacity = 1 if video_ok else 0.45
+        self.ids.btn_video.background_color = (0.18, 0.80, 0.44, 1) if video_ok else (0.55, 0.55, 0.55, 1)
+        self.ids.lbl_video_estado.text = f"Disponible • {PRECIOS['video']}" if video_ok else "No disponible"
+        self.ids.lbl_video_estado.color = (0.18, 0.80, 0.44, 1) if video_ok else (0.85, 0.30, 0.30, 1)
 
-        self.ids.btn_video.background_color = (
-            (0.18, 0.80, 0.44, 1)
-            if video_ok
-            else
-            (0.55, 0.55, 0.55, 1)
-        )
-
-        self.ids.lbl_video_estado.text = (
-            f"Disponible • {PRECIOS['video']}"
-            if video_ok
-            else
-            "No disponible"
-        )
-
-        self.ids.lbl_video_estado.color = (
-            (0.18, 0.80, 0.44, 1)
-            if video_ok
-            else
-            (0.85, 0.30, 0.30, 1)
-        )
-
-        # =============================================
         # URGENTE
-        # =============================================
-
         urgente_ok = "urgente" in habilitados
-
         self.ids.btn_urgente.disabled = not urgente_ok
         self.ids.btn_urgente.opacity = 1 if urgente_ok else 0.45
+        self.ids.btn_urgente.background_color = (0.91, 0.30, 0.24, 1) if urgente_ok else (0.55, 0.55, 0.55, 1)
+        self.ids.lbl_urgente_estado.text = f"Disponible • {PRECIOS['urgente']}" if urgente_ok else "No disponible"
+        self.ids.lbl_urgente_estado.color = (0.91, 0.30, 0.24, 1) if urgente_ok else (0.85, 0.30, 0.30, 1)
 
-        self.ids.btn_urgente.background_color = (
-            (0.91, 0.30, 0.24, 1)
-            if urgente_ok
-            else
-            (0.55, 0.55, 0.55, 1)
-        )
-
-        self.ids.lbl_urgente_estado.text = (
-            f"Disponible • {PRECIOS['urgente']}"
-            if urgente_ok
-            else
-            "No disponible"
-        )
-
-        self.ids.lbl_urgente_estado.color = (
-            (0.91, 0.30, 0.24, 1)
-            if urgente_ok
-            else
-            (0.85, 0.30, 0.30, 1)
-        )
-
-        # =============================================
         # BANNER
-        # =============================================
-
         if estado == "guardia":
-
-            self.ids.lbl_banner.text = (
-                "Abogado en guardia • Solo urgencias habilitadas"
-            )
-
-            self.ids.lbl_banner.color = (
-                0.90, 0.70, 0.10, 1
-            )
-
+            self.ids.lbl_banner.text = "Abogado en guardia • Solo urgencias habilitadas"
+            self.ids.lbl_banner.color = (0.90, 0.70, 0.10, 1)
         elif estado == "ocupado":
-
-            self.ids.lbl_banner.text = (
-                "Abogado ocupado • No disponible actualmente"
-            )
-
-            self.ids.lbl_banner.color = (
-                0.85, 0.30, 0.30, 1
-            )
-
+            self.ids.lbl_banner.text = "Abogado ocupado • No disponible actualmente"
+            self.ids.lbl_banner.color = (0.85, 0.30, 0.30, 1)
         else:
-
-            self.ids.lbl_banner.text = (
-                "Abogado disponible • Todos los servicios habilitados"
-            )
-
-            self.ids.lbl_banner.color = (
-                0.18, 0.80, 0.44, 1
-            )
-
-    # =====================================================
-    # SELECCIONAR
-    # =====================================================
+            self.ids.lbl_banner.text = "Abogado disponible • Todos los servicios habilitados"
+            self.ids.lbl_banner.color = (0.18, 0.80, 0.44, 1)
 
     def seleccionar(self, servicio):
-
         session.tipo_servicio = servicio
+
+        # Crear consulta inmediatamente en Firestore con estado 'pendiente'
+        # Asi el tipo_servicio queda persistido y no se pierde al cerrar la app
+        user = session.current_user
+        abogado_email = session.abogado_seleccionado
+
+        if not user or not abogado_email:
+            self.manager.current = "abogados"
+            return
+
+        abogado_data = fb.obtener_usuario_por_email(abogado_email)
+        if not abogado_data:
+            self.manager.current = "abogados"
+            return
+
+        abogado_uid = abogado_data.get('uid')
+        cliente_uid = user.get('uid')
+
+        # Crear consulta pendiente en Firestore
+        consulta_id = fb.crear_consulta(cliente_uid, abogado_uid, servicio)
+        session.current_consulta_id = consulta_id
+
+        print(f"CONSULTA CREADA: id={consulta_id}, tipo={servicio}, estado=pendiente")
 
         self.manager.current = "pago"
 
-    # =====================================================
-    # VOLVER
-    # =====================================================
-
     def volver(self):
-
         self.manager.current = "abogados"

@@ -171,6 +171,30 @@
 
                     on_release: root.unirse()
 
+                # =========================
+                # BOTON COPIAR LINK
+                # =========================
+
+                Button:
+                    id: btn_copiar
+                    text: "Copiar link de la sala"
+
+                    size_hint_y: None
+                    height: "44dp"
+
+                    font_size: "14sp"
+
+                    background_normal: ""
+
+                    background_color: 0.24, 0.17, 0.55, 1
+
+                    color: 1, 1, 1, 1
+
+                    opacity: 1
+                    disabled: False
+
+                    on_release: root.copiar_link()
+
                 Label:
                     text: "Se abrira en tu navegador o app de video"
                     font_size: "11sp"

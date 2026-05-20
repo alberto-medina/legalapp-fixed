@@ -1,91 +1,13 @@
-from database import get_connection, create_tables
-import hashlib
+import firebase_config as fb
 
+# Crear abogados de demostración
+print("🚀 Creando abogados demo...")
+fb.crear_abogados_demo()
 
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-
-# =========================================================
-# CREAR TABLAS
-# =========================================================
-
-create_tables()
-
-conn = get_connection()
-cursor = conn.cursor()
-
-# =========================================================
-# BORRAR DEMOS ANTERIORES
-# =========================================================
-
-cursor.execute(
-    "DELETE FROM users WHERE email=?",
-    ("abogado@test.com",)
-)
-
-cursor.execute(
-    "DELETE FROM users WHERE email=?",
-    ("cliente@test.com",)
-)
-
-# =========================================================
-# CREAR ABOGADO DEMO
-# =========================================================
-
-cursor.execute("""
-    INSERT INTO users (
-        username,
-        email,
-        password,
-        rol,
-        telefono,
-        especialidad,
-        matricula,
-        experiencia,
-        descripcion,
-        estado_abogado,
-        cuenta_bancaria,
-        saldo
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-""", (
-    "Dr Test",
-    "abogado@test.com",
-    hash_password("1234"),
-    "abogado",
-    "387000000",
-    "Derecho Penal",
-    "MP-2025-TEST",
-    "12 años",
-    "Especialista en derecho penal, denuncias, defensa y causas urgentes.",
-    "disponible",
-    "",
-    0.0
-))
-
-# =========================================================
-# CREAR CLIENTE DEMO
-# =========================================================
-
-cursor.execute("""
-    INSERT INTO users (
-        username,
-        email,
-        password,
-        rol,
-        telefono
-    )
-    VALUES (?, ?, ?, ?, ?)
-""", (
-    "Cliente Test",
-    "cliente@test.com",
-    hash_password("1234"),
-    "cliente",
-    "123456"
-))
-
-conn.commit()
-conn.close()
-
-print("OK Abogado y Cliente creados correctamente")
+print("\n✅ Listo! Los abogados demo están creados.")
+print("\nCredenciales de prueba:")
+print("  Cliente: cliente@test.com / Cliente123!")
+print("  Abogados: maria.gonzalez@legalapp.demo / Demo1234!")
+print("            carlos.rodriguez@legalapp.demo / Demo1234!")
+print("            laura.martinez@legalapp.demo / Demo1234!")
+print("            juan.perez@legalapp.demo / Demo1234!")

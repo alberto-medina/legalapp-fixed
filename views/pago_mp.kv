@@ -135,6 +135,19 @@
                         on_release: root.ir_a_pagar()
 
                     Button:
+                        id: btn_verificar
+                        text: "Verificar pago"
+                        size_hint_y: None
+                        height: "48dp"
+                        bold: True
+                        font_size: "15sp"
+                        background_normal: ""
+                        background_color: 0.18, 0.80, 0.44, 1
+                        color: 1, 1, 1, 1
+                        disabled: True
+                        on_release: root.verificar_pago()
+
+                    Button:
                         id: btn_confirmar
                         text: "Ya pague - Continuar"
                         size_hint_y: None
