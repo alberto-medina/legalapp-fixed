@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from kivy.utils import platform
-import firebase_config as fb
+import supabase_config as fb
 import session
 import time
 
@@ -45,8 +45,8 @@ class DashboardScreen(Screen):
                         diff = (ahora - ts).total_seconds()
                         if diff > VIDEO_TIMEOUT_SEGUNDOS:
                             continue
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        print("ERROR VIDEO:", e)
                 videollamada = (cid, cdata)
                 break
 
@@ -72,7 +72,11 @@ class DashboardScreen(Screen):
         self.manager.current = "videollamada"
 
     def nueva_consulta(self):
-        self.manager.current = "especialidad"
+        # Resetear ubicacion anterior
+        session.provincia_busqueda = None
+        session.ciudad_busqueda = None
+        session.area_legal = None
+        self.manager.current = "ubicacion"
 
     def ver_historial(self):
         self.manager.current = "historial"

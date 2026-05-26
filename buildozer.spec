@@ -9,11 +9,11 @@ source.dir = .
 source.include_exts = py,kv,png,jpg,jpeg,svg,ttf,otf,json,sql,xml,txt
 source.exclude_patterns = legal_app.db,.env,*.pyc,__pycache__,*.spec,tests/*,*.md
 
-requirements = python3,kivy,kivymd,pillow,requests,firebase-admin,pyjnius,certifi,urllib3,charset-normalizer,idna,plyer,android
+requirements = python3,kivy,kivymd,pillow,requests,supabase,pyjnius,certifi,urllib3,charset-normalizer,idna,plyer,android
 
 orientation = portrait
 
-android.permissions = INTERNET,CAMERA,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,VIBRATE,WAKE_LOCK,RECEIVE_BOOT_COMPLETED,POST_NOTIFICATIONS
+android.permissions = INTERNET,CAMERA,RECORD_AUDIO,READ_EXTERNAL_STORAGE,WRITE_EXTERNAL_STORAGE,VIBRATE,WAKE_LOCK,RECEIVE_BOOT_COMPLETED,POST_NOTIFICATIONS
 
 android.minapi = 26
 android.targetapi = 34
@@ -27,7 +27,11 @@ android.gradle_dependencies = com.google.firebase:firebase-messaging:23.4.0,com.
 
 android.gradle_plugins = com.google.gms.google-services
 
-icon.filename      = assets/icon_512.png
+android.enable_androidx = True
+
+p4a.branch = develop
+
+icon.filename = assets/icon_512.png
 presplash.filename = assets/splash_1080.png
 
 log_level = 2

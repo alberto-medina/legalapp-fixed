@@ -1,0 +1,162 @@
+<PagoSuscripcionScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: "70dp"
+            padding: ["16dp", "10dp"]
+            spacing: "10dp"
+            canvas.before:
+                Color:
+                    rgba: 0.23, 0.18, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint: None, None
+                size: "36dp", "36dp"
+                font_size: "18sp"
+                bold: True
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            Label:
+                text: "PAGAR SUSCRIPCION"
+                font_size: "17sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+
+            BoxLayout:
+                orientation: "vertical"
+                padding: ["18dp", "20dp", "18dp", "40dp"]
+                spacing: "14dp"
+                size_hint_y: None
+                height: self.minimum_height
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: "130dp"
+                    padding: ["16dp", "14dp"]
+                    spacing: "6dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14]
+
+                    Label:
+                        text: "MercadoPago"
+                        font_size: "16sp"
+                        bold: True
+                        color: 0.00, 0.56, 0.90, 1
+                        halign: "center"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "24dp"
+
+                    Label:
+                        id: lbl_monto
+                        text: "$55.000"
+                        font_size: "32sp"
+                        bold: True
+                        color: 0.23, 0.18, 0.55, 1
+                        halign: "center"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "44dp"
+
+                    Label:
+                        id: lbl_especialidades
+                        text: "Suscripcion profesional"
+                        font_size: "13sp"
+                        color: 0.40, 0.45, 0.55, 1
+                        halign: "center"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "20dp"
+
+                    Label:
+                        text: "Suscripcion anual - Pago unico"
+                        font_size: "11sp"
+                        color: 0.60, 0.63, 0.70, 1
+                        halign: "center"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "16dp"
+
+                Label:
+                    id: lbl_estado
+                    text: "Preparando pago..."
+                    font_size: "13sp"
+                    color: 0.55, 0.50, 0.65, 1
+                    halign: "center"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "36dp"
+
+                Button:
+                    id: btn_pagar
+                    text: "Ir a pagar en MercadoPago"
+                    size_hint_y: None
+                    height: "52dp"
+                    bold: True
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_color: 0.00, 0.56, 0.90, 1
+                    color: 1, 1, 1, 1
+                    disabled: True
+                    on_release: root.ir_a_pagar()
+
+                Button:
+                    id: btn_verificar
+                    text: "VERIFICAR PAGO"
+                    size_hint_y: None
+                    height: "52dp"
+                    bold: True
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_color: 0.18, 0.80, 0.44, 1
+                    color: 1, 1, 1, 1
+                    disabled: True
+                    on_release: root.verificar_pago()
+
+                Button:
+                    id: btn_activar_manual
+                    text: "YA PAGUE (efectivo / transferencia)"
+                    size_hint_y: None
+                    height: "52dp"
+                    bold: True
+                    font_size: "14sp"
+                    background_normal: ""
+                    background_color: 0.55, 0.55, 0.60, 1
+                    color: 1, 1, 1, 1
+                    disabled: True
+                    on_release: root.activar_manual()
+
+                Label:
+                    text: "Al completar el pago tu cuenta quedara activa\ny podras recibir consultas de clientes."
+                    font_size: "12sp"
+                    color: 0.55, 0.58, 0.65, 1
+                    halign: "center"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "40dp"

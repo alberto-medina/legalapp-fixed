@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.button import Button
 from kivy.clock import Clock
-import firebase_config as fb
+import supabase_config as fb
 import session
 from datetime import datetime
 

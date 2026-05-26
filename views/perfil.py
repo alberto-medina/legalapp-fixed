@@ -8,7 +8,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.graphics import Color, RoundedRectangle
 
-import firebase_config as fb
+import supabase_config as fb
 import session
 from views.utils_avatar import get_avatar_source
 

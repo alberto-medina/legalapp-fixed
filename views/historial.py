@@ -4,7 +4,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
-import firebase_config as fb
+import supabase_config as fb
 import session
 
 ESTADOS_FILTRO = ["Todos", "pagado", "videollamada", "finalizado"]

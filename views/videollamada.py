@@ -1,5 +1,5 @@
 import session
-import firebase_config as fb
+import supabase_config as fb
 from kivy.uix.screenmanager import Screen
 from kivy.utils import platform
 

@@ -1,0 +1,148 @@
+<UbicacionScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: "70dp"
+            padding: ["16dp", "10dp"]
+            spacing: "10dp"
+            canvas.before:
+                Color:
+                    rgba: 0.23, 0.18, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint: None, None
+                size: "36dp", "36dp"
+                font_size: "18sp"
+                bold: True
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: "2dp"
+
+                Label:
+                    text: "NUEVA CONSULTA"
+                    font_size: "17sp"
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: "left"
+                    text_size: self.size
+
+                Label:
+                    text: "Donde necesitas el abogado?"
+                    font_size: "12sp"
+                    color: 0.80, 0.78, 1, 1
+                    halign: "left"
+                    text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "3dp"
+
+            BoxLayout:
+                orientation: "vertical"
+                padding: ["16dp", "16dp", "16dp", "40dp"]
+                spacing: "12dp"
+                size_hint_y: None
+                height: self.minimum_height
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["14dp", "12dp"]
+                    spacing: "8dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14]
+
+                    Label:
+                        text: "Selecciona la provincia"
+                        font_size: "14sp"
+                        bold: True
+                        color: 0.23, 0.18, 0.55, 1
+                        size_hint_y: None
+                        height: "24dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    GridLayout:
+                        id: grid_provincias
+                        cols: 1
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: "4dp"
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["14dp", "12dp"]
+                    spacing: "8dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14]
+
+                    Label:
+                        id: lbl_ciudad_titulo
+                        text: "Selecciona la ciudad"
+                        font_size: "14sp"
+                        bold: True
+                        color: 0.23, 0.18, 0.55, 1
+                        size_hint_y: None
+                        height: "24dp"
+                        halign: "left"
+                        text_size: self.size
+                        opacity: 0
+
+                    GridLayout:
+                        id: grid_ciudades
+                        cols: 1
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: "4dp"
+                        opacity: 0
+
+                Button:
+                    id: btn_buscar
+                    text: "Buscar abogados"
+                    size_hint_y: None
+                    height: "52dp"
+                    bold: True
+                    font_size: "16sp"
+                    background_normal: ""
+                    background_color: 0.23, 0.18, 0.55, 1
+                    color: 1, 1, 1, 1
+                    disabled: True
+                    on_release: root.buscar()
+
+                Button:
+                    text: "Ver abogados de todas las provincias"
+                    size_hint_y: None
+                    height: "44dp"
+                    font_size: "13sp"
+                    background_color: 0, 0, 0, 0
+                    color: 0.45, 0.50, 0.58, 1
+                    on_release: root.buscar_todas()

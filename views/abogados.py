@@ -4,7 +4,7 @@ from kivy.uix.image import AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.graphics import Color, RoundedRectangle
-import firebase_config as fb
+import supabase_config as fb
 import session
 from views.utils_avatar import get_avatar_source
 
@@ -27,7 +27,17 @@ class AbogadosScreen(Screen):
     _todos = []
 
     def on_enter(self):
-        self.ids.lbl_area.text = f"Especialidad: {session.area_legal or ''}"
+        provincia = getattr(session, 'provincia_busqueda', None)
+        ciudad = getattr(session, 'ciudad_busqueda', None)
+
+        if provincia and ciudad:
+            self.ids.lbl_area.text = (
+                f"Especialidad: {session.area_legal or ''} - "
+                f"{ciudad}, {provincia}"
+            )
+        else:
+            self.ids.lbl_area.text = f"Especialidad: {session.area_legal or ''}"
+
         self.ids.buscador.text = ""
 
         if "filtro_estado" in self.ids:
@@ -38,7 +48,14 @@ class AbogadosScreen(Screen):
         self.cargar_abogados()
 
     def cargar_abogados(self):
-        abogados = fb.listar_abogados(disponibles=False)
+        provincia = getattr(session, 'provincia_busqueda', None)
+        ciudad = getattr(session, 'ciudad_busqueda', None)
+
+        abogados = fb.listar_abogados(
+            disponibles=False,
+            provincia=provincia,
+            ciudad=ciudad
+        )
 
         area = (session.area_legal or "").strip().lower()
 
@@ -47,7 +64,8 @@ class AbogadosScreen(Screen):
             for data in abogados:
                 especialidad = (data.get('especialidad') or "").lower()
                 descripcion = (data.get('descripcion') or "").lower()
-                if area in especialidad or area in descripcion:
+                especialidades = (data.get('especialidades') or "").lower()
+                if area in especialidad or area in descripcion or area in especialidades:
                     filtrados.append(data)
             self._todos = filtrados if filtrados else abogados
         else:
@@ -62,18 +80,30 @@ class AbogadosScreen(Screen):
 
         if "filtro_estado" in self.ids:
             estado = self.ids.filtro_estado.text
+
         if "filtro_orden" in self.ids:
             orden = self.ids.filtro_orden.text
 
         filtrados = []
+
         for data in self._todos:
+
+            # SOLO abogados aprobados
+            if not data.get("aprobado", False):
+                continue
+
             nombre = data.get('username', '') or data.get('nombre', '')
             descripcion = data.get('descripcion', '')
             experiencia = data.get('experiencia', '')
             especialidad = data.get('especialidad', '')
             estado_abogado = data.get('estado_abogado', 'disponible')
 
-            contenido = f"{nombre} {descripcion} {experiencia} {especialidad}".lower()
+            contenido = (
+                f"{nombre} "
+                f"{descripcion} "
+                f"{experiencia} "
+                f"{especialidad}"
+            ).lower()
 
             if texto and texto not in contenido:
                 continue
@@ -85,21 +115,56 @@ class AbogadosScreen(Screen):
             filtrados.append(data)
 
         if orden == "Nombre A-Z":
-            filtrados.sort(key=lambda x: (x.get('username', '') or x.get('nombre', '')).lower())
+            filtrados.sort(
+                key=lambda x: (
+                        x.get('username', '') or x.get('nombre', '')
+                ).lower()
+            )
+
         elif orden == "Mayor experiencia":
+
             def exp_num(v):
                 try:
-                    return int(''.join(filter(str.isdigit, str(v))))
-                except:
+                    return int(
+                        ''.join(filter(str.isdigit, str(v)))
+                    )
+                except Exception as e:
+                    print("ERROR EXPERIENCIA:", e)
                     return 0
-            filtrados.sort(key=lambda x: exp_num(x.get('experiencia', '')), reverse=True)
+
+            filtrados.sort(
+                key=lambda x: exp_num(
+                    x.get('experiencia', '')
+                ),
+                reverse=True
+            )
+
         elif orden == "Mejor valorados":
+
             def get_rating(email):
-                resenas = fb.obtener_resenas_abogado(email)
-                if not resenas:
+                try:
+                    resenas = fb.obtener_resenas_abogado(email)
+
+                    if not resenas:
+                        return 0
+
+                    return (
+                            sum(
+                                r.get('puntaje', 0)
+                                for r in resenas
+                            ) / len(resenas)
+                    )
+
+                except Exception as e:
+                    print("ERROR RATING:", e)
                     return 0
-                return sum(r.get('puntaje', 0) for r in resenas) / len(resenas)
-            filtrados.sort(key=lambda x: get_rating(x.get('email', '')), reverse=True)
+
+            filtrados.sort(
+                key=lambda x: get_rating(
+                    x.get('email', '')
+                ),
+                reverse=True
+            )
 
         self.render(filtrados)
 
@@ -107,8 +172,15 @@ class AbogadosScreen(Screen):
         self.ids.lista.clear_widgets()
 
         if not abogados:
+            provincia = getattr(session, 'provincia_busqueda', None)
+            ciudad = getattr(session, 'ciudad_busqueda', None)
+            if provincia:
+                msg = f"No se encontraron abogados en {ciudad}, {provincia}"
+            else:
+                msg = "No se encontraron abogados"
+
             self.ids.lista.add_widget(Label(
-                text="No se encontraron abogados",
+                text=msg,
                 size_hint_y=None,
                 height=70,
                 font_size="15sp",
@@ -124,16 +196,18 @@ class AbogadosScreen(Screen):
             experiencia = data.get('experiencia', '')
             descripcion = data.get('descripcion', '')
             especialidad = data.get('especialidad', '')
+            provincia = data.get('provincia', '')
+            ciudad = data.get('ciudad', '')
 
-            self.add_card(nombre, email, estado, foto, experiencia, descripcion, especialidad)
+            self.add_card(nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia, ciudad)
 
-    def add_card(self, nombre, email, estado, foto, experiencia, descripcion, especialidad):
+    def add_card(self, nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia="", ciudad=""):
         resenas = fb.obtener_resenas_abogado(email)
         cantidad = len(resenas)
         promedio = sum(r.get('puntaje', 0) for r in resenas) / cantidad if cantidad > 0 else 0
 
         estrellas = "★" * round(promedio) + "☆" * (5 - round(promedio))
-        altura = 220 if descripcion else 170
+        altura = 240 if descripcion else 190
 
         card = BoxLayout(
             orientation="vertical",
@@ -190,6 +264,21 @@ class AbogadosScreen(Screen):
             lbl_esp.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
             info.add_widget(lbl_esp)
 
+        # Ubicacion
+        if provincia or ciudad:
+            ubicacion_txt = f"{ciudad}, {provincia}" if ciudad and provincia else provincia or ciudad
+            lbl_ubic = Label(
+                text=ubicacion_txt,
+                font_size="11sp",
+                color=(0.45, 0.50, 0.60, 1),
+                size_hint_y=None,
+                height=18,
+                halign="left",
+                valign="middle",
+            )
+            lbl_ubic.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
+            info.add_widget(lbl_ubic)
+
         lbl_estado = Label(
             text=ESTADO_LABEL.get(estado, estado),
             font_size="12sp",
@@ -203,7 +292,7 @@ class AbogadosScreen(Screen):
         lbl_estado.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
         info.add_widget(lbl_estado)
 
-        rating = f"{estrellas}  {promedio:.1f} ({cantidad})" if cantidad else "Sin reseñas"
+        rating = f"{estrellas}  {promedio:.1f} ({cantidad})" if cantidad else "Sin resenas"
         lbl_rating = Label(
             text=rating,
             font_size="12sp",

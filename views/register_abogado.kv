@@ -1,7 +1,6 @@
-<RegisterScreen>:
+<RegisterAbogadoScreen>:
     BoxLayout:
         orientation: "vertical"
-
         canvas.before:
             Color:
                 rgba: 0.96, 0.97, 0.98, 1
@@ -11,9 +10,9 @@
 
         BoxLayout:
             size_hint_y: None
-            height: "120dp"
-            padding: ["20dp", "20dp"]
-
+            height: "70dp"
+            padding: ["16dp", "10dp"]
+            spacing: "10dp"
             canvas.before:
                 Color:
                     rgba: 0.23, 0.18, 0.55, 1
@@ -21,24 +20,24 @@
                     pos: self.pos
                     size: self.size
 
-            BoxLayout:
-                orientation: "vertical"
-                spacing: "4dp"
+            Button:
+                text: "<"
+                size_hint: None, None
+                size: "36dp", "36dp"
+                font_size: "18sp"
+                bold: True
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
 
-                Label:
-                    text: "LEGAL APP"
-                    font_size: "26sp"
-                    bold: True
-                    color: 1, 1, 1, 1
-                    halign: "center"
-                    text_size: self.size
-
-                Label:
-                    text: "Crear cuenta"
-                    font_size: "14sp"
-                    color: 0.80, 0.78, 1, 1
-                    halign: "center"
-                    text_size: self.size
+            Label:
+                text: "REGISTRO PROFESIONAL"
+                font_size: "17sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
 
         ScrollView:
             do_scroll_x: False
@@ -46,7 +45,7 @@
 
             BoxLayout:
                 orientation: "vertical"
-                padding: ["18dp", "20dp", "18dp", "40dp"]
+                padding: ["18dp", "18dp", "18dp", "40dp"]
                 spacing: "10dp"
                 size_hint_y: None
                 height: self.minimum_height
@@ -55,20 +54,19 @@
                     orientation: "vertical"
                     size_hint_y: None
                     height: self.minimum_height
-                    padding: ["16dp", "16dp"]
+                    padding: ["16dp", "14dp"]
                     spacing: "10dp"
-
                     canvas.before:
                         Color:
                             rgba: 1, 1, 1, 1
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [16]
+                            radius: [14]
 
                     Label:
-                        text: "Registrate como cliente"
-                        font_size: "15sp"
+                        text: "Datos personales"
+                        font_size: "14sp"
                         bold: True
                         color: 0.23, 0.18, 0.55, 1
                         size_hint_y: None
@@ -87,8 +85,8 @@
                         text_size: self.size
 
                     TextInput:
-                        id: username
-                        hint_text: "Tu nombre completo"
+                        id: nombre
+                        hint_text: "Dr/Dra. Nombre Apellido"
                         multiline: False
                         size_hint_y: None
                         height: "46dp"
@@ -125,31 +123,6 @@
                         write_tab: False
 
                     Label:
-                        text: "DNI"
-                        font_size: "11sp"
-                        bold: True
-                        color: 0.40, 0.45, 0.55, 1
-                        size_hint_y: None
-                        height: "16dp"
-                        halign: "left"
-                        text_size: self.size
-
-                    TextInput:
-                        id: dni
-                        hint_text: "Tu DNI (opcional)"
-                        multiline: False
-                        input_filter: "int"
-                        size_hint_y: None
-                        height: "46dp"
-                        background_color: 0.96, 0.97, 0.98, 1
-                        foreground_color: 0.10, 0.12, 0.18, 1
-                        hint_text_color: 0.65, 0.68, 0.75, 1
-                        cursor_color: 0.23, 0.18, 0.55, 1
-                        padding: ["12dp", "12dp"]
-                        font_size: "15sp"
-                        write_tab: False
-
-                    Label:
                         text: "TELEFONO"
                         font_size: "11sp"
                         bold: True
@@ -173,8 +146,32 @@
                         font_size: "15sp"
                         write_tab: False
 
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["16dp", "14dp"]
+                    spacing: "10dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14]
+
                     Label:
-                        text: "DIRECCION"
+                        text: "Datos profesionales"
+                        font_size: "14sp"
+                        bold: True
+                        color: 0.23, 0.18, 0.55, 1
+                        size_hint_y: None
+                        height: "24dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    Label:
+                        text: "MATRICULA *"
                         font_size: "11sp"
                         bold: True
                         color: 0.40, 0.45, 0.55, 1
@@ -184,8 +181,8 @@
                         text_size: self.size
 
                     TextInput:
-                        id: direccion
-                        hint_text: "Tu direccion (opcional)"
+                        id: matricula
+                        hint_text: "Numero de matricula"
                         multiline: False
                         size_hint_y: None
                         height: "46dp"
@@ -196,6 +193,165 @@
                         padding: ["12dp", "12dp"]
                         font_size: "15sp"
                         write_tab: False
+
+                    Label:
+                        text: "PROVINCIA *"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: provincia
+                        hint_text: "Ej: Buenos Aires, CABA, Cordoba..."
+                        multiline: False
+                        size_hint_y: None
+                        height: "46dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        cursor_color: 0.23, 0.18, 0.55, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "ANOS DE EXPERIENCIA"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: experiencia
+                        hint_text: "Ej: 10 anos"
+                        multiline: False
+                        size_hint_y: None
+                        height: "46dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        cursor_color: 0.23, 0.18, 0.55, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "DESCRIPCION PROFESIONAL"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: descripcion
+                        hint_text: "Contanos sobre tu experiencia..."
+                        multiline: True
+                        size_hint_y: None
+                        height: "80dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "14sp"
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["16dp", "14dp"]
+                    spacing: "8dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14]
+
+                    Label:
+                        text: "Especialidades *"
+                        font_size: "14sp"
+                        bold: True
+                        color: 0.23, 0.18, 0.55, 1
+                        size_hint_y: None
+                        height: "24dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    Label:
+                        text: "1ra especialidad incluida. Cada adicional: $10.000"
+                        font_size: "11sp"
+                        color: 0.55, 0.58, 0.65, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    GridLayout:
+                        id: grid_especialidades
+                        cols: 1
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: "6dp"
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: "70dp"
+                    padding: ["16dp", "12dp"]
+                    spacing: "4dp"
+                    canvas.before:
+                        Color:
+                            rgba: 0.23, 0.18, 0.55, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14]
+
+                    Label:
+                        id: lbl_precio
+                        text: "Total a pagar: $55.000"
+                        font_size: "18sp"
+                        bold: True
+                        color: 1, 1, 1, 1
+                        halign: "center"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "28dp"
+
+                    Label:
+                        id: lbl_detalle_precio
+                        text: "Suscripcion base (1 especialidad incluida)"
+                        font_size: "11sp"
+                        color: 0.85, 0.85, 1, 1
+                        halign: "center"
+                        text_size: self.size
+                        size_hint_y: None
+                        height: "18dp"
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["16dp", "14dp"]
+                    spacing: "10dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [14]
 
                     Label:
                         text: "CONTRASENA *"
@@ -209,7 +365,7 @@
 
                     TextInput:
                         id: password
-                        hint_text: "Minimo 8 caracteres"
+                        hint_text: "Minimo 6 caracteres"
                         password: True
                         multiline: False
                         size_hint_y: None
@@ -256,79 +412,13 @@
                         halign: "left"
                         text_size: self.size
 
-                    Button:
-                        text: "Crear cuenta"
-                        size_hint_y: None
-                        height: "52dp"
-                        bold: True
-                        font_size: "16sp"
-                        background_normal: ""
-                        background_color: 0.18, 0.80, 0.44, 1
-                        color: 1, 1, 1, 1
-                        on_release: root.register()
-
-                    BoxLayout:
-                        size_hint_y: None
-                        height: "40dp"
-                        spacing: "8dp"
-
-                        CheckBox:
-                            id: terms_check
-                            size_hint_x: None
-                            width: "40dp"
-
-                        Label:
-                            text: "Acepto términos y privacidad"
-                            color: 0.35, 0.38, 0.45, 1
-                            halign: "left"
-                            valign: "middle"
-                            text_size: self.size
-
-                    Button:
-                        text: "Ver Términos y Condiciones"
-                        size_hint_y: None
-                        height: "44dp"
-                        background_normal: ""
-                        background_color: 0.23, 0.18, 0.55, 1
-                        color: 1, 1, 1, 1
-                        on_release:
-                            app.root.current = "terms_screen"
-
-                    Button:
-                        text: "Ver Política de Privacidad"
-                        size_hint_y: None
-                        height: "44dp"
-                        background_normal: ""
-                        background_color: 0.23, 0.18, 0.55, 1
-                        color: 1, 1, 1, 1
-                        on_release:
-                            app.root.current = "privacy_screen"
-
-                Label:
-                    text: "o"
-                    font_size: "13sp"
-                    color: 0.60, 0.63, 0.70, 1
-                    size_hint_y: None
-                    height: "24dp"
-                    halign: "center"
-                    text_size: self.size
-
                 Button:
-                    text: "Soy abogado - Registrarme como profesional"
+                    text: "Continuar al pago"
                     size_hint_y: None
                     height: "52dp"
                     bold: True
-                    font_size: "14sp"
+                    font_size: "16sp"
                     background_normal: ""
                     background_color: 0.23, 0.18, 0.55, 1
                     color: 1, 1, 1, 1
-                    on_release: root.ir_registro_abogado()
-
-                Button:
-                    text: "Ya tengo cuenta"
-                    size_hint_y: None
-                    height: "44dp"
-                    font_size: "14sp"
-                    background_color: 0, 0, 0, 0
-                    color: 0.45, 0.50, 0.58, 1
-                    on_release: root.go_back()
+                    on_release: root.registrar()

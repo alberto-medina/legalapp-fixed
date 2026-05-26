@@ -24,7 +24,7 @@ python -m venv .venv
 pip install kivy kivymd pillow requests supabase python-dotenv
 
 # 4. Configurar credenciales
-cp .env.example .env
+cp .env .env
 # Editar .env con tus datos de Supabase
 
 # 5. Correr la app

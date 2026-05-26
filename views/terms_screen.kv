@@ -1,0 +1,55 @@
+<TermsScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 15
+
+        canvas.before:
+            Color:
+                rgba: 0.95, 0.96, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            text: "Términos y Condiciones"
+            font_size: "24sp"
+            bold: True
+            size_hint_y: None
+            height: "50dp"
+            color: 0, 0, 0, 1
+
+        ScrollView:
+
+            Label:
+                id: terms_label
+                text: ""
+                text_size: self.width - 30, None
+                size_hint_y: None
+                height: self.texture_size[1]
+                color: 0.1, 0.1, 0.1, 1
+                valign: "top"
+
+        BoxLayout:
+            size_hint_y: None
+            height: "50dp"
+            spacing: 10
+
+            CheckBox:
+                id: aceptar_check
+                size_hint_x: None
+                width: "50dp"
+
+            Label:
+                text: "Acepto los términos y condiciones"
+                color: 0, 0, 0, 1
+                text_size: self.size
+                valign: "middle"
+
+        Button:
+            text: "Aceptar y Continuar"
+            size_hint_y: None
+            height: "55dp"
+            background_color: 0.1, 0.5, 0.9, 1
+            on_release: root.aceptar_terminos()

@@ -40,7 +40,6 @@
                 color: 1, 1, 1, 1
                 on_release: root.volver()
 
-        # BODY - SCROLLVIEW GENERAL
         ScrollView:
             do_scroll_x: False
             bar_width: dp(4)
@@ -52,24 +51,14 @@
                 size_hint_y: None
                 height: self.minimum_height
 
-                # ========== SECCION ABOGADOS ==========
+                # SECCION ABOGADOS
                 Label:
-                    text: "Gestión de Abogados"
+                    text: "Gestion de Abogados"
                     font_size: "18sp"
                     bold: True
                     color: 0.10, 0.12, 0.18, 1
                     size_hint_y: None
                     height: dp(30)
-
-                Button:
-                    text: "+ Crear Nuevo Abogado"
-                    size_hint_y: None
-                    height: dp(50)
-                    background_normal: ""
-                    background_color: 0.18, 0.80, 0.44, 1
-                    color: 1, 1, 1, 1
-                    bold: True
-                    on_release: root.mostrar_formulario_crear()
 
                 Label:
                     text: "Abogados Registrados"
@@ -91,10 +80,10 @@
                         size_hint_y: None
                         height: self.minimum_height
 
-                # ========== SECCION RETIROS ==========
+                # SEPARADOR
                 Widget:
                     size_hint_y: None
-                    height: dp(20)
+                    height: dp(10)
 
                 BoxLayout:
                     size_hint_y: None
@@ -108,8 +97,9 @@
 
                 Widget:
                     size_hint_y: None
-                    height: dp(20)
+                    height: dp(10)
 
+                # SECCION RETIROS
                 Label:
                     text: "Retiros Pendientes"
                     font_size: "18sp"
@@ -119,7 +109,7 @@
                     height: dp(30)
 
                 Label:
-                    text: "Transferí manualmente desde tu MercadoPago y apretá PAGAR"
+                    text: "Transferi manualmente desde tu MercadoPago y apreta PAGAR"
                     font_size: "12sp"
                     color: 0.85, 0.55, 0.05, 1
                     size_hint_y: None
@@ -137,3 +127,45 @@
                         spacing: dp(10)
                         size_hint_y: None
                         height: self.minimum_height
+
+                # SEPARADOR
+                Widget:
+                    size_hint_y: None
+                    height: dp(10)
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: dp(2)
+                    canvas.before:
+                        Color:
+                            rgba: 0.10, 0.12, 0.18, 0.2
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(10)
+
+                # SECCION PRECIOS
+                Label:
+                    text: "Configuracion de Precios"
+                    font_size: "18sp"
+                    bold: True
+                    color: 0.10, 0.12, 0.18, 1
+                    size_hint_y: None
+                    height: dp(30)
+
+                Label:
+                    text: "Edita el precio y apreta Guardar para actualizar"
+                    font_size: "12sp"
+                    color: 0.45, 0.50, 0.58, 1
+                    size_hint_y: None
+                    height: dp(20)
+
+                GridLayout:
+                    id: precios_container
+                    cols: 1
+                    spacing: dp(8)
+                    size_hint_y: None
+                    height: self.minimum_height

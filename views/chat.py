@@ -11,7 +11,7 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
 from kivy.utils import platform
 
-import firebase_config as fb
+import supabase_config as fb
 import session
 
 try:

@@ -7,7 +7,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, RoundedRectangle
 from kivy.clock import Clock
-import firebase_config as fb
+import supabase_config as fb
 import session
 
 ESTADOS = ["disponible", "guardia", "ocupado"]

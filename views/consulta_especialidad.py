@@ -34,6 +34,18 @@ ESPECIALIDADES = [
 class ConsultaEspecialidadScreen(Screen):
 
     def on_enter(self):
+        # Mostrar ubicacion en el titulo si existe el label
+        provincia = getattr(session, 'provincia_busqueda', None)
+        ciudad = getattr(session, 'ciudad_busqueda', None)
+
+        if 'lbl_ubicacion' in self.ids:
+            if provincia and ciudad:
+                self.ids.lbl_ubicacion.text = f"{ciudad}, {provincia}"
+                self.ids.lbl_ubicacion.opacity = 1
+            else:
+                self.ids.lbl_ubicacion.text = "Todas las provincias"
+                self.ids.lbl_ubicacion.opacity = 0.7
+
         self.cargar_especialidades(ESPECIALIDADES)
 
     def cargar_especialidades(self, lista):
@@ -96,4 +108,4 @@ EspecialidadCard:
         self.manager.current = "abogados"
 
     def volver(self):
-        self.manager.current = "dashboard"
+        self.manager.current = "ubicacion"
