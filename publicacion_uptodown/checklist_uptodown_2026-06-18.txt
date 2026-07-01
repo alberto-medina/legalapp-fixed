@@ -1,0 +1,67 @@
+LEGAL APP - CHECKLIST UPTODOWN
+Fecha: 2026-06-18
+
+APK seleccionado
+- Archivo: C:\legalapp-fixed\legalapp-release-signed.apk
+- Nombre app: Legal App
+- Package: com.legalapp.app.legalapp
+- Version visible: 1.1.10
+- Version numerica: 120
+
+Antes de subir
+[ ] Confirmar que el APK abre e instala en al menos 2 celulares
+[ ] Confirmar login cliente
+[ ] Confirmar login abogado
+[ ] Confirmar registro cliente
+[ ] Confirmar registro abogado
+[ ] Confirmar validacion de email
+[ ] Confirmar pago de suscripcion de abogado
+[ ] Confirmar aprobacion admin
+[ ] Confirmar consulta chat
+[ ] Confirmar consulta video
+[ ] Confirmar consulta urgente
+[ ] Confirmar envio de imagen
+[ ] Confirmar envio de PDF
+[ ] Confirmar envio de audio
+[ ] Confirmar notificaciones push
+[ ] Confirmar retiro de honorarios
+[ ] Confirmar borrado de cuenta
+
+Material para la ficha
+[ ] Icono de la app en buena calidad
+[ ] 6 a 10 capturas verticales
+[ ] 1 video corto de uso
+[ ] Descripcion corta
+[ ] Descripcion completa
+[ ] Novedades de la version
+[ ] Categoria sugerida
+[ ] Correo de contacto
+[ ] Politica de privacidad
+
+Capturas sugeridas
+[ ] Login
+[ ] Dashboard cliente
+[ ] Elegir abogado
+[ ] Perfil publico del abogado
+[ ] Chat
+[ ] Videollamada
+[ ] Perfil abogado
+[ ] Panel abogado
+[ ] Pantalla de pago
+[ ] Notificaciones
+
+Datos para tener a mano
+- Privacidad: privacidad@legalapp.com.ar
+- Politica de privacidad dentro de la app: actualizada
+- Terminos dentro de la app: actualizados
+
+Notas
+- Si Uptodown pide descripcion mas comercial, usar la ficha base del archivo ficha_base_legal_app.txt
+- Si pide APK final, usar siempre legalapp-release-signed.apk
+- Si pide changelog: resaltar estabilidad, chat, pagos, videollamadas, push y perfiles
+
+Pendientes de mejora no bloqueantes para primera salida controlada
+- Alta con Google para cliente
+- Pulido fino de teclado/scroll en algunas pantallas
+- Mas robustez ante segundo plano prolongado
+- Mejoras menores en camara a primer disparo

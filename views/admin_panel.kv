@@ -16,7 +16,8 @@
         BoxLayout:
             size_hint_y: None
             height: dp(60)
-            padding: [dp(20), dp(12)]
+            padding: [dp(20), dp(12), dp(12), dp(12)]
+            spacing: dp(10)
             canvas.before:
                 Color:
                     rgba: 0.10, 0.12, 0.18, 1
@@ -30,24 +31,31 @@
                 bold: True
                 color: 1, 1, 1, 1
                 halign: "left"
+                valign: "middle"
                 text_size: self.size
+                size_hint_x: 1
 
             Button:
                 text: "Salir"
                 size_hint_x: None
+                size_hint_y: None
                 width: dp(80)
+                height: dp(36)
+                pos_hint: {"center_y": 0.5}
+                background_normal: ""
                 background_color: 0.9, 0.2, 0.2, 1
                 color: 1, 1, 1, 1
                 on_release: root.volver()
 
         ScrollView:
             do_scroll_x: False
-            bar_width: dp(4)
+            bar_width: dp(6)
+            bar_color: (0.24, 0.17, 0.55, 1)
 
             BoxLayout:
                 orientation: "vertical"
-                padding: dp(20)
-                spacing: dp(15)
+                padding: dp(15)
+                spacing: dp(12)
                 size_hint_y: None
                 height: self.minimum_height
 
@@ -58,46 +66,53 @@
                     bold: True
                     color: 0.10, 0.12, 0.18, 1
                     size_hint_y: None
-                    height: dp(30)
+                    height: dp(32)
 
                 Label:
                     text: "Abogados Registrados"
-                    font_size: "14sp"
+                    font_size: "13sp"
                     color: 0.45, 0.50, 0.58, 1
                     size_hint_y: None
-                    height: dp(20)
+                    height: dp(22)
 
                 ScrollView:
                     do_scroll_x: False
                     bar_width: dp(4)
                     size_hint_y: None
-                    height: dp(250)
+                    height: dp(280)
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
 
-                    GridLayout:
+                    BoxLayout:
                         id: abogados_container
-                        cols: 1
-                        spacing: dp(10)
+                        orientation: "vertical"
+                        spacing: dp(8)
+                        padding: dp(8)
                         size_hint_y: None
                         height: self.minimum_height
 
                 # SEPARADOR
                 Widget:
                     size_hint_y: None
-                    height: dp(10)
+                    height: dp(8)
 
                 BoxLayout:
                     size_hint_y: None
                     height: dp(2)
                     canvas.before:
                         Color:
-                            rgba: 0.10, 0.12, 0.18, 0.2
+                            rgba: 0.10, 0.12, 0.18, 0.15
                         Rectangle:
                             pos: self.pos
                             size: self.size
 
                 Widget:
                     size_hint_y: None
-                    height: dp(10)
+                    height: dp(8)
 
                 # SECCION RETIROS
                 Label:
@@ -106,46 +121,53 @@
                     bold: True
                     color: 0.10, 0.12, 0.18, 1
                     size_hint_y: None
-                    height: dp(30)
+                    height: dp(32)
 
                 Label:
                     text: "Transferi manualmente desde tu MercadoPago y apreta PAGAR"
                     font_size: "12sp"
                     color: 0.85, 0.55, 0.05, 1
                     size_hint_y: None
-                    height: dp(20)
+                    height: dp(22)
 
                 ScrollView:
                     do_scroll_x: False
                     bar_width: dp(4)
                     size_hint_y: None
-                    height: dp(250)
+                    height: dp(200)
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
 
-                    GridLayout:
+                    BoxLayout:
                         id: retiros_container
-                        cols: 1
-                        spacing: dp(10)
+                        orientation: "vertical"
+                        spacing: dp(8)
+                        padding: dp(8)
                         size_hint_y: None
                         height: self.minimum_height
 
                 # SEPARADOR
                 Widget:
                     size_hint_y: None
-                    height: dp(10)
+                    height: dp(8)
 
                 BoxLayout:
                     size_hint_y: None
                     height: dp(2)
                     canvas.before:
                         Color:
-                            rgba: 0.10, 0.12, 0.18, 0.2
+                            rgba: 0.10, 0.12, 0.18, 0.15
                         Rectangle:
                             pos: self.pos
                             size: self.size
 
                 Widget:
                     size_hint_y: None
-                    height: dp(10)
+                    height: dp(8)
 
                 # SECCION PRECIOS
                 Label:
@@ -154,18 +176,25 @@
                     bold: True
                     color: 0.10, 0.12, 0.18, 1
                     size_hint_y: None
-                    height: dp(30)
+                    height: dp(32)
 
                 Label:
                     text: "Edita el precio y apreta Guardar para actualizar"
                     font_size: "12sp"
                     color: 0.45, 0.50, 0.58, 1
                     size_hint_y: None
-                    height: dp(20)
+                    height: dp(22)
 
-                GridLayout:
+                BoxLayout:
                     id: precios_container
-                    cols: 1
-                    spacing: dp(8)
+                    orientation: "vertical"
+                    spacing: dp(10)
+                    padding: dp(10)
                     size_hint_y: None
                     height: self.minimum_height
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size

@@ -1,0 +1,20 @@
+﻿ESTADO AAB
+Estado actual:
+- generado correctamente
+Archivo generado:
+- C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay\legalapp-1.1.10-arm64-v8a_armeabi-v7a-release.aab
+Fecha detectada:
+- 2026-06-29 20:30:50
+Objetivo:
+- sacar un .aab desde una copia separada
+- dejar el APK estable intacto
+Carpeta destino esperada:
+C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay
+Estado del flujo:
+- el APK estable quedo intacto
+- el AAB se genero desde copia separada
+- la estrategia de separar APK y AAB funciono bien
+Observaciones:
+- seguir usando la copia separada para Google Play
+- no cambiar legalapp-produccion estable a modo AAB
+- si se recompila, volver a copiar el nuevo .aab a esta misma carpeta

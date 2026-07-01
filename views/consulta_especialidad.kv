@@ -1,4 +1,5 @@
 #:import ButtonBehavior kivy.uix.behaviors.ButtonBehavior
+#:import dp kivy.metrics.dp
 
 <EspecialidadCard@ButtonBehavior+BoxLayout>:
     orientation: "horizontal"
@@ -13,7 +14,7 @@
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [18]
+            radius: [dp(18)]
 
         Color:
             rgba: 0, 0, 0, 0.05
@@ -79,6 +80,17 @@
             color: 0.45, 0.50, 0.60, 1
             size_hint_y: None
             height: "42dp"
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Label:
+            id: lbl_ubicacion
+            text: ""
+            font_size: "12sp"
+            color: 0.30, 0.23, 0.67, 1
+            size_hint_y: None
+            height: "22dp"
             halign: "center"
             valign: "middle"
             text_size: self.size

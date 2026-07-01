@@ -2,6 +2,8 @@ import session
 import supabase_config as fb
 from kivy.uix.screenmanager import Screen
 from kivy.utils import platform
+from kivy.clock import Clock
+import threading
 
 
 def _get_sala_url(consulta_id):
@@ -65,7 +67,60 @@ def _copiar_al_portapapeles(texto):
 
 class VideollamadaScreen(Screen):
 
+    _poll_event = None
+    _cargando_video = False
+
+    def on_pre_enter(self):
+        self._refresh_ui()
+
     def on_enter(self):
+        self._refresh_ui()
+        if self._poll_event is None:
+            self._poll_event = Clock.schedule_interval(lambda dt: self._refresh_ui(), 2)
+
+    def on_leave(self):
+        if self._poll_event is not None:
+            self._poll_event.cancel()
+            self._poll_event = None
+
+    def _refresh_ui(self):
+        if self._cargando_video:
+            return
+
+        self._cargando_video = True
+
+        def _worker():
+            payload = {
+                "consulta": None,
+                "video_iniciado": False,
+                "error": None,
+            }
+            try:
+                cid = session.current_consulta_id
+                if not cid:
+                    payload["error"] = "Consulta no encontrada"
+                else:
+                    consulta = fb.obtener_consulta(cid)
+                    payload["consulta"] = consulta
+                    if consulta:
+                        tipo = consulta.get('tipo_servicio', '')
+                        estado = consulta.get('estado', '')
+                        payload["video_iniciado"] = (
+                            tipo == "video"
+                            and estado in ["en_curso", "videollamada"]
+                            and fb.consulta_tiene_videollamada_iniciada(cid)
+                        )
+                    else:
+                        payload["error"] = "Consulta no encontrada"
+            except Exception as e:
+                payload["error"] = str(e)
+            finally:
+                Clock.schedule_once(lambda dt, data=payload: self._aplicar_refresh_ui(data), 0)
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _aplicar_refresh_ui(self, payload):
+        self._cargando_video = False
         cid = session.current_consulta_id
         if not cid:
             self.ids.lbl_sala.text = "Consulta no encontrada"
@@ -75,7 +130,7 @@ class VideollamadaScreen(Screen):
             self.ids.btn_copiar.opacity = 0
             return
 
-        consulta = fb.obtener_consulta(cid)
+        consulta = (payload or {}).get("consulta")
         if not consulta:
             self.ids.lbl_sala.text = "Consulta no encontrada"
             self.ids.btn_unirse.disabled = True
@@ -88,13 +143,16 @@ class VideollamadaScreen(Screen):
         cliente_email = consulta.get('cliente_email', '')
         tipo = consulta.get('tipo_servicio', '')
         estado = consulta.get('estado', '')
+        video_iniciado = bool((payload or {}).get("video_iniciado"))
 
         es_abogado = session.es_abogado()
         otro = cliente_email if es_abogado else abogado_email
 
         self.ids.lbl_con_quien.text = f"Videollamada con: {otro}"
 
-        if estado != "videollamada":
+        abogado_puede_iniciar = es_abogado and tipo == "video" and estado in ["en_curso", "videollamada"]
+
+        if estado != "videollamada" and not abogado_puede_iniciar and not video_iniciado:
             self.ids.lbl_sala.text = "El abogado todavia no inicio la videollamada"
             self.ids.lbl_url.text = ""
             self.ids.btn_unirse.disabled = True

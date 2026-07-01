@@ -1,0 +1,3 @@
+Esta copia se usa solo para generar el AAB de Google Play.
+No tocar el APK estable ni legalapp-produccion original.
+Cambios aplicados aqui: targetapi 35, release_artifact aab, permisos reducidos.

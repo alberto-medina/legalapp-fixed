@@ -1,0 +1,21 @@
+ESTADO GOOGLE PLAY
+
+Lo que ya tenemos:
+- carpeta de preparacion armada en:
+  C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay
+- checklist
+- notas tecnicas
+- borrador data safety
+- borrador politica de privacidad
+
+Lo que falta antes de subir en serio:
+- cuenta Play Console
+- confirmar si hay testing obligatorio
+- cerrar politica de privacidad publica por HTTPS
+- completar Data safety
+- generar AAB cuando lo retomemos de forma controlada
+
+Decision actual:
+- mantener APK como base estable
+- no seguir tocando logica de la app
+- retomar Google Play despues de consolidar esta base

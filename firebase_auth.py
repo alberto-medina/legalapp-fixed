@@ -1,161 +1,223 @@
+# firebase_auth.py — VERSIÓN ANDROID COMPATIBLE (sin firebase_admin)
 import os
 import requests
-import firebase_admin
-
-from firebase_admin import credentials
-from firebase_admin import auth
+from kivy.utils import platform
 
 # =========================================================
-# FIREBASE INIT
+# CONFIG
 # =========================================================
 
-SERVICE_ACCOUNT_FILE = "serviceAccountKey.json"
+from config import FIREBASE_API_KEY
 
-if not firebase_admin._apps:
-    if os.path.exists(SERVICE_ACCOUNT_FILE):
-        cred = credentials.Certificate(SERVICE_ACCOUNT_FILE)
+API_KEY = FIREBASE_API_KEY
 
-        firebase_admin.initialize_app(cred)
+FIREBASE_AUTH_URL = "https://identitytoolkit.googleapis.com/v1"
 
-        print("Firebase Auth conectado")
-    else:
-        raise FileNotFoundError(
-            "Falta serviceAccountKey.json"
-        )
 
 # =========================================================
-# API KEY
+# HELPERS
 # =========================================================
 
-API_KEY = "AIzaSyBmBKc5MkGmWBjeEa2YPOqCKa9Ve3fxWbE"
+def _auth_post(endpoint, payload, params=None):
+    """POST al Firebase Auth REST API."""
+    url = f"{FIREBASE_AUTH_URL}/{endpoint}"
+    if params:
+        url += "?" + "&".join([f"{k}={v}" for k, v in params.items()])
+    try:
+        r = requests.post(url, json=payload, timeout=15)
+        data = r.json()
+        if r.status_code == 200:
+            return True, data, None
+        error_msg = data.get("error", {}).get("message", "Error de autenticación")
+        return False, None, error_msg
+    except Exception as e:
+        return False, None, str(e)
+
+
+# =========================================================
+# REFRESH TOKEN (NUEVO)
+# =========================================================
+
+def refrescar_id_token(refresh_token):
+    """Obtiene un id_token fresco usando el refresh_token."""
+    try:
+        url = f"https://securetoken.googleapis.com/v1/token?key={API_KEY}"
+        payload = {
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token
+        }
+        r = requests.post(url, data=payload, timeout=15)
+        data = r.json()
+
+        if r.status_code == 200:
+            return True, {
+                "id_token": data.get("id_token"),
+                "refresh_token": data.get("refresh_token"),
+                "expires_in": data.get("expires_in")
+            }, None
+        else:
+            error_msg = data.get("error", {}).get("message", "Error refrescando token")
+            return False, None, error_msg
+
+    except Exception as e:
+        return False, None, str(e)
+
 
 # =========================================================
 # REGISTRO
 # =========================================================
 
-def crear_usuario_auth(email, password, nombre):
-
+def crear_usuario_auth_completo(email, password, nombre):
+    """Crea usuario en Firebase Auth vía REST API y devuelve tokens del alta."""
     try:
-
-        user = auth.create_user(
-            email=email,
-            password=password,
-            display_name=nombre
+        ok, data, error = _auth_post(
+            "accounts:signUp",
+            {
+                "email": email,
+                "password": password,
+                "displayName": nombre,
+                "returnSecureToken": True
+            },
+            params={"key": API_KEY}
         )
+        if not ok:
+            return False, None, error
 
-        return True, user.uid, None
+        return True, {
+            "uid": data.get("localId"),
+            "idToken": data.get("idToken"),
+            "refreshToken": data.get("refreshToken"),
+        }, None
 
     except Exception as e:
         return False, None, str(e)
+
+
+def crear_usuario_auth(email, password, nombre):
+    """Compatibilidad: devuelve solo uid."""
+    ok, data, error = crear_usuario_auth_completo(email, password, nombre)
+    if not ok:
+        return False, None, error
+    return True, (data or {}).get("uid"), None
+
 
 # =========================================================
 # LOGIN
 # =========================================================
 
 def login_usuario_auth(email, password):
-
+    """Login vía Firebase Auth REST API."""
     try:
-
-        url = (
-            "https://identitytoolkit.googleapis.com/"
-            f"v1/accounts:signInWithPassword?key={API_KEY}"
+        ok, data, error = _auth_post(
+            "accounts:signInWithPassword",
+            {
+                "email": email,
+                "password": password,
+                "returnSecureToken": True
+            },
+            params={"key": API_KEY}
         )
+        if not ok:
+            return False, None, error
 
-        payload = {
-            "email": email,
-            "password": password,
-            "returnSecureToken": True
-        }
-
-        response = requests.post(
-            url,
-            json=payload,
-            timeout=10
-        )
-
-        data = response.json()
-
-        if response.status_code == 200:
-
-            return True, {
-                "uid": data["localId"],
-                "idToken": data["idToken"],
-                "refreshToken": data["refreshToken"]
-            }, None
-
-        # ✅ CORREGIDO: extraer mensaje de error como string
-        error_msg = data.get("error", {}).get("message", "Error de autenticación")
-        return False, None, error_msg
+        return True, {
+            "uid": data.get("localId"),
+            "idToken": data.get("idToken"),
+            "refreshToken": data.get("refreshToken")
+        }, None
 
     except Exception as e:
         return False, None, str(e)
+
 
 # =========================================================
 # RESET PASSWORD
 # =========================================================
 
 def enviar_reset_password(email):
-
+    """Envía email de reset de password."""
     try:
-
-        url = (
-            "https://identitytoolkit.googleapis.com/"
-            f"v1/accounts:sendOobCode?key={API_KEY}"
+        ok, _, error = _auth_post(
+            "accounts:sendOobCode",
+            {
+                "requestType": "PASSWORD_RESET",
+                "email": email
+            },
+            params={"key": API_KEY}
         )
-
-        payload = {
-            "requestType": "PASSWORD_RESET",
-            "email": email
-        }
-
-        response = requests.post(
-            url,
-            json=payload,
-            timeout=10
-        )
-
-        if response.status_code == 200:
-            return True, None
-
-        # ✅ CORREGIDO: extraer mensaje de error como string
-        data = response.json()
-        error_msg = data.get("error", {}).get("message", "Error al enviar reset")
-        return False, error_msg
+        if not ok:
+            return False, error
+        return True, None
 
     except Exception as e:
         return False, str(e)
+
 
 # =========================================================
 # VERIFY EMAIL
 # =========================================================
 
 def enviar_verificacion_email(id_token):
-
+    """Envía email de verificación."""
     try:
-
-        url = (
-            "https://identitytoolkit.googleapis.com/"
-            f"v1/accounts:sendOobCode?key={API_KEY}"
+        ok, _, error = _auth_post(
+            "accounts:sendOobCode",
+            {
+                "requestType": "VERIFY_EMAIL",
+                "idToken": id_token
+            },
+            params={"key": API_KEY}
         )
-
-        payload = {
-            "requestType": "VERIFY_EMAIL",
-            "idToken": id_token
-        }
-
-        response = requests.post(
-            url,
-            json=payload,
-            timeout=10
-        )
-
-        if response.status_code == 200:
-            return True, None
-
-        # ✅ CORREGIDO: extraer mensaje de error como string
-        data = response.json()
-        error_msg = data.get("error", {}).get("message", "Error al enviar verificación")
-        return False, error_msg
+        if not ok:
+            return False, error
+        return True, None
 
     except Exception as e:
         return False, str(e)
+
+
+# =========================================================
+# OBTENER INFO USUARIO
+# =========================================================
+
+def obtener_info_usuario(id_token):
+    """Obtiene info del usuario incluyendo emailVerified."""
+    try:
+        ok, data, error = _auth_post(
+            "accounts:lookup",
+            {"idToken": id_token},
+            params={"key": API_KEY}
+        )
+        if not ok:
+            return False, None, error
+
+        users = data.get("users", [])
+        if not users:
+            return False, None, "Usuario no encontrado"
+
+        user = users[0]
+        return True, {
+            "uid": user.get("localId"),
+            "email": user.get("email"),
+            "email_verified": user.get("emailVerified", False),
+            "display_name": user.get("displayName", ""),
+        }, None
+    except Exception as e:
+        return False, None, str(e)
+
+
+def borrar_usuario_auth(id_token):
+    """Borra el usuario autenticado actualmente en Firebase Auth."""
+    try:
+        ok, _, error = _auth_post(
+            "accounts:delete",
+            {"idToken": id_token},
+            params={"key": API_KEY}
+        )
+        if not ok:
+            return False, error
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+

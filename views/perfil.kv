@@ -1,3 +1,5 @@
+#:import dp kivy.metrics.dp
+
 <PerfilScreen>:
 
     BoxLayout:
@@ -15,7 +17,6 @@
             size_hint_y: None
             height: "68dp"
             padding: ["14dp", "12dp", "14dp", "12dp"]
-
             canvas.before:
                 Color:
                     rgba: 0.10, 0.12, 0.18, 1
@@ -44,12 +45,13 @@
                 text_size: self.size
 
         ScrollView:
+            id: perfil_scroll
             do_scroll_x: False
             bar_width: "4dp"
 
             BoxLayout:
                 orientation: "vertical"
-                padding: ["16dp", "16dp", "16dp", "120dp"]
+                padding: [dp(16), dp(16), dp(16), dp(120) + app.keyboard_height]
                 spacing: "12dp"
                 size_hint_y: None
                 height: self.minimum_height
@@ -61,14 +63,13 @@
                     height: "220dp"
                     spacing: "10dp"
                     padding: ["0dp", "18dp", "0dp", "14dp"]
-
                     canvas.before:
                         Color:
                             rgba: 0.10, 0.12, 0.18, 1
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [18]
+                            radius: [dp(18)]
 
                     AsyncImage:
                         id: img_avatar
@@ -153,50 +154,42 @@
                     font_size: "15sp"
                     write_tab: False
 
-                # FOTO
-                Label:
-                    text: "FOTO (ruta o URL)"
-                    font_size: "12sp"
-                    bold: True
-                    color: 0.40, 0.45, 0.55, 1
-                    size_hint_y: None
-                    height: "20dp"
-                    halign: "left"
-                    valign: "middle"
-                    text_size: self.size
-
+                # FOTO URL (oculta visualmente pero funcional)
                 TextInput:
                     id: foto
-                    hint_text: "Se completa al elegir foto..."
-                    multiline: False
+                    opacity: 0
                     size_hint_y: None
-                    height: "50dp"
-                    background_color: 1, 1, 1, 1
-                    foreground_color: 0.10, 0.12, 0.18, 1
-                    hint_text_color: 0.60, 0.63, 0.70, 1
-                    cursor_color: 0.18, 0.80, 0.44, 1
-                    padding: ["14dp", "14dp"]
-                    font_size: "15sp"
-                    write_tab: False
+                    height: "0dp"
+                    multiline: False
 
-                # SECCION ABOGADO
+             # SECCION ABOGADO — oculta por defecto, Python la muestra si es abogado
                 BoxLayout:
                     id: seccion_abogado
                     orientation: "vertical"
                     spacing: "12dp"
                     size_hint_y: None
-                    height: self.minimum_height
+                    height: self.minimum_height if self.opacity else 0
+                    opacity: 0
+                    disabled: True
 
+                    # DATOS PROFESIONALES
                     BoxLayout:
                         size_hint_y: None
-                        height: "36dp"
-                        padding: ["0dp", "10dp", "0dp", "0dp"]
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
 
                         Label:
                             text: "DATOS PROFESIONALES"
                             font_size: "13sp"
                             bold: True
-                            color: 0.35, 0.40, 0.50, 1
+                            color: 0.23, 0.18, 0.55, 1
                             halign: "left"
                             valign: "middle"
                             text_size: self.size
@@ -215,6 +208,56 @@
                     TextInput:
                         id: matricula
                         hint_text: "Numero de matricula"
+                        multiline: False
+                        size_hint_y: None
+                        height: "50dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "PROVINCIA"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: provincia
+                        hint_text: "Ej: Salta, CABA, Cordoba..."
+                        multiline: False
+                        size_hint_y: None
+                        height: "50dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "CIUDAD"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: ciudad
+                        hint_text: "Ej: Salta Capital"
                         multiline: False
                         size_hint_y: None
                         height: "50dp"
@@ -275,16 +318,103 @@
                         padding: ["14dp", "12dp"]
                         font_size: "15sp"
 
+                    # ESPECIALIDADES (solo lectura)
                     BoxLayout:
                         size_hint_y: None
-                        height: "36dp"
-                        padding: ["0dp", "10dp", "0dp", "0dp"]
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
+
+                        Label:
+                            text: "ESPECIALIDADES"
+                            font_size: "13sp"
+                            bold: True
+                            color: 0.23, 0.18, 0.55, 1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    Label:
+                        id: lbl_especialidades
+                        text: "-"
+                        font_size: "13sp"
+                        color: 0.30, 0.23, 0.67, 1
+                        size_hint_y: None
+                        height: max(dp(40), self.texture_size[1] + dp(10))
+                        halign: "left"
+                        valign: "top"
+                        text_size: self.width, None
+
+                    # FIX: Botón para agregar especialidad
+                    Button:
+                        id: btn_agregar_especialidad
+                        text: "+ Agregar especialidad"
+                        size_hint_y: None
+                        height: "48dp"
+                        font_size: "14sp"
+                        bold: True
+                        background_normal: ""
+                        background_color: 0.23, 0.18, 0.55, 1
+                        color: 1, 1, 1, 1
+                        on_release: root.agregar_especialidad()
+
+                    # SUSCRIPCION (solo lectura)
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
+
+                        Label:
+                            text: "SUSCRIPCION"
+                            font_size: "13sp"
+                            bold: True
+                            color: 0.23, 0.18, 0.55, 1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    Label:
+                        id: lbl_suscripcion
+                        text: "-"
+                        font_size: "13sp"
+                        color: 0.18, 0.80, 0.44, 1
+                        size_hint_y: None
+                        height: max(dp(46), self.texture_size[1] + dp(10))
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.width, None
+
+                    # DATOS BANCARIOS
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
 
                         Label:
                             text: "DATOS BANCARIOS"
                             font_size: "13sp"
                             bold: True
-                            color: 0.35, 0.40, 0.50, 1
+                            color: 0.23, 0.18, 0.55, 1
                             halign: "left"
                             valign: "middle"
                             text_size: self.size
@@ -314,16 +444,24 @@
                         font_size: "15sp"
                         write_tab: False
 
+                    # RESENAS
                     BoxLayout:
                         size_hint_y: None
-                        height: "36dp"
-                        padding: ["0dp", "10dp", "0dp", "0dp"]
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
 
                         Label:
                             text: "OPINIONES DE CLIENTES"
                             font_size: "13sp"
                             bold: True
-                            color: 0.35, 0.40, 0.50, 1
+                            color: 0.23, 0.18, 0.55, 1
                             halign: "left"
                             valign: "middle"
                             text_size: self.size
@@ -335,10 +473,10 @@
                         bold: True
                         color: 0.85, 0.55, 0.05, 1
                         size_hint_y: None
-                        height: "30dp"
+                        height: max(dp(46), self.texture_size[1] + dp(10))
                         halign: "left"
                         valign: "middle"
-                        text_size: self.size
+                        text_size: self.width, None
 
                     BoxLayout:
                         id: resenas_box
@@ -361,3 +499,14 @@
                     background_color: 0.10, 0.12, 0.18, 1
                     color: 1, 1, 1, 1
                     on_release: root.guardar()
+
+                Button:
+                    text: "BORRAR CUENTA"
+                    size_hint_y: None
+                    height: "50dp"
+                    bold: True
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_color: 0.86, 0.20, 0.20, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.borrar_cuenta_popup()

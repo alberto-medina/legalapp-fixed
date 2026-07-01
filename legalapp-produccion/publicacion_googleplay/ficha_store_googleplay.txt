@@ -1,0 +1,23 @@
+FICHA STORE - BORRADOR GOOGLE PLAY
+
+Nombre de la app:
+Legal App
+
+Descripcion corta:
+Consultas legales en minutos por chat, video y urgencias.
+
+Descripcion completa:
+Legal App es una aplicacion movil diseñada para conectar clientes con abogados de manera rapida, simple y segura. Desde la app se pueden iniciar consultas legales por chat, videollamada o modalidad urgente, realizar pagos, enviar archivos, compartir imagenes, revisar el historial de consultas y hacer seguimiento del estado de cada caso. Tambien permite a los abogados administrar su perfil profesional, sus especialidades, sus honorarios y la atencion de clientes desde el celular.
+
+Email de soporte:
+Definir en Play Console
+
+Sitio web:
+https://www.cumbrelabs.com.ar/
+
+Categoria sugerida:
+Negocios o Herramientas
+
+Notas:
+- Ajustar la descripcion si Google pide una version mas neutra o mas comercial.
+- Preparar traduccion al ingles solo si vale la pena para la primera publicacion.

@@ -1,0 +1,44 @@
+COMANDOS GOOGLE PLAY - AAB SEPARADO
+
+FUENTE ESTABLE:
+C:\legalapp-fixed\legalapp-produccion
+
+DESTINO NUEVO EN UBUNTU:
+\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build
+
+PASO 1 - POWERSHELL - CREAR CARPETA NUEVA EN WSL
+
+New-Item -ItemType Directory -Force "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build"
+
+PASO 2 - POWERSHELL - COPIAR BASE ESTABLE COMPLETA
+
+robocopy "C:\legalapp-fixed\legalapp-produccion" "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build" /MIR /XD .buildozer bin __pycache__ publicacion_uptodown publicacion_googleplay
+
+PASO 3 - UBUNTU - ENTRAR A LA COPIA NUEVA
+
+cd /home/eto_/legalapp-googleplay-build
+source /home/eto_/buildozer-env/bin/activate
+
+PASO 4 - UBUNTU - AJUSTAR buildozer.spec SOLO EN LA COPIA AAB
+
+sed -i 's/android.targetapi = 33/android.targetapi = 35/' buildozer.spec
+sed -i 's/android.release_artifact = apk/android.release_artifact = aab/' buildozer.spec
+
+PASO 5 - UBUNTU - COMPILAR
+
+buildozer android release
+
+PASO 6 - UBUNTU - VERIFICAR SALIDA
+
+ls -lh /home/eto_/legalapp-googleplay-build/bin
+
+RESULTADO ESPERADO:
+- un archivo .aab dentro de /home/eto_/legalapp-googleplay-build/bin
+
+PASO 7 - COPIAR EL AAB A WINDOWS
+
+cp /home/eto_/legalapp-googleplay-build/bin/*.aab /mnt/c/legalapp-fixed/legalapp-produccion/publicacion_googleplay/
+
+IMPORTANTE:
+- este flujo NO toca el APK estable
+- este flujo NO toca la carpeta legalapp-produccion original

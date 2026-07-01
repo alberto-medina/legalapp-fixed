@@ -1,148 +1,152 @@
+#:import dp kivy.metrics.dp
+
 <UbicacionScreen>:
+
     BoxLayout:
         orientation: "vertical"
+
         canvas.before:
             Color:
-                rgba: 0.96, 0.97, 0.98, 1
+                rgba: 0.96, 0.95, 0.98, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
+        # HEADER
         BoxLayout:
             size_hint_y: None
-            height: "70dp"
-            padding: ["16dp", "10dp"]
-            spacing: "10dp"
+            height: dp(58)
+            padding: [dp(16), dp(10)]
             canvas.before:
                 Color:
-                    rgba: 0.23, 0.18, 0.55, 1
+                    rgba: 0.24, 0.17, 0.55, 1
                 Rectangle:
                     pos: self.pos
                     size: self.size
 
-            Button:
-                text: "<"
-                size_hint: None, None
-                size: "36dp", "36dp"
-                font_size: "18sp"
+            Label:
+                text: "DONDE BUSCAR"
+                font_size: "17sp"
                 bold: True
-                background_color: 0, 0, 0, 0
                 color: 1, 1, 1, 1
-                on_release: root.volver()
+                halign: "center"
+                valign: "middle"
+                text_size: (self.width, None)
 
-            BoxLayout:
-                orientation: "vertical"
-                spacing: "2dp"
-
-                Label:
-                    text: "NUEVA CONSULTA"
-                    font_size: "17sp"
-                    bold: True
-                    color: 1, 1, 1, 1
-                    halign: "left"
-                    text_size: self.size
-
-                Label:
-                    text: "Donde necesitas el abogado?"
-                    font_size: "12sp"
-                    color: 0.80, 0.78, 1, 1
-                    halign: "left"
-                    text_size: self.size
-
+        # CONTENIDO
         ScrollView:
             do_scroll_x: False
-            bar_width: "3dp"
+            bar_width: 0
 
             BoxLayout:
                 orientation: "vertical"
-                padding: ["16dp", "16dp", "16dp", "40dp"]
-                spacing: "12dp"
                 size_hint_y: None
                 height: self.minimum_height
+                padding: [dp(20), dp(28), dp(20), dp(20)]
+                spacing: dp(16)
 
-                BoxLayout:
-                    orientation: "vertical"
+                Label:
+                    text: "Elegí donde querés buscar tu abogado"
+                    font_size: "15sp"
+                    color: 0.35, 0.38, 0.50, 1
+                    halign: "center"
+                    valign: "middle"
                     size_hint_y: None
-                    height: self.minimum_height
-                    padding: ["14dp", "12dp"]
-                    spacing: "8dp"
-                    canvas.before:
-                        Color:
-                            rgba: 1, 1, 1, 1
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [14]
+                    height: dp(28)
+                    text_size: (self.width, None)
 
-                    Label:
-                        text: "Selecciona la provincia"
-                        font_size: "14sp"
-                        bold: True
-                        color: 0.23, 0.18, 0.55, 1
-                        size_hint_y: None
-                        height: "24dp"
-                        halign: "left"
-                        text_size: self.size
-
-                    GridLayout:
-                        id: grid_provincias
-                        cols: 1
-                        size_hint_y: None
-                        height: self.minimum_height
-                        spacing: "4dp"
-
-                BoxLayout:
-                    orientation: "vertical"
+                # PROVINCIA
+                Label:
+                    text: "PROVINCIA"
+                    font_size: "11sp"
+                    bold: True
+                    color: 0.45, 0.48, 0.60, 1
+                    halign: "left"
+                    valign: "middle"
                     size_hint_y: None
-                    height: self.minimum_height
-                    padding: ["14dp", "12dp"]
-                    spacing: "8dp"
-                    canvas.before:
-                        Color:
-                            rgba: 1, 1, 1, 1
-                        RoundedRectangle:
-                            pos: self.pos
-                            size: self.size
-                            radius: [14]
+                    height: dp(18)
+                    text_size: (self.width, None)
 
-                    Label:
-                        id: lbl_ciudad_titulo
-                        text: "Selecciona la ciudad"
-                        font_size: "14sp"
-                        bold: True
-                        color: 0.23, 0.18, 0.55, 1
-                        size_hint_y: None
-                        height: "24dp"
-                        halign: "left"
-                        text_size: self.size
-                        opacity: 0
+                Button:
+                    id: btn_provincia
+                    text: "Elegí la provincia"
+                    size_hint_y: None
+                    height: dp(52)
+                    font_size: "15sp"
+                    bold: True
+                    background_normal: ""
+                    background_color: 1, 1, 1, 1
+                    color: 0.24, 0.17, 0.55, 1
+                    halign: "left"
+                    text_size: (self.width - dp(32), None)
+                    padding: [dp(16), dp(10)]
+                    on_release: root.abrir_provincias()
 
-                    GridLayout:
-                        id: grid_ciudades
-                        cols: 1
-                        size_hint_y: None
-                        height: self.minimum_height
-                        spacing: "4dp"
-                        opacity: 0
+                # CIUDAD
+                Label:
+                    text: "CIUDAD / DEPARTAMENTO"
+                    font_size: "11sp"
+                    bold: True
+                    color: 0.45, 0.48, 0.60, 1
+                    halign: "left"
+                    valign: "middle"
+                    size_hint_y: None
+                    height: dp(18)
+                    text_size: (self.width, None)
 
+                Button:
+                    id: btn_ciudad
+                    text: "Elegí la ciudad"
+                    size_hint_y: None
+                    height: dp(52)
+                    font_size: "15sp"
+                    bold: True
+                    disabled: True
+                    opacity: 0.45
+                    background_normal: ""
+                    background_color: 1, 1, 1, 1
+                    color: 0.24, 0.17, 0.55, 1
+                    halign: "left"
+                    text_size: (self.width - dp(32), None)
+                    padding: [dp(16), dp(10)]
+                    on_release: root.abrir_ciudades()
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(24)
+
+                # BUSCAR
                 Button:
                     id: btn_buscar
-                    text: "Buscar abogados"
+                    text: "BUSCAR ABOGADOS"
                     size_hint_y: None
-                    height: "52dp"
+                    height: dp(56)
+                    font_size: "17sp"
                     bold: True
-                    font_size: "16sp"
-                    background_normal: ""
-                    background_color: 0.23, 0.18, 0.55, 1
-                    color: 1, 1, 1, 1
                     disabled: True
+                    opacity: 0.45
+                    background_normal: ""
+                    background_color: 0.24, 0.17, 0.55, 1
+                    color: 1, 1, 1, 1
                     on_release: root.buscar()
 
+                # TODO EL PAIS
                 Button:
-                    text: "Ver abogados de todas las provincias"
+                    text: "Buscar en todo el pais"
                     size_hint_y: None
-                    height: "44dp"
-                    font_size: "13sp"
+                    height: dp(44)
+                    font_size: "14sp"
+                    background_normal: ""
                     background_color: 0, 0, 0, 0
-                    color: 0.45, 0.50, 0.58, 1
+                    color: 0.45, 0.48, 0.60, 1
                     on_release: root.buscar_todas()
+
+                Button:
+                    text: "< Volver"
+                    size_hint_y: None
+                    height: dp(40)
+                    font_size: "13sp"
+                    background_normal: ""
+                    background_color: 0, 0, 0, 0
+                    color: 0.55, 0.58, 0.68, 1
+                    on_release: root.volver()

@@ -1,0 +1,37 @@
+BORRADOR DATA SAFETY - LEGAL APP
+
+Atencion:
+Esto es un borrador de trabajo. Antes de completar el formulario de Google Play hay que validar cada punto contra el comportamiento real de la app y los SDK/servicios usados.
+
+Datos que probablemente intervienen en la app:
+- nombre
+- email
+- telefono
+- uid de usuario
+- mensajes de chat
+- archivos adjuntos
+- imagenes
+- audio
+- datos de perfil profesional
+- datos de suscripcion
+- identificadores de dispositivo / token push
+
+Funciones que impactan en la declaracion:
+- autenticacion
+- recuperacion/verificacion por email
+- chat en tiempo real
+- envio de archivos
+- camara
+- microfono
+- videollamada
+- notificaciones push
+- pagos / suscripciones
+
+Tareas pendientes para cerrar este formulario:
+[ ] Mapear exactamente que datos se recolectan
+[ ] Mapear que datos se almacenan en Supabase
+[ ] Mapear que datos pasan por Firebase
+[ ] Confirmar si algun SDK recolecta diagnostico o analytics
+[ ] Confirmar cifrado en transito
+[ ] Confirmar mecanismo para borrar cuenta y datos relacionados
+[ ] Redactar respuesta consistente con politica de privacidad

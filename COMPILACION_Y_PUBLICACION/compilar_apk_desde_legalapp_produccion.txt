@@ -1,0 +1,30 @@
+COMPILAR DIRECTO DESDE LA CARPETA DE PRODUCCION
+
+Solo usar este flujo si el proyecto ya esta sano y sincronizado.
+
+UBUNTU:
+
+cd /mnt/c/legalapp-fixed/legalapp-produccion
+source ~/buildozer-env/bin/activate
+buildozer android release
+
+FIRMAR:
+
+apksigner sign \
+  --ks /mnt/c/legalapp-fixed/legalapp-produccion/legalapp-release.keystore \
+  --ks-key-alias legalapp \
+  --out /mnt/c/legalapp-fixed/legalapp-produccion/bin/legalapp-release-signed.apk \
+  /mnt/c/legalapp-fixed/legalapp-produccion/bin/legalapp-1.1.10-arm64-v8a_armeabi-v7a-release-unsigned.apk
+
+VERIFICAR:
+
+apksigner verify --print-certs /mnt/c/legalapp-fixed/legalapp-produccion/bin/legalapp-release-signed.apk
+
+COPIAR A LA RAIZ SI QUERES:
+
+cp /mnt/c/legalapp-fixed/legalapp-produccion/bin/legalapp-release-signed.apk /mnt/c/legalapp-fixed/
+
+IMPORTANTE:
+- la base estable hoy es APK
+- targetapi actual estable: 33
+- no usar AAB hasta retomarlo de forma controlada

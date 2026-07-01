@@ -1,0 +1,52 @@
+COMPILAR APK - FLUJO ESTABLE
+
+FUENTE ESTABLE:
+C:\legalapp-fixed\legalapp-produccion
+
+DESTINO DE BUILD EN UBUNTU:
+\\wsl$\Ubuntu\home\eto_\legalapp-build
+
+PASO 1 - POWERSHELL - COPIAR ARCHIVOS A UBUNTU
+
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\main.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\main.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\buildozer.spec" "\\wsl$\Ubuntu\home\eto_\legalapp-build\buildozer.spec" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\supabase_config.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\supabase_config.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\config.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\config.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\firebase_auth.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\firebase_auth.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\fcm_service.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\fcm_service.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\session.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\session.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\google-services.json" "\\wsl$\Ubuntu\home\eto_\legalapp-build\google-services.json" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\network_security_config.xml" "\\wsl$\Ubuntu\home\eto_\legalapp-build\network_security_config.xml" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\perfil.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\perfil.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\perfil.kv" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\perfil.kv" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\abogados.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\abogados.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\abogados.kv" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\abogados.kv" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\chat.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\chat.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\chat.kv" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\chat.kv" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\login.py" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\login.py" -Force
+Copy-Item "C:\legalapp-fixed\legalapp-produccion\views\login.kv" "\\wsl$\Ubuntu\home\eto_\legalapp-build\views\login.kv" -Force
+
+PASO 2 - UBUNTU - COMPILAR
+
+cd /home/eto_/legalapp-build
+source /home/eto_/buildozer-env/bin/activate
+buildozer android release
+
+PASO 3 - UBUNTU - FIRMAR
+
+apksigner sign \
+  --ks /home/eto_/legalapp-build/legalapp-release.keystore \
+  --ks-key-alias legalapp \
+  --out /home/eto_/legalapp-build/bin/legalapp-release-signed.apk \
+  /home/eto_/legalapp-build/bin/legalapp-1.1.10-arm64-v8a_armeabi-v7a-release-unsigned.apk
+
+PASO 4 - UBUNTU - VERIFICAR FIRMA
+
+apksigner verify --print-certs /home/eto_/legalapp-build/bin/legalapp-release-signed.apk
+
+PASO 5 - UBUNTU - COPIAR A WINDOWS
+
+cp /home/eto_/legalapp-build/bin/legalapp-release-signed.apk /mnt/c/legalapp-fixed/legalapp-produccion/
+
+RESULTADO ESPERADO:
+C:\legalapp-fixed\legalapp-produccion\legalapp-release-signed.apk

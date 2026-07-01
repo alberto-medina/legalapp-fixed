@@ -1,0 +1,54 @@
+LEGAL APP - FICHA BASE PARA UPTODOWN
+
+Nombre
+Legal App
+
+Subtitulo corto
+Consultas legales por chat, video y urgencias
+
+Descripcion corta
+Conecta clientes con abogados por especialidad y resuelve consultas legales por chat, videollamada o modo urgente.
+
+Descripcion completa
+Legal App es una plataforma pensada para conectar clientes con abogados de forma simple, rapida y profesional.
+
+La app permite:
+- registrarse como cliente o abogado
+- validar cuenta por email
+- buscar abogados por especialidad y ubicacion
+- iniciar consultas por chat
+- realizar videollamadas
+- solicitar consultas urgentes
+- pagar consultas y suscripciones desde la app
+- enviar imagenes, audios y documentos en el chat
+- recibir notificaciones del estado de las consultas
+
+Para abogados, Legal App incluye:
+- panel profesional
+- gestion de consultas
+- estados de disponibilidad
+- perfil publico con experiencia, bio y resenas
+- control de honorarios y retiros
+
+Legal App apunta a hacer mas accesible la primera orientacion legal digital, con una experiencia clara tanto para clientes como para profesionales.
+
+Novedades de esta version
+- mejoras generales de estabilidad
+- mejor flujo de pagos y suscripciones
+- mejoras en chat, audio, PDF e imagenes
+- videollamadas mas robustas
+- notificaciones push activas
+- mejoras de perfil y foto de usuario
+- terminos y politica de privacidad actualizados
+
+Categoria sugerida
+Productividad o Comunicacion
+
+Etiquetas sugeridas
+legal, abogados, consultas, chat, videollamada, urgencias, argentina
+
+Correo de contacto
+privacidad@legalapp.com.ar
+
+URL de politica de privacidad
+Usar la URL publica que vayas a publicar. Si todavia no la subiste a web, conviene publicarla antes de mandar la ficha.

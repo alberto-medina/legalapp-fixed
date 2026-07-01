@@ -1,0 +1,26 @@
+ESTADO ACTUAL - LEGAL APP PARA GOOGLE PLAY
+
+Lo que ya tenemos bastante encaminado:
+- app funcional en produccion real de pruebas
+- APK release firmado
+- flujo principal probado: registro, login, consulta, chat, videollamada, urgencia, pagos
+- capturas base ya seleccionadas para publicacion
+- textos base de publicacion ya redactados
+- web de soporte disponible
+- notificaciones push funcionando en el flujo ya probado
+
+Lo que todavia falta o hay que confirmar:
+- crear o terminar cuenta Play Console
+- verificar si Google exige closed testing por tipo/fecha de cuenta
+- generar .aab
+- confirmar target API compatible con politica actual
+- preparar assets especificos de Play Store
+- completar Data safety
+- definir y publicar politica de privacidad final
+- hacer pasada final de estabilidad antes de subida a Play
+
+Riesgos principales:
+- que Google pida testing obligatorio
+- que el formulario Data safety quede incompleto o inconsistente
+- que tengamos que ajustar build para AAB o target API
+- que algun crash intermitente reaparezca en revision final

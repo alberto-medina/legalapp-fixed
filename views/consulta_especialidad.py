@@ -105,6 +105,7 @@ EspecialidadCard:
 
     def seleccionar(self, area):
         session.area_legal = area
+        session.guardar()
         self.manager.current = "abogados"
 
     def volver(self):

@@ -1,0 +1,35 @@
+﻿NOTAS TECNICAS - GOOGLE PLAY
+1. Build
+- Para Google Play probablemente necesitemos AAB en lugar de APK.
+- Revisar firma, versionCode y versionName.
+- Ruta sugerida de salida cuando lo generemos:
+  - legalapp-produccion/bin/legalapp-release.aab
+- Antes de eso conviene congelar cambios y elegir una release candidata.
+2. API target
+- Verificar politica vigente al momento de subir.
+- Si hace falta, ajustar target SDK antes de generar el AAB final.
+- Segun la documentacion oficial revisada hoy, nuevas apps deben apuntar a Android 15 / API 35.
+3. Estabilidad
+- Hacer pruebas de:
+  - segundo plano
+  - retorno a la app
+  - camara
+  - microfono
+  - adjuntos
+  - chat
+  - videollamada
+4. Permisos
+- Revisar que los permisos declarados sean coherentes con el uso real.
+- Evitar permisos innecesarios.
+5. Testing
+- Si la cuenta personal es nueva, preparar closed test con 12 testers durante 14 dias continuos.
+- Si Google lo exige, esa parte no se puede esquivar: hay que planificar testers reales.
+6. Antes de subir
+- congelar cambios
+- guardar backup del proyecto
+- guardar release candidata
+- guardar assets definitivos de ficha
+7. Pendiente tecnico concreto
+- confirmar si el build actual con Buildozer ya puede exportar AAB sin romper la firma
+- revisar si hay que ajustar buildozer.spec especificamente para bundle
+- validar package name final a usar en Play

@@ -1,0 +1,34 @@
+﻿POLITICA DE PRIVACIDAD - PENDIENTE
+Antes de subir a Google Play, Legal App deberia tener una politica de privacidad publica y accesible por HTTPS.
+Minimo recomendado:
+- que datos personales se recopilan
+- para que se usan
+- como se almacenan
+- con que terceros se comparten
+- uso de notificaciones
+- uso de camara y microfono
+- uso de archivos adjuntos
+- informacion sobre pagos y suscripciones
+- contacto para soporte o reclamos
+- procedimiento para solicitar borrado de cuenta o datos
+Estado:
+- falta definir documento final
+- falta publicarlo en URL estable HTTPS
+Sugerencia:
+- alojarla en cumbrelabs.com.ar o dominio equivalente
+- dejar una version simple y clara, alineada con lo que realmente hace la app
+BORRADOR BASE
+Legal App recopila la informacion necesaria para permitir el registro de usuarios, la validacion de cuentas, la comunicacion entre clientes y abogados, la gestion de consultas legales y el procesamiento de funciones vinculadas a suscripciones, pagos y notificaciones.
+La aplicacion puede tratar datos como nombre, correo electronico, telefono, informacion profesional del abogado, mensajes, archivos adjuntos, imagenes, audios, tokens de notificaciones y datos relacionados con el estado de consultas y suscripciones.
+Los datos se utilizan para:
+- crear y administrar cuentas
+- verificar identidad y acceso
+- permitir consultas por chat, videollamada o urgencia
+- enviar notificaciones
+- gestionar pagos y suscripciones
+- mejorar la operacion general del servicio
+Legal App puede utilizar servicios de terceros para autenticacion, almacenamiento, notificaciones, videollamadas y procesamiento de pagos. La informacion solo deberia compartirse en la medida necesaria para prestar esas funciones.
+El usuario puede solicitar la actualizacion o eliminacion de su cuenta y de los datos asociados a traves de los canales de contacto definidos por el titular del servicio.
+Importante:
+- este texto es solo una base de trabajo
+- antes de publicarlo hay que revisar que coincida exactamente con el comportamiento real de la app y con Supabase, Firebase y Mercado Pago

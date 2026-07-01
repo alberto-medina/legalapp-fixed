@@ -1,0 +1,61 @@
+MEJORAS FUTURAS SUGERIDAS - LEGAL APP
+
+Este archivo guarda ideas utiles detectadas durante pruebas y conversaciones tecnicas.
+No implica aplicarlas ahora. Son mejoras para revisar con calma, una por una.
+
+1. DASHBOARD - REFRESCO DE FOTO / AVATAR
+- Revisar si el avatar del dashboard se vuelve a cargar aunque la foto no haya cambiado.
+- Posible mejora:
+  - comparar foto_url actual vs foto_url nueva antes de repintar
+  - refrescar la UI solo si hay cambios reales
+- Beneficio:
+  - menos parpadeo visual
+  - menos recarga innecesaria
+
+2. DASHBOARD - CHEQUEO DE VIDEOLLAMADAS
+- Revisar el intervalo de Clock.schedule_interval para check_videollamada.
+- Posible mejora:
+  - subirlo de 2 segundos a 7 o 10 segundos si no afecta la experiencia
+- Beneficio:
+  - menos consultas repetidas a Supabase
+  - menos carga de CPU y red
+
+3. CACHE DE FOTO DE PERFIL
+- Validar si set_avatar_image ya evita recargas innecesarias desde internet.
+- Posible mejora:
+  - descargar la foto una vez
+  - mantener copia local
+  - refrescar solo cuando el usuario la cambia
+
+4. ESTABILIDAD EN SEGUNDO PLANO
+- Seguir observando si hay cierres al volver desde segundo plano.
+- Ya existe trabajo sobre on_pause/on_resume, pero conviene seguir monitoreando.
+- Posible mejora futura:
+  - registrar mejor tiempos de pausa y reanudacion
+  - evitar reanudaciones duplicadas o muy seguidas
+
+5. TRY / EXCEPT MAS ESPECIFICOS
+- Donde sea util, reemplazar except generales por errores mas concretos.
+- Ejemplos:
+  - FileNotFoundError
+  - PermissionError
+  - AttributeError
+- Beneficio:
+  - detectar mas rapido que fallo
+  - mensajes de debug mas claros
+
+6. LOGS Y TRAZAS DE ERRORES
+- Seguir guardando los logs de Android cuando aparezca un crash o ANR.
+- Beneficio:
+  - atacar problemas reales
+  - evitar cambios por intuicion
+
+7. POLITICA GENERAL DE CAMBIOS
+- No tocar modulos estables sin una razon clara.
+- Si una mejora es solo estetica o de optimizacion menor:
+  - anotar primero
+  - probar despues en copia separada
+
+ESTADO
+- Estas mejoras estan anotadas para revision futura.
+- No forman parte del cierre actual de APK estable ni de la preparacion inmediata para Google Play.

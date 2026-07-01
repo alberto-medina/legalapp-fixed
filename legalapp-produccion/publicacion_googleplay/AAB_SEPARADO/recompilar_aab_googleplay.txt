@@ -1,0 +1,16 @@
+﻿RECOMPILAR AAB GOOGLE PLAY
+Este archivo es para copiar y pegar cuando haya que volver a generar el bundle sin tocar el APK estable.
+POWERSHELL
+New-Item -ItemType Directory -Force "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build"
+robocopy "C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay\AAB_SEPARADO\fuente_googleplay" "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build" /MIR /XD .buildozer bin __pycache__
+UBUNTU
+cd /home/eto_/legalapp-googleplay-build
+source /home/eto_/buildozer-env/bin/activate
+buildozer android release
+VERIFICAR SALIDA
+ls -lh /home/eto_/legalapp-googleplay-build/bin
+COPIAR EL AAB A WINDOWS
+cp /home/eto_/legalapp-googleplay-build/bin/*.aab /mnt/c/legalapp-fixed/legalapp-produccion/publicacion_googleplay/
+RESULTADO ESPERADO
+Archivo final en:
+C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay\

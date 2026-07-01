@@ -1,0 +1,23 @@
+﻿PROXIMOS PASOS - GOOGLE PLAY
+Orden recomendado de trabajo:
+1. Confirmar la cuenta Play Console
+- si ya existe, verificar si es personal o de organizacion
+- confirmar si cae en el requisito de testing obligatorio
+2. Cerrar la politica de privacidad
+- tomar el borrador base
+- adaptarlo a lo real
+- publicarlo en HTTPS
+3. Resolver Data safety
+- usar el borrador de esta carpeta
+- mapear datos reales y terceros reales
+4. Preparar build para Google Play
+- definir si el siguiente objetivo es generar AAB
+- revisar buildozer.spec y firma
+5. Hacer una release candidata para Play
+- una version estable
+- sin cambios de ultima hora
+- con pruebas puntuales de segundo plano, camara, adjuntos, audio y retorno a la app
+6. Recien despues
+- completar ficha en Play Console
+- subir build
+- entrar a testing o produccion segun lo que permita la cuenta

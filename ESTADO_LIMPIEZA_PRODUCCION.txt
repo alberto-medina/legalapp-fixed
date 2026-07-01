@@ -1,0 +1,6 @@
+﻿ULTIMA BASE ESTABLE DE PRODUCCION
+Fecha: 2026-06-29_00-59-56
+Origen sincronizado: C:\legalapp-fixed\legalapp-produccion
+Backup carpeta: C:\legalapp-fixed\backups\legalapp-produccion-ultima-2026-06-29_00-59-56
+Backup zip: C:\legalapp-fixed\backups\legalapp-produccion-ultima-2026-06-29_00-59-56.zip
+Raiz sincronizada con produccion en archivos y carpetas clave.

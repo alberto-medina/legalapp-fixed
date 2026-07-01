@@ -1,6 +1,9 @@
+#:import dp kivy.metrics.dp
+
 <RegisterAbogadoScreen>:
     BoxLayout:
         orientation: "vertical"
+
         canvas.before:
             Color:
                 rgba: 0.96, 0.97, 0.98, 1
@@ -40,6 +43,7 @@
                 text_size: self.size
 
         ScrollView:
+            id: register_abogado_scroll
             do_scroll_x: False
             bar_width: "3dp"
 
@@ -50,6 +54,7 @@
                 size_hint_y: None
                 height: self.minimum_height
 
+                # DATOS PERSONALES
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
@@ -62,7 +67,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [14]
+                            radius: [dp(14)]
 
                     Label:
                         text: "Datos personales"
@@ -96,7 +101,6 @@
                         cursor_color: 0.23, 0.18, 0.55, 1
                         padding: ["12dp", "12dp"]
                         font_size: "15sp"
-                        write_tab: False
 
                     Label:
                         text: "EMAIL *"
@@ -120,7 +124,6 @@
                         cursor_color: 0.23, 0.18, 0.55, 1
                         padding: ["12dp", "12dp"]
                         font_size: "15sp"
-                        write_tab: False
 
                     Label:
                         text: "TELEFONO"
@@ -144,8 +147,8 @@
                         cursor_color: 0.23, 0.18, 0.55, 1
                         padding: ["12dp", "12dp"]
                         font_size: "15sp"
-                        write_tab: False
 
+                # DATOS PROFESIONALES
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
@@ -158,7 +161,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [14]
+                            radius: [dp(14)]
 
                     Label:
                         text: "Datos profesionales"
@@ -192,7 +195,6 @@
                         cursor_color: 0.23, 0.18, 0.55, 1
                         padding: ["12dp", "12dp"]
                         font_size: "15sp"
-                        write_tab: False
 
                     Label:
                         text: "PROVINCIA *"
@@ -204,19 +206,45 @@
                         halign: "left"
                         text_size: self.size
 
-                    TextInput:
-                        id: provincia
-                        hint_text: "Ej: Buenos Aires, CABA, Cordoba..."
-                        multiline: False
+                    Button:
+                        id: btn_provincia
+                        text: "Elegí la provincia"
                         size_hint_y: None
                         height: "46dp"
+                        font_size: "14sp"
+                        bold: True
+                        background_normal: ""
                         background_color: 0.96, 0.97, 0.98, 1
-                        foreground_color: 0.10, 0.12, 0.18, 1
-                        hint_text_color: 0.65, 0.68, 0.75, 1
-                        cursor_color: 0.23, 0.18, 0.55, 1
-                        padding: ["12dp", "12dp"]
-                        font_size: "15sp"
-                        write_tab: False
+                        color: 0.23, 0.18, 0.55, 1
+                        halign: "left"
+                        text_size: (self.width - 24, None)
+                        padding: ["12dp", "10dp"]
+                        on_release: root.abrir_selector_provincia()
+
+                    Label:
+                        text: "CIUDAD *"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    Button:
+                        id: btn_ciudad
+                        text: "Elegí la ciudad"
+                        size_hint_y: None
+                        height: "46dp"
+                        font_size: "14sp"
+                        bold: True
+                        background_normal: ""
+                        background_color: 0.96, 0.97, 0.98, 1
+                        color: 0.23, 0.18, 0.55, 1
+                        halign: "left"
+                        text_size: (self.width - 24, None)
+                        padding: ["12dp", "10dp"]
+                        on_release: root.abrir_selector_ciudad()
 
                     Label:
                         text: "ANOS DE EXPERIENCIA"
@@ -240,7 +268,6 @@
                         cursor_color: 0.23, 0.18, 0.55, 1
                         padding: ["12dp", "12dp"]
                         font_size: "15sp"
-                        write_tab: False
 
                     Label:
                         text: "DESCRIPCION PROFESIONAL"
@@ -257,13 +284,14 @@
                         hint_text: "Contanos sobre tu experiencia..."
                         multiline: True
                         size_hint_y: None
-                        height: "80dp"
+                        height: "90dp"
                         background_color: 0.96, 0.97, 0.98, 1
                         foreground_color: 0.10, 0.12, 0.18, 1
                         hint_text_color: 0.65, 0.68, 0.75, 1
                         padding: ["12dp", "12dp"]
                         font_size: "14sp"
 
+                # ESPECIALIDADES
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
@@ -276,7 +304,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [14]
+                            radius: [dp(14)]
 
                     Label:
                         text: "Especialidades *"
@@ -285,38 +313,34 @@
                         color: 0.23, 0.18, 0.55, 1
                         size_hint_y: None
                         height: "24dp"
-                        halign: "left"
-                        text_size: self.size
 
                     Label:
                         text: "1ra especialidad incluida. Cada adicional: $10.000"
                         font_size: "11sp"
                         color: 0.55, 0.58, 0.65, 1
                         size_hint_y: None
-                        height: "16dp"
-                        halign: "left"
-                        text_size: self.size
+                        height: "18dp"
 
                     GridLayout:
                         id: grid_especialidades
                         cols: 1
+                        spacing: "6dp"
                         size_hint_y: None
                         height: self.minimum_height
-                        spacing: "6dp"
 
+                # PRECIO
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
                     height: "70dp"
                     padding: ["16dp", "12dp"]
-                    spacing: "4dp"
                     canvas.before:
                         Color:
                             rgba: 0.23, 0.18, 0.55, 1
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [14]
+                            radius: [dp(14)]
 
                     Label:
                         id: lbl_precio
@@ -324,21 +348,14 @@
                         font_size: "18sp"
                         bold: True
                         color: 1, 1, 1, 1
-                        halign: "center"
-                        text_size: self.size
-                        size_hint_y: None
-                        height: "28dp"
 
                     Label:
                         id: lbl_detalle_precio
-                        text: "Suscripcion base (1 especialidad incluida)"
+                        text: "Suscripcion base"
                         font_size: "11sp"
                         color: 0.85, 0.85, 1, 1
-                        halign: "center"
-                        text_size: self.size
-                        size_hint_y: None
-                        height: "18dp"
 
+                # PASSWORD
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
@@ -351,7 +368,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [14]
+                            radius: [dp(14)]
 
                     Label:
                         text: "CONTRASENA *"
@@ -360,23 +377,36 @@
                         color: 0.40, 0.45, 0.55, 1
                         size_hint_y: None
                         height: "16dp"
-                        halign: "left"
-                        text_size: self.size
 
-                    TextInput:
-                        id: password
-                        hint_text: "Minimo 6 caracteres"
-                        password: True
-                        multiline: False
+                    BoxLayout:
+                        orientation: "horizontal"
                         size_hint_y: None
                         height: "46dp"
-                        background_color: 0.96, 0.97, 0.98, 1
-                        foreground_color: 0.10, 0.12, 0.18, 1
-                        hint_text_color: 0.65, 0.68, 0.75, 1
-                        cursor_color: 0.23, 0.18, 0.55, 1
-                        padding: ["12dp", "12dp"]
-                        font_size: "15sp"
-                        write_tab: False
+                        spacing: "4dp"
+
+                        TextInput:
+                            id: password
+                            hint_text: "Minimo 6 caracteres"
+                            password: True
+                            multiline: False
+                            size_hint_y: None
+                            height: "46dp"
+                            background_color: 0.96, 0.97, 0.98, 1
+                            foreground_color: 0.10, 0.12, 0.18, 1
+                            hint_text_color: 0.65, 0.68, 0.75, 1
+                            cursor_color: 0.23, 0.18, 0.55, 1
+                            padding: ["12dp", "12dp"]
+
+                        Button:
+                            size_hint_x: None
+                            width: "56dp"
+                            text: "Ver"
+                            font_size: "13sp"
+                            bold: True
+                            background_normal: ""
+                            background_color: 0.90, 0.89, 0.97, 1
+                            color: 0.30, 0.23, 0.67, 1
+                            on_release: password.password = not password.password
 
                     Label:
                         text: "REPETIR CONTRASENA *"
@@ -385,33 +415,124 @@
                         color: 0.40, 0.45, 0.55, 1
                         size_hint_y: None
                         height: "16dp"
-                        halign: "left"
-                        text_size: self.size
 
-                    TextInput:
-                        id: password_confirm
-                        hint_text: "Repeti tu contrasena"
-                        password: True
-                        multiline: False
+                    BoxLayout:
+                        orientation: "horizontal"
                         size_hint_y: None
                         height: "46dp"
-                        background_color: 0.96, 0.97, 0.98, 1
-                        foreground_color: 0.10, 0.12, 0.18, 1
-                        hint_text_color: 0.65, 0.68, 0.75, 1
-                        cursor_color: 0.23, 0.18, 0.55, 1
-                        padding: ["12dp", "12dp"]
-                        font_size: "15sp"
-                        write_tab: False
+                        spacing: "4dp"
 
-                    Label:
-                        id: error
-                        text: ""
-                        color: 0.90, 0.25, 0.25, 1
+                        TextInput:
+                            id: password_confirm
+                            hint_text: "Repeti tu contrasena"
+                            password: True
+                            multiline: False
+                            size_hint_y: None
+                            height: "46dp"
+                            background_color: 0.96, 0.97, 0.98, 1
+                            foreground_color: 0.10, 0.12, 0.18, 1
+                            hint_text_color: 0.65, 0.68, 0.75, 1
+                            cursor_color: 0.23, 0.18, 0.55, 1
+                            padding: ["12dp", "12dp"]
+
+                        Button:
+                            size_hint_x: None
+                            width: "56dp"
+                            text: "Ver"
+                            font_size: "13sp"
+                            bold: True
+                            background_normal: ""
+                            background_color: 0.90, 0.89, 0.97, 1
+                            color: 0.30, 0.23, 0.67, 1
+                            on_release: password_confirm.password = not password_confirm.password
+
+                # TERMINOS
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["16dp", "14dp"]
+                    spacing: "10dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(14)]
+
+                    BoxLayout:
+                        orientation: "vertical"
                         size_hint_y: None
-                        height: "36dp"
-                        halign: "left"
-                        text_size: self.size
+                        height: self.minimum_height
+                        padding: ["12dp", "12dp"]
+                        spacing: "8dp"
+                        canvas.before:
+                            Color:
+                                rgba: 0.94, 0.92, 0.99, 1
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12)]
 
+                        BoxLayout:
+                            size_hint_y: None
+                            height: "44dp"
+                            spacing: "8dp"
+
+                            CheckBox:
+                                id: terms_check
+                                size_hint_x: None
+                                width: "40dp"
+
+                            Label:
+                                text: "Acepto terminos, condiciones, politica de privacidad y bases del servicio *"
+                                bold: True
+                                color: 0.23, 0.18, 0.55, 1
+                                halign: "left"
+                                valign: "middle"
+                                text_size: self.size
+
+                        Label:
+                            text: "Incluye reglas de suscripcion, cobros, retiros y uso profesional de la plataforma."
+                            font_size: "11sp"
+                            color: 0.42, 0.45, 0.55, 1
+                            size_hint_y: None
+                            height: "32dp"
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "38dp"
+                        spacing: "8dp"
+
+                        Button:
+                            text: "Ver Terminos y bases"
+                            background_normal: ""
+                            background_color: 0.23, 0.18, 0.55, 1
+                            color: 1, 1, 1, 1
+                            on_release: app.root.current = "terms_screen"
+
+                        Button:
+                            text: "Ver Privacidad"
+                            background_normal: ""
+                            background_color: 0.18, 0.80, 0.44, 1
+                            color: 1, 1, 1, 1
+                            on_release: app.root.current = "privacy_screen"
+
+                # ERROR
+                Label:
+                    id: error
+                    text: ""
+                    color: 0.90, 0.25, 0.25, 1
+                    size_hint_y: None
+                    height: "36dp"
+                    halign: "left"
+                    text_size: self.size
+
+                # BOTON
                 Button:
                     text: "Continuar al pago"
                     size_hint_y: None

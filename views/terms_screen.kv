@@ -1,55 +1,89 @@
-<TermsScreen>:
+#:import dp kivy.metrics.dp
 
+<TermsScreen>:
     BoxLayout:
         orientation: "vertical"
-        padding: 20
-        spacing: 15
-
         canvas.before:
             Color:
-                rgba: 0.95, 0.96, 0.98, 1
+                rgba: 0.96, 0.97, 0.98, 1
             Rectangle:
                 pos: self.pos
                 size: self.size
 
-        Label:
-            text: "Términos y Condiciones"
-            font_size: "24sp"
-            bold: True
-            size_hint_y: None
-            height: "50dp"
-            color: 0, 0, 0, 1
-
-        ScrollView:
-
-            Label:
-                id: terms_label
-                text: ""
-                text_size: self.width - 30, None
-                size_hint_y: None
-                height: self.texture_size[1]
-                color: 0.1, 0.1, 0.1, 1
-                valign: "top"
-
+        # HEADER
         BoxLayout:
             size_hint_y: None
-            height: "50dp"
-            spacing: 10
+            height: "70dp"
+            padding: ["16dp", "10dp"]
+            spacing: "10dp"
+            canvas.before:
+                Color:
+                    rgba: 0.23, 0.18, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
 
-            CheckBox:
-                id: aceptar_check
-                size_hint_x: None
-                width: "50dp"
+            Button:
+                text: "<"
+                size_hint: None, None
+                size: "36dp", "36dp"
+                font_size: "18sp"
+                bold: True
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
 
             Label:
-                text: "Acepto los términos y condiciones"
-                color: 0, 0, 0, 1
-                text_size: self.size
+                text: "TERMINOS Y CONDICIONES"
+                font_size: "17sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
                 valign: "middle"
+                text_size: self.size
 
-        Button:
-            text: "Aceptar y Continuar"
-            size_hint_y: None
-            height: "55dp"
-            background_color: 0.1, 0.5, 0.9, 1
-            on_release: root.aceptar_terminos()
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "3dp"
+
+            BoxLayout:
+                orientation: "vertical"
+                padding: ["18dp", "18dp", "18dp", "40dp"]
+                spacing: "12dp"
+                size_hint_y: None
+                height: self.minimum_height
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["16dp", "16dp"]
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(14)]
+
+                    Label:
+                        id: terms_label
+                        text: ""
+                        font_size: "13sp"
+                        color: 0.15, 0.18, 0.25, 1
+                        halign: "left"
+                        valign: "top"
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        text_size: self.width, None
+
+                Button:
+                    text: "Volver"
+                    size_hint_y: None
+                    height: "52dp"
+                    bold: True
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_color: 0.23, 0.18, 0.55, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.volver()

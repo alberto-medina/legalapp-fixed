@@ -1,3 +1,5 @@
+#:import dp kivy.metrics.dp
+
 <AbogadoPanelScreen>:
 
     BoxLayout:
@@ -13,8 +15,8 @@
         # TOPBAR
         BoxLayout:
             size_hint_y: None
-            height: "72dp"
-            padding: ["20dp", "12dp", "20dp", "12dp"]
+            height: "96dp"
+            padding: ["16dp", "12dp", "16dp", "12dp"]
             spacing: "10dp"
             canvas.before:
                 Color:
@@ -46,9 +48,29 @@
                     size_hint_y: None
                     height: "16dp"
 
+            Button:
+                text: "Avisos"
+                size_hint: None, None
+                size: dp(58), dp(38)
+                font_size: "11sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.35, 0.28, 0.70, 1
+                color: 1, 1, 1, 1
+                on_release: root.ver_notificaciones()
+
+            AsyncImage:
+                id: img_avatar_abogado
+                source: "assets/avatar_default.png"
+                size_hint: None, None
+                size: dp(40), dp(40)
+                allow_stretch: True
+                keep_ratio: True
+
             BoxLayout:
                 orientation: "vertical"
                 spacing: "2dp"
+                size_hint_x: 0.48
                 Label:
                     id: lbl_nombre_abogado
                     text: ""
@@ -56,10 +78,10 @@
                     bold: True
                     color: 1, 1, 1, 1
                     halign: "right"
-                    valign: "middle"
-                    text_size: self.size
+                    valign: "top"
+                    text_size: self.width, None
                     size_hint_y: None
-                    height: "28dp"
+                    height: "38dp"
                 Label:
                     text: "Abogado"
                     font_size: "11sp"
@@ -99,13 +121,13 @@
                     RoundedRectangle:
                         pos: self.x + 2, self.y - 4
                         size: self.width - 4, self.height
-                        radius: [18]
+                        radius: [dp(18)]
                     Color:
                         rgba: 1, 1, 1, 1
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [18]
+                        radius: [dp(18)]
 
                 Label:
                     text: "CONSULTAS"
@@ -142,13 +164,13 @@
                     RoundedRectangle:
                         pos: self.x + 2, self.y - 4
                         size: self.width - 4, self.height
-                        radius: [18]
+                        radius: [dp(18)]
                     Color:
                         rgba: 0.24, 0.17, 0.55, 1
                     RoundedRectangle:
                         pos: self.pos
                         size: self.size
-                        radius: [18]
+                        radius: [dp(18)]
 
                 Label:
                     text: "HONORARIOS"
@@ -301,7 +323,7 @@
                     RoundedRectangle:
                         pos: [self.x + 3, self.y + 3]
                         size: [self.width - 6, self.height - 6]
-                        radius: [14]
+                        radius: [dp(14)]
 
                 Label:
                     text: "Panel"

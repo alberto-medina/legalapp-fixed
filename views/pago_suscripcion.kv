@@ -1,3 +1,5 @@
+#:import dp kivy.metrics.dp
+
 <PagoSuscripcionScreen>:
     BoxLayout:
         orientation: "vertical"
@@ -61,7 +63,7 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [14]
+                            radius: [dp(14)]
 
                     Label:
                         text: "MercadoPago"

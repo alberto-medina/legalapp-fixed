@@ -1,3 +1,5 @@
+#:import dp kivy.metrics.dp
+
 <RegisterScreen>:
     BoxLayout:
         orientation: "vertical"
@@ -13,7 +15,6 @@
             size_hint_y: None
             height: "120dp"
             padding: ["20dp", "20dp"]
-
             canvas.before:
                 Color:
                     rgba: 0.23, 0.18, 0.55, 1
@@ -41,6 +42,7 @@
                     text_size: self.size
 
         ScrollView:
+            id: register_scroll
             do_scroll_x: False
             bar_width: "3dp"
 
@@ -57,14 +59,13 @@
                     height: self.minimum_height
                     padding: ["16dp", "16dp"]
                     spacing: "10dp"
-
                     canvas.before:
                         Color:
                             rgba: 1, 1, 1, 1
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [16]
+                            radius: [dp(16)]
 
                     Label:
                         text: "Registrate como cliente"
@@ -207,20 +208,37 @@
                         halign: "left"
                         text_size: self.size
 
-                    TextInput:
-                        id: password
-                        hint_text: "Minimo 8 caracteres"
-                        password: True
-                        multiline: False
+                    BoxLayout:
+                        orientation: "horizontal"
                         size_hint_y: None
                         height: "46dp"
-                        background_color: 0.96, 0.97, 0.98, 1
-                        foreground_color: 0.10, 0.12, 0.18, 1
-                        hint_text_color: 0.65, 0.68, 0.75, 1
-                        cursor_color: 0.23, 0.18, 0.55, 1
-                        padding: ["12dp", "12dp"]
-                        font_size: "15sp"
-                        write_tab: False
+                        spacing: "4dp"
+
+                        TextInput:
+                            id: password
+                            hint_text: "Minimo 8 caracteres"
+                            password: True
+                            multiline: False
+                            size_hint_y: None
+                            height: "46dp"
+                            background_color: 0.96, 0.97, 0.98, 1
+                            foreground_color: 0.10, 0.12, 0.18, 1
+                            hint_text_color: 0.65, 0.68, 0.75, 1
+                            cursor_color: 0.23, 0.18, 0.55, 1
+                            padding: ["12dp", "12dp"]
+                            font_size: "15sp"
+                            write_tab: False
+
+                        Button:
+                            size_hint_x: None
+                            width: "56dp"
+                            text: "Ver"
+                            font_size: "13sp"
+                            bold: True
+                            background_normal: ""
+                            background_color: 0.90, 0.89, 0.97, 1
+                            color: 0.30, 0.23, 0.67, 1
+                            on_release: password.password = not password.password
 
                     Label:
                         text: "REPETIR CONTRASENA *"
@@ -232,20 +250,99 @@
                         halign: "left"
                         text_size: self.size
 
-                    TextInput:
-                        id: password_confirm
-                        hint_text: "Repeti tu contrasena"
-                        password: True
-                        multiline: False
+                    BoxLayout:
+                        orientation: "horizontal"
                         size_hint_y: None
                         height: "46dp"
-                        background_color: 0.96, 0.97, 0.98, 1
-                        foreground_color: 0.10, 0.12, 0.18, 1
-                        hint_text_color: 0.65, 0.68, 0.75, 1
-                        cursor_color: 0.23, 0.18, 0.55, 1
+                        spacing: "4dp"
+
+                        TextInput:
+                            id: password_confirm
+                            hint_text: "Repeti tu contrasena"
+                            password: True
+                            multiline: False
+                            size_hint_y: None
+                            height: "46dp"
+                            background_color: 0.96, 0.97, 0.98, 1
+                            foreground_color: 0.10, 0.12, 0.18, 1
+                            hint_text_color: 0.65, 0.68, 0.75, 1
+                            cursor_color: 0.23, 0.18, 0.55, 1
+                            padding: ["12dp", "12dp"]
+                            font_size: "15sp"
+                            write_tab: False
+
+                        Button:
+                            size_hint_x: None
+                            width: "56dp"
+                            text: "Ver"
+                            font_size: "13sp"
+                            bold: True
+                            background_normal: ""
+                            background_color: 0.90, 0.89, 0.97, 1
+                            color: 0.30, 0.23, 0.67, 1
+                            on_release: password_confirm.password = not password_confirm.password
+
+                    BoxLayout:
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: self.minimum_height
                         padding: ["12dp", "12dp"]
-                        font_size: "15sp"
-                        write_tab: False
+                        spacing: "8dp"
+                        canvas.before:
+                            Color:
+                                rgba: 0.94, 0.92, 0.99, 1
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12)]
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: "44dp"
+                            spacing: "8dp"
+
+                            CheckBox:
+                                id: terms_check
+                                size_hint_x: None
+                                width: "40dp"
+
+                            Label:
+                                text: "Acepto terminos, politica de privacidad y bases del servicio *"
+                                bold: True
+                                color: 0.23, 0.18, 0.55, 1
+                                halign: "left"
+                                valign: "middle"
+                                text_size: self.size
+
+                        Label:
+                            text: "Es obligatorio para crear la cuenta y usar Legal App."
+                            font_size: "11sp"
+                            color: 0.42, 0.45, 0.55, 1
+                            size_hint_y: None
+                            height: "18dp"
+                            halign: "left"
+                            text_size: self.size
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "36dp"
+                        spacing: "8dp"
+
+                        Button:
+                            text: "Ver Terminos y bases"
+                            font_size: "12sp"
+                            background_normal: ""
+                            background_color: 0.23, 0.18, 0.55, 1
+                            color: 1, 1, 1, 1
+                            on_release: app.root.current = "terms_screen"
+
+                        Button:
+                            text: "Ver Privacidad"
+                            font_size: "12sp"
+                            background_normal: ""
+                            background_color: 0.18, 0.80, 0.44, 1
+                            color: 1, 1, 1, 1
+                            on_release: app.root.current = "privacy_screen"
 
                     Label:
                         id: error
@@ -266,43 +363,6 @@
                         background_color: 0.18, 0.80, 0.44, 1
                         color: 1, 1, 1, 1
                         on_release: root.register()
-
-                    BoxLayout:
-                        size_hint_y: None
-                        height: "40dp"
-                        spacing: "8dp"
-
-                        CheckBox:
-                            id: terms_check
-                            size_hint_x: None
-                            width: "40dp"
-
-                        Label:
-                            text: "Acepto términos y privacidad"
-                            color: 0.35, 0.38, 0.45, 1
-                            halign: "left"
-                            valign: "middle"
-                            text_size: self.size
-
-                    Button:
-                        text: "Ver Términos y Condiciones"
-                        size_hint_y: None
-                        height: "44dp"
-                        background_normal: ""
-                        background_color: 0.23, 0.18, 0.55, 1
-                        color: 1, 1, 1, 1
-                        on_release:
-                            app.root.current = "terms_screen"
-
-                    Button:
-                        text: "Ver Política de Privacidad"
-                        size_hint_y: None
-                        height: "44dp"
-                        background_normal: ""
-                        background_color: 0.23, 0.18, 0.55, 1
-                        color: 1, 1, 1, 1
-                        on_release:
-                            app.root.current = "privacy_screen"
 
                 Label:
                     text: "o"

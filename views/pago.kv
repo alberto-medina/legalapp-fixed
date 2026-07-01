@@ -1,3 +1,5 @@
+#:import dp kivy.metrics.dp
+
 <PagoScreen>:
 
     BoxLayout:
@@ -16,8 +18,8 @@
 
         BoxLayout:
             size_hint_y: None
-            height: 60
-            padding: [12, 10, 16, 10]
+            height: dp(60)
+            padding: [dp(12), dp(10), dp(16), dp(10)]
 
             canvas.before:
                 Color:
@@ -29,8 +31,8 @@
             Button:
                 text: "<"
                 size_hint_x: None
-                width: 36
-                font_size: 22
+                width: dp(36)
+                font_size: "22sp"
                 bold: True
                 background_color: 0,0,0,0
                 color: 1,1,1,1
@@ -38,7 +40,7 @@
 
             Label:
                 text: "CONFIRMAR PAGO"
-                font_size: 16
+                font_size: "16sp"
                 bold: True
                 color: 1,1,1,1
                 halign: "left"
@@ -50,8 +52,8 @@
 
         BoxLayout:
             size_hint_y: None
-            height: 74
-            padding: [18, 12]
+            height: dp(74)
+            padding: [dp(18), dp(12)]
 
             canvas.before:
                 Color:
@@ -63,7 +65,7 @@
             Label:
                 id: lbl_abogado_info
                 text: ""
-                font_size: 13
+                font_size: "13sp"
                 color: 0.40, 0.45, 0.55, 1
                 halign: "left"
                 valign: "middle"
@@ -79,8 +81,8 @@
                 orientation: "vertical"
                 size_hint_y: None
                 height: self.minimum_height
-                padding: [22, 26]
-                spacing: 18
+                padding: [dp(22), dp(26)]
+                spacing: dp(18)
 
                 # =========================================
                 # PRECIO
@@ -89,21 +91,21 @@
                 Label:
                     id: lbl_precio_grande
                     text: "$0"
-                    font_size: 58
+                    font_size: "58sp"
                     bold: True
                     color: 0.10, 0.12, 0.18, 1
                     size_hint_y: None
-                    height: 84
+                    height: dp(84)
                     halign: "center"
                     text_size: self.size
 
                 Label:
                     id: lbl_tipo_desc
                     text: ""
-                    font_size: 14
+                    font_size: "14sp"
                     color: 0.45, 0.50, 0.58, 1
                     size_hint_y: None
-                    height: 52
+                    height: dp(52)
                     halign: "center"
                     valign: "middle"
                     text_size: self.size
@@ -115,8 +117,8 @@
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
-                    height: 120
-                    padding: [18, 16]
+                    height: dp(120)
+                    padding: [dp(18), dp(16)]
 
                     canvas.before:
                         Color:
@@ -124,22 +126,22 @@
                         RoundedRectangle:
                             pos: self.pos
                             size: self.size
-                            radius: [18]
+                            radius: [dp(18)]
 
                     Label:
                         text: "Resumen"
-                        font_size: 15
+                        font_size: "15sp"
                         bold: True
                         color: 0.10, 0.12, 0.18, 1
                         size_hint_y: None
-                        height: 24
+                        height: dp(24)
                         halign: "left"
                         text_size: self.size
 
                     Label:
                         id: lbl_resumen
                         text: ""
-                        font_size: 12
+                        font_size: "12sp"
                         color: 0.45, 0.50, 0.58, 1
                         halign: "left"
                         valign: "top"
@@ -152,11 +154,11 @@
                 Label:
                     id: lbl_error_mp
                     text: ""
-                    font_size: 12
+                    font_size: "12sp"
                     bold: True
                     color: 0.85, 0.30, 0.30, 1
                     size_hint_y: None
-                    height: 24
+                    height: dp(24)
                     halign: "center"
                     text_size: self.size
 
@@ -168,8 +170,8 @@
                     id: btn_pago_unico
                     text: "CONFIRMAR PAGO"
                     size_hint_y: None
-                    height: 62
-                    font_size: 16
+                    height: dp(62)
+                    font_size: "16sp"
                     bold: True
                     background_normal: ""
                     background_color: 0.18, 0.80, 0.44, 1
@@ -178,16 +180,16 @@
 
                 Label:
                     text: "Pago seguro • MercadoPago • Acreditacion inmediata"
-                    font_size: 11
+                    font_size: "11sp"
                     color: 0.60, 0.63, 0.70, 1
                     size_hint_y: None
-                    height: 22
+                    height: dp(22)
                     halign: "center"
                     text_size: self.size
 
                 Widget:
                     size_hint_y: None
-                    height: 16
+                    height: dp(16)
 
         # =================================================
         # FOOTER
@@ -196,8 +198,8 @@
         Button:
             text: "Cambiar tipo de consulta"
             size_hint_y: None
-            height: 48
-            font_size: 13
+            height: dp(48)
+            font_size: "13sp"
             background_color: 0,0,0,0
             color: 0.45, 0.50, 0.58, 1
             on_release:

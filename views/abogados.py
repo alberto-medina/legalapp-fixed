@@ -1,12 +1,19 @@
+import threading
+import json
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, RoundedRectangle
+from kivy.metrics import dp
+from kivy.resources import resource_find
 import supabase_config as fb
 import session
 from views.utils_avatar import get_avatar_source
+
+RATING_FONT = resource_find("data/fonts/DejaVuSans.ttf") or "data/fonts/DejaVuSans.ttf"
 
 
 ESTADO_COLOR = {
@@ -20,6 +27,20 @@ ESTADO_LABEL = {
     "guardia":    "Urgente",
     "ocupado":    "Ocupado",
 }
+
+def _rating_text(puntaje):
+    try:
+        valor = max(0, min(5, int(round(float(puntaje or 0)))))
+    except Exception:
+        valor = 0
+    return "★" * valor + "☆" * (5 - valor)
+
+
+def _fecha_resena(fecha):
+    texto = str(fecha or "")
+    if "T" in texto:
+        return texto.split("T", 1)[0]
+    return texto[:10]
 
 
 class AbogadosScreen(Screen):
@@ -48,30 +69,60 @@ class AbogadosScreen(Screen):
         self.cargar_abogados()
 
     def cargar_abogados(self):
-        provincia = getattr(session, 'provincia_busqueda', None)
-        ciudad = getattr(session, 'ciudad_busqueda', None)
+        from kivy.clock import Clock as _Clock
 
-        abogados = fb.listar_abogados(
-            disponibles=False,
-            provincia=provincia,
-            ciudad=ciudad
-        )
+        def _fetch():
+            provincia = getattr(session, 'provincia_busqueda', None)
+            ciudad = getattr(session, 'ciudad_busqueda', None)
 
-        area = (session.area_legal or "").strip().lower()
+            # Normalizar provincia y ciudad a Title Case para matchear
+            # independientemente de como el abogado haya completado el campo
+            if provincia:
+                provincia = provincia.strip().title()
+            if ciudad and ciudad != "Otras":
+                ciudad = ciudad.strip().title()
+            elif ciudad == "Otras":
+                ciudad = None
 
-        if area:
-            filtrados = []
-            for data in abogados:
-                especialidad = (data.get('especialidad') or "").lower()
-                descripcion = (data.get('descripcion') or "").lower()
-                especialidades = (data.get('especialidades') or "").lower()
-                if area in especialidad or area in descripcion or area in especialidades:
-                    filtrados.append(data)
-            self._todos = filtrados if filtrados else abogados
-        else:
-            self._todos = abogados
+            abogados = fb.listar_abogados(
+                disponibles=False,
+                provincia=provincia,
+                ciudad=ciudad
+            )
 
-        self.filtrar()
+            area = (session.area_legal or "").strip().lower()
+
+            if area:
+                filtrados = []
+                for data in abogados:
+                    especialidad = str(data.get('especialidad') or "").strip().lower()
+                    especialidades_raw = data.get('especialidades') or []
+                    try:
+                        especialidades_lista = (
+                            json.loads(especialidades_raw)
+                            if isinstance(especialidades_raw, str)
+                            else especialidades_raw
+                        )
+                    except Exception:
+                        especialidades_lista = []
+
+                    especialidades_lista = [
+                        str(esp or "").strip().lower()
+                        for esp in (especialidades_lista or [])
+                    ]
+
+                    coincide_principal = area in especialidad
+                    coincide_lista = any(area in esp for esp in especialidades_lista)
+
+                    if coincide_principal or coincide_lista:
+                        filtrados.append(data)
+                self._todos = filtrados
+            else:
+                self._todos = abogados
+
+            _Clock.schedule_once(lambda dt: self.filtrar(), 0)
+
+        threading.Thread(target=_fetch, daemon=True).start()
 
     def filtrar(self, *args):
         texto = self.ids.buscador.text.strip().lower()
@@ -88,8 +139,9 @@ class AbogadosScreen(Screen):
 
         for data in self._todos:
 
+
             # SOLO abogados aprobados
-            if not data.get("aprobado", False):
+            if data.get("aprobado") is False:
                 continue
 
             nombre = data.get('username', '') or data.get('nombre', '')
@@ -199,43 +251,66 @@ class AbogadosScreen(Screen):
             provincia = data.get('provincia', '')
             ciudad = data.get('ciudad', '')
 
-            self.add_card(nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia, ciudad)
+            matricula = data.get('matricula', '')
+            self.add_card(
+                nombre,
+                email,
+                estado,
+                foto,
+                experiencia,
+                descripcion,
+                especialidad,
+                provincia,
+                ciudad,
+                matricula,
+            )
 
-    def add_card(self, nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia="", ciudad=""):
+    def add_card(self, nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia="", ciudad="", matricula=""):
+        from kivy.metrics import dp as _dp
         resenas = fb.obtener_resenas_abogado(email)
         cantidad = len(resenas)
         promedio = sum(r.get('puntaje', 0) for r in resenas) / cantidad if cantidad > 0 else 0
 
-        estrellas = "★" * round(promedio) + "☆" * (5 - round(promedio))
-        altura = 240 if descripcion else 190
-
+        # Card con altura dinamica - se expande segun contenido
         card = BoxLayout(
             orientation="vertical",
             size_hint_y=None,
-            height=altura,
-            padding=[16, 14],
-            spacing=10,
+            padding=[_dp(16), _dp(14)],
+            spacing=_dp(10),
         )
+        card.height = card.minimum_height
 
         with card.canvas.before:
             Color(rgba=(1, 1, 1, 1))
-            card.bg = RoundedRectangle(pos=card.pos, size=card.size, radius=[20])
+            card.bg = RoundedRectangle(pos=card.pos, size=card.size, radius=[_dp(20)])
 
         card.bind(
             pos=lambda w, v: setattr(w.bg, "pos", v),
-            size=lambda w, v: setattr(w.bg, "size", v),
+            size=lambda w, v: (setattr(w.bg, "size", v), setattr(w, "height", w.minimum_height)),
+            minimum_height=lambda w, v: setattr(w, "height", v),
         )
 
-        top = BoxLayout(orientation="horizontal", size_hint_y=None, height=90, spacing=14)
+        # ----- FILA SUPERIOR: avatar + info + boton -----
+        top = BoxLayout(
+            orientation="horizontal",
+            size_hint_y=None,
+            spacing=_dp(14),
+        )
+        top.bind(minimum_height=lambda w, v: setattr(w, "height", max(v, _dp(92))))
 
         avatar = AsyncImage(
-            source=get_avatar_source(foto),
+            source=get_avatar_source(foto, email),
             size_hint=(None, None),
-            size=(70, 70),
+            size=(_dp(72), _dp(72)),
         )
         top.add_widget(avatar)
 
-        info = BoxLayout(orientation="vertical", spacing=2)
+        info = BoxLayout(
+            orientation="vertical",
+            spacing=_dp(3),
+            size_hint_y=None,
+        )
+        info.bind(minimum_height=lambda w, v: setattr(w, "height", v))
 
         lbl_nombre = Label(
             text=nombre,
@@ -243,11 +318,17 @@ class AbogadosScreen(Screen):
             bold=True,
             color=(0.10, 0.06, 0.14, 1),
             size_hint_y=None,
-            height=22,
+            height=_dp(22),
             halign="left",
-            valign="middle",
+            valign="top",
         )
-        lbl_nombre.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
+
+        def _ajustar_nombre(lbl, *args):
+            lbl.text_size = (lbl.width, None)
+            lbl.texture_update()
+            lbl.height = max(_dp(22), lbl.texture_size[1])
+
+        lbl_nombre.bind(width=_ajustar_nombre, texture_size=_ajustar_nombre)
         info.add_widget(lbl_nombre)
 
         if especialidad:
@@ -257,14 +338,13 @@ class AbogadosScreen(Screen):
                 bold=True,
                 color=(0.30, 0.23, 0.67, 1),
                 size_hint_y=None,
-                height=20,
+                height=_dp(20),
                 halign="left",
                 valign="middle",
             )
             lbl_esp.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
             info.add_widget(lbl_esp)
 
-        # Ubicacion
         if provincia or ciudad:
             ubicacion_txt = f"{ciudad}, {provincia}" if ciudad and provincia else provincia or ciudad
             lbl_ubic = Label(
@@ -272,7 +352,7 @@ class AbogadosScreen(Screen):
                 font_size="11sp",
                 color=(0.45, 0.50, 0.60, 1),
                 size_hint_y=None,
-                height=18,
+                height=_dp(18),
                 halign="left",
                 valign="middle",
             )
@@ -285,20 +365,21 @@ class AbogadosScreen(Screen):
             bold=True,
             color=ESTADO_COLOR.get(estado, (0.5, 0.5, 0.5, 1)),
             size_hint_y=None,
-            height=20,
+            height=_dp(20),
             halign="left",
             valign="middle",
         )
         lbl_estado.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
         info.add_widget(lbl_estado)
 
-        rating = f"{estrellas}  {promedio:.1f} ({cantidad})" if cantidad else "Sin resenas"
+        rating = f"{_rating_text(promedio)} {promedio:.1f}/5" if cantidad else "Sin resenas"
         lbl_rating = Label(
             text=rating,
             font_size="12sp",
             color=(0.90, 0.62, 0.10, 1),
+            font_name=RATING_FONT,
             size_hint_y=None,
-            height=20,
+            height=_dp(20),
             halign="left",
             valign="middle",
         )
@@ -311,7 +392,7 @@ class AbogadosScreen(Screen):
                 font_size="11sp",
                 color=(0.45, 0.48, 0.60, 1),
                 size_hint_y=None,
-                height=18,
+                height=_dp(18),
                 halign="left",
                 valign="middle",
             )
@@ -320,10 +401,32 @@ class AbogadosScreen(Screen):
 
         top.add_widget(info)
 
+        acciones = BoxLayout(
+            orientation="vertical",
+            size_hint=(None, None),
+            width=_dp(94),
+            spacing=_dp(6),
+        )
+        acciones.bind(minimum_height=lambda w, v: setattr(w, "height", max(v, _dp(96))))
+
+        btn_ver = Button(
+            text="Ver perfil",
+            size_hint=(None, None),
+            size=(_dp(88), _dp(36)),
+            font_size="11sp",
+            bold=True,
+            background_normal="",
+            background_color=(0.90, 0.89, 0.97, 1),
+            color=(0.30, 0.23, 0.67, 1),
+        )
+        btn_ver.bind(
+            on_release=lambda x, n=nombre, e=email, est=estado, f=foto, exp=experiencia, desc=descripcion, esp=especialidad, prov=provincia, ciu=ciudad, mat=matricula:
+            self.ver_perfil_abogado(n, e, est, f, exp, desc, esp, prov, ciu, mat)
+        )
         btn = Button(
             text="Elegir",
             size_hint=(None, None),
-            size=(90, 52),
+            size=(_dp(80), _dp(44)),
             bold=True,
             font_size="14sp",
             background_normal="",
@@ -331,29 +434,203 @@ class AbogadosScreen(Screen):
             color=(1, 1, 1, 1),
         )
         btn.bind(on_release=lambda x, e=email, est=estado: self.seleccionar(e, est))
-        top.add_widget(btn)
+        acciones.add_widget(btn_ver)
+        acciones.add_widget(btn)
+        top.add_widget(acciones)
 
         card.add_widget(top)
 
+        # ----- DESCRIPCION con altura dinamica -----
         if descripcion:
             desc = descripcion.strip()
-            if len(desc) > 140:
-                desc = desc[:140] + "..."
+            if len(desc) > 200:
+                desc = desc[:200] + "..."
+
             lbl_desc = Label(
                 text=desc,
                 font_size="12sp",
                 color=(0.45, 0.50, 0.60, 1),
                 halign="left",
                 valign="top",
+                size_hint_y=None,
             )
-            lbl_desc.bind(size=lambda s, *_: setattr(s, "text_size", (s.width, None)))
+
+            def _ajustar_desc(lbl, *args):
+                lbl.text_size = (lbl.width, None)
+                lbl.texture_update()
+                lbl.height = max(_dp(18), lbl.texture_size[1] + _dp(4))
+
+            lbl_desc.bind(width=_ajustar_desc, texture_size=_ajustar_desc)
+            lbl_desc.height = _dp(36)
             card.add_widget(lbl_desc)
 
         self.ids.lista.add_widget(card)
 
+    def ver_perfil_abogado(self, nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia="", ciudad="", matricula=""):
+        perfil = fb.obtener_usuario_por_email(email) or {}
+        nombre = perfil.get('username', '') or perfil.get('nombre', '') or nombre
+        estado = perfil.get('estado_abogado', estado) or estado
+        foto = perfil.get('foto_url', foto) or foto
+        experiencia = perfil.get('experiencia', experiencia) or experiencia
+        descripcion = perfil.get('descripcion', descripcion) or descripcion
+        especialidad = perfil.get('especialidad', especialidad) or especialidad
+        provincia = perfil.get('provincia', provincia) or provincia
+        ciudad = perfil.get('ciudad', ciudad) or ciudad
+        matricula = perfil.get('matricula', matricula) or matricula
+
+        resenas = fb.obtener_resenas_abogado(email) or []
+        cantidad = len(resenas)
+        promedio = sum(r.get('puntaje', 0) for r in resenas) / cantidad if cantidad > 0 else 0
+
+        layout = BoxLayout(orientation="vertical", padding=[dp(14), dp(12)], spacing=dp(10))
+        with layout.canvas.before:
+            Color(1, 1, 1, 1)
+            layout.bg = RoundedRectangle(pos=layout.pos, size=layout.size, radius=[dp(18)])
+        layout.bind(
+            pos=lambda w, v: setattr(w.bg, "pos", v),
+            size=lambda w, v: setattr(w.bg, "size", v),
+        )
+
+        scroll = ScrollView(do_scroll_x=False)
+        content = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
+        content.bind(minimum_height=content.setter("height"))
+
+        avatar = AsyncImage(
+            source=get_avatar_source(foto, email),
+            size_hint=(None, None),
+            size=(dp(96), dp(96)),
+            pos_hint={"center_x": 0.5},
+        )
+        content.add_widget(avatar)
+
+        def _lbl(texto, size="14sp", color=(0.10, 0.12, 0.18, 1), bold=False, h=None, font_name=None):
+            lbl = Label(
+                text=texto,
+                font_size=size,
+                bold=bold,
+                color=color,
+                halign="left",
+                valign="middle",
+                size_hint_y=None,
+                height=h or dp(24),
+            )
+            if font_name:
+                lbl.font_name = font_name
+            lbl.bind(size=lambda s, *_: setattr(s, "text_size", (s.width, None)))
+            return lbl
+
+        nombre_lbl = _lbl(nombre, size="20sp", color=(0.10, 0.06, 0.14, 1), bold=True, h=dp(34))
+        nombre_lbl.halign = "center"
+        nombre_lbl.valign = "middle"
+        nombre_lbl.bind(
+            size=lambda s, *_: setattr(s, "text_size", (s.width, None)),
+            texture_size=lambda s, v: setattr(s, "height", max(dp(34), v[1] + dp(4))),
+        )
+        content.add_widget(nombre_lbl)
+
+        if especialidad:
+            esp = _lbl(especialidad, size="15sp", color=(0.30, 0.23, 0.67, 1), bold=True, h=dp(26))
+            esp.halign = "center"
+            esp.bind(size=lambda s, *_: setattr(s, "text_size", (s.width, None)))
+            content.add_widget(esp)
+
+        ubicacion = f"{ciudad}, {provincia}" if ciudad and provincia else provincia or ciudad
+        if ubicacion:
+            ubic = _lbl(ubicacion, size="12sp", color=(0.45, 0.50, 0.60, 1), h=dp(22))
+            ubic.halign = "center"
+            ubic.bind(size=lambda s, *_: setattr(s, "text_size", (s.width, None)))
+            content.add_widget(ubic)
+
+        if matricula:
+            mat = _lbl(f"Matrícula: {matricula}", size="12sp", color=(0.28, 0.32, 0.42, 1), bold=True, h=dp(22))
+            mat.halign = "center"
+            mat.bind(size=lambda s, *_: setattr(s, "text_size", (s.width, None)))
+            content.add_widget(mat)
+
+        content.add_widget(_lbl(
+            ESTADO_LABEL.get(estado, estado),
+            size="13sp",
+            color=ESTADO_COLOR.get(estado, (0.5, 0.5, 0.5, 1)),
+            bold=True,
+            h=dp(22)
+        ))
+        content.add_widget(_lbl(
+            f"{_rating_text(promedio)}\n{promedio:.1f}/5 ({cantidad} reseñas)" if cantidad else "Sin reseñas",
+            size="13sp",
+            color=(0.90, 0.62, 0.10, 1),
+            bold=True,
+            h=dp(24),
+            font_name=RATING_FONT if cantidad else None
+        ))
+
+        if experiencia:
+            content.add_widget(_lbl(f"Años de experiencia: {experiencia}", size="13sp", color=(0.28, 0.32, 0.42, 1), h=dp(24)))
+
+        if descripcion:
+            content.add_widget(_lbl("Bio", size="14sp", color=(0.30, 0.23, 0.67, 1), bold=True, h=dp(24)))
+            bio = _lbl(descripcion.strip(), size="13sp", color=(0.22, 0.24, 0.30, 1), h=dp(90))
+            bio.valign = "top"
+            bio.bind(texture_size=lambda s, v: setattr(s, "height", max(dp(54), v[1] + dp(8))))
+            content.add_widget(bio)
+
+        if resenas:
+            content.add_widget(_lbl("Opiniones recientes", size="14sp", color=(0.30, 0.23, 0.67, 1), bold=True, h=dp(24)))
+            for rdata in resenas[:5]:
+                puntaje = int(rdata.get("puntaje", 0) or 0)
+                comentario = str(rdata.get("comentario", "") or "").strip()
+                fecha = str(rdata.get("fecha", "") or "")[:10]
+                texto = f"{_rating_text(puntaje)}  {_fecha_resena(fecha)}"
+                if comentario:
+                    texto += f"\n{comentario}"
+                card = _lbl(texto, size="12sp", color=(0.10, 0.12, 0.18, 1), h=dp(54 if comentario else 28), font_name=RATING_FONT)
+                card.valign = "top" if comentario else "middle"
+                card.bind(texture_size=lambda s, v: setattr(s, "height", max(dp(28), v[1] + dp(8))))
+                content.add_widget(card)
+
+        scroll.add_widget(content)
+        layout.add_widget(scroll)
+
+        botones = BoxLayout(size_hint_y=None, height=dp(46), spacing=dp(8))
+        btn_cerrar = Button(
+            text="Cerrar",
+            background_normal="",
+            background_color=(0.90, 0.89, 0.97, 1),
+            color=(0.30, 0.23, 0.67, 1),
+            bold=True,
+        )
+        btn_elegir = Button(
+            text="Elegir abogado",
+            background_normal="",
+            background_color=(0.30, 0.23, 0.67, 1),
+            color=(1, 1, 1, 1),
+            bold=True,
+        )
+        botones.add_widget(btn_cerrar)
+        botones.add_widget(btn_elegir)
+        layout.add_widget(botones)
+
+        from kivy.uix.popup import Popup
+        popup = Popup(
+            title="Perfil del abogado",
+            content=layout,
+            size_hint=(0.92, 0.86),
+            separator_color=(0.30, 0.68, 0.95, 1),
+            background_color=(1, 1, 1, 1),
+        )
+        btn_cerrar.bind(on_release=popup.dismiss)
+        btn_elegir.bind(on_release=lambda *_: (popup.dismiss(), self.seleccionar(email, estado)))
+        popup.open()
+
+
     def seleccionar(self, email, estado):
         session.abogado_seleccionado = email
-        session.estado_abogado = estado
+        abogado = fb.obtener_usuario_por_email(email) or {}
+        session.estado_abogado = (
+            abogado.get("estado_abogado")
+            or estado
+            or "disponible"
+        )
+        session.guardar()
         self.manager.current = "tipo"
 
     def volver(self):

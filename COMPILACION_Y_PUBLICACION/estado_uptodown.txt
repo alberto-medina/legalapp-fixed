@@ -1,0 +1,19 @@
+ESTADO UPTODOWN
+
+Estado actual:
+- la app ya fue subida
+- quedo en revision / pendiente de revision
+- existe carpeta de publicacion preparada
+
+Ruta clave:
+C:\legalapp-fixed\legalapp-produccion\publicacion_uptodown
+
+Contenido preparado:
+- legalapp-release-signed.apk
+- textos de descripcion
+- novedades
+- ficha de publicacion
+- capturas seleccionadas
+
+Importante:
+- no tocar de mas la ficha mientras este en revision salvo que Uptodown pida cambios

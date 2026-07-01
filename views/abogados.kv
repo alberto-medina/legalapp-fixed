@@ -1,3 +1,5 @@
+#:import dp kivy.metrics.dp
+
 <AbogadosScreen>:
 
     BoxLayout:
@@ -15,8 +17,8 @@
         # =========================
         BoxLayout:
             size_hint_y: None
-            height: 72
-            padding: [14, 12, 18, 12]
+            height: dp(72)
+            padding: [dp(14), dp(12), dp(18), dp(12)]
 
             canvas.before:
                 Color:
@@ -28,8 +30,8 @@
             Button:
                 text: "<"
                 size_hint_x: None
-                width: 42
-                font_size: 24
+                width: dp(42)
+                font_size: "24sp"
                 bold: True
                 background_normal: ""
                 background_color: 0, 0, 0, 0
@@ -62,8 +64,8 @@
         # =========================
         BoxLayout:
             size_hint_y: None
-            height: 74
-            padding: [16, 14, 16, 10]
+            height: dp(74)
+            padding: [dp(16), dp(14), dp(16), dp(10)]
 
             canvas.before:
                 Color:
@@ -77,14 +79,14 @@
                 hint_text: "Buscar por nombre, experiencia o especialidad..."
                 multiline: False
                 size_hint_y: None
-                height: 46
+                height: dp(46)
                 background_normal: ""
                 background_active: ""
                 background_color: 1, 1, 1, 1
                 foreground_color: 0.10, 0.06, 0.14, 1
                 hint_text_color: 0.55, 0.52, 0.66, 1
                 cursor_color: 0.30, 0.23, 0.67, 1
-                padding: [16, 12]
+                padding: [dp(16), dp(12)]
                 font_size: "15sp"
                 on_text: root.filtrar()
 
@@ -93,9 +95,9 @@
         # =========================
         BoxLayout:
             size_hint_y: None
-            height: 64
-            padding: [14, 8, 14, 10]
-            spacing: 10
+            height: dp(64)
+            padding: [dp(14), dp(8), dp(14), dp(10)]
+            spacing: dp(10)
 
             canvas.before:
                 Color:
@@ -137,7 +139,7 @@
             BoxLayout:
                 id: lista
                 orientation: "vertical"
-                padding: [16, 16, 16, 90]
-                spacing: 14
+                padding: [dp(16), dp(16), dp(16), dp(90)]
+                spacing: dp(14)
                 size_hint_y: None
                 height: self.minimum_height

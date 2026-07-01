@@ -1,0 +1,57 @@
+FLUJO CORRECTO DE COMPILACION - LEGAL APP
+
+IMPORTANTE:
+- PowerShell se usa solo para copiar archivos modificados desde Windows a Ubuntu.
+- Ubuntu se abre en una ventana aparte y ahi se compila/firma.
+- No compilar desde /mnt/c/legalapp-fixed/legalapp-produccion.
+- No tocar buildozer.spec si solo se prueban cambios visuales.
+- El APK firmado final se copia a C:\legalapp-fixed.
+
+
+1) POWER SHELL - COPIAR ARCHIVOS MODIFICADOS A UBUNTU
+
+Copy-Item C:\legalapp-fixed\legalapp-produccion\views\abogados.py \\wsl$\Ubuntu\home\eto_\legalapp-build\views\abogados.py -Force
+Copy-Item C:\legalapp-fixed\legalapp-produccion\views\perfil.py \\wsl$\Ubuntu\home\eto_\legalapp-build\views\perfil.py -Force
+Copy-Item C:\legalapp-fixed\legalapp-produccion\views\perfil.kv \\wsl$\Ubuntu\home\eto_\legalapp-build\views\perfil.kv -Force
+
+
+2) UBUNTU - COMPILAR
+
+cd /home/eto_/legalapp-build
+source /home/eto_/buildozer-env/bin/activate
+buildozer android release
+
+
+3) UBUNTU - FIRMAR
+
+apksigner sign --ks /home/eto_/legalapp-build/legalapp-release.keystore --ks-key-alias legalapp --out /home/eto_/legalapp-build/bin/legalapp-release-signed.apk /home/eto_/legalapp-build/bin/legalapp-1.1.10-arm64-v8a_armeabi-v7a-release-unsigned.apk
+
+
+4) UBUNTU - DEVOLVER APK A WINDOWS
+
+cp /home/eto_/legalapp-build/bin/legalapp-release-signed.apk /mnt/c/legalapp-fixed/legalapp-release-signed.apk
+
+
+RUTAS CONFIRMADAS
+
+Proyecto Windows con cambios:
+C:\legalapp-fixed\legalapp-produccion
+
+Proyecto Ubuntu donde se compila:
+/home/eto_/legalapp-build
+
+Entorno Ubuntu:
+/home/eto_/buildozer-env
+
+Keystore:
+/home/eto_/legalapp-build/legalapp-release.keystore
+
+APK final en Windows:
+C:\legalapp-fixed\legalapp-release-signed.apk
+
+
+ARCHIVOS DETECTADOS COMO MODIFICADOS EL 28/06/2026
+
+C:\legalapp-fixed\legalapp-produccion\views\abogados.py
+C:\legalapp-fixed\legalapp-produccion\views\perfil.py
+C:\legalapp-fixed\legalapp-produccion\views\perfil.kv

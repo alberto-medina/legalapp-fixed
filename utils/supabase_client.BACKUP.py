@@ -1,4 +1,4 @@
-# utils/supabase_client.py — Juris Lex
+# utils/supabase_client.BACKUP.py — Juris Lex
 # Cliente para Supabase (PostgreSQL en la nube).
 # Reemplaza SQLite local cuando SUPABASE_URL y SUPABASE_ANON_KEY estan configuradas.
 #
