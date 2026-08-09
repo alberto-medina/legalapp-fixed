@@ -1,5 +1,4 @@
 venv_buildozer/
-legalapp-escritorio/.venv_escritorio/
 __pycache__/
 *.pyc
 .buildozer/
@@ -29,10 +28,6 @@ serviceAccountKey.json
 google-services.json
 firebase-debug.log
 firebase-debug.*.log
-
-# Keystore de firma de release (jamas debe ir al repo)
-*.keystore
-*.jks
 
 # Kivy
 .kivy/

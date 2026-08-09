@@ -1,0 +1,5 @@
+kivy
+supabase
+requests
+plyer
+pillow

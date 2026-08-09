@@ -1,0 +1,15 @@
+CHECKLIST LEGAL APP ESCRITORIO
+
+HECHO
+- Carpeta separada creada sin tocar la base movil.
+- Duplicados internos limpiados.
+- Auditoria inicial de chat, perfil, pagos y videollamada.
+- Fallback de selector de archivos para escritorio.
+- Fallback de camara para escritorio cuando Camera no este disponible.
+- Apertura de archivos locales con compatibilidad Windows/macOS/Linux.
+- Audio desktop resuelto con grabacion real en Windows y fallback en otros desktop.
+
+PENDIENTE
+- Probar chat completo en Windows.
+- Evaluar empaquetado desktop.
+- Revisar notificaciones para escritorio (si se quieren o no en la primera version).

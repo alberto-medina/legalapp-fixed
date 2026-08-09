@@ -1,0 +1,165 @@
+#:import ButtonBehavior kivy.uix.behaviors.ButtonBehavior
+#:import dp kivy.metrics.dp
+
+<EspecialidadCard@ButtonBehavior+BoxLayout>:
+    orientation: "horizontal"
+    size_hint_y: None
+    height: "132dp"
+    padding: ["14dp", "12dp"]
+    spacing: "14dp"
+
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(18)]
+
+        Color:
+            rgba: 0, 0, 0, 0.05
+        Line:
+            rounded_rectangle:
+                [self.x + 1, self.y + 1, self.width - 2, self.height - 2, 18]
+            width: 1
+
+<ConsultaEspecialidadScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # =========================
+        # TOPBAR
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            padding: ["12dp", "10dp", "16dp", "10dp"]
+            spacing: "10dp"
+
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint_x: None
+                width: "42dp"
+                font_size: "22sp"
+                bold: True
+                background_normal: ""
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            Label:
+                text: "AREA LEGAL"
+                font_size: "18sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+        # =========================
+        # TITULO
+        # =========================
+        Label:
+            text: "Selecciona la especialidad para tu consulta"
+            font_size: "14sp"
+            color: 0.45, 0.50, 0.60, 1
+            size_hint_y: None
+            height: "42dp"
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Label:
+            id: lbl_ubicacion
+            text: ""
+            font_size: "12sp"
+            color: 0.30, 0.23, 0.67, 1
+            size_hint_y: None
+            height: "22dp"
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        # =========================
+        # BUSCADOR
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: "62dp"
+            padding: ["16dp", "4dp", "16dp", "10dp"]
+
+            TextInput:
+                id: buscador
+                hint_text: "Buscar: divorcio, despido, herencia, mediacion..."
+                multiline: False
+                font_size: "15sp"
+                background_color: 1, 1, 1, 1
+                foreground_color: 0.10, 0.12, 0.18, 1
+                hint_text_color: 0.55, 0.58, 0.66, 1
+                cursor_color: 0.30, 0.23, 0.67, 1
+                padding: ["14dp", "14dp"]
+                on_text: root.filtrar_especialidades(self.text)
+
+        # =========================
+        # FILTROS
+        # =========================
+        ScrollView:
+            size_hint_y: None
+            height: "56dp"
+            do_scroll_y: False
+            bar_width: 0
+
+            BoxLayout:
+                size_hint_x: None
+                width: self.minimum_width
+                spacing: "10dp"
+                padding: ["16dp", "0dp", "16dp", "0dp"]
+
+                Button:
+                    text: "Todas"
+                    size_hint_x: None
+                    width: "110dp"
+                    background_normal: ""
+                    background_color: 0.24, 0.17, 0.55, 1
+                    color: 1, 1, 1, 1
+                    bold: True
+                    on_release: root.aplicar_filtro("Todas")
+
+                Button:
+                    text: "A-Z"
+                    size_hint_x: None
+                    width: "110dp"
+                    background_normal: ""
+                    background_color: 0.90, 0.92, 0.96, 1
+                    color: 0.20, 0.22, 0.30, 1
+                    on_release: root.aplicar_filtro("A-Z")
+
+        # =========================
+        # LISTA
+        # =========================
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "6dp"
+
+            BoxLayout:
+                id: lista_especialidades
+                orientation: "vertical"
+                padding: ["16dp", "8dp", "16dp", "20dp"]
+                spacing: "12dp"
+                size_hint_y: None
+                height: self.minimum_height

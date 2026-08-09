@@ -1,0 +1,105 @@
+<HistorialScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # =========================
+        # TOPBAR
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: "64dp"
+            padding: ["12dp", "10dp", "16dp", "10dp"]
+            spacing: "10dp"
+
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint_x: None
+                width: "42dp"
+                font_size: "22sp"
+                bold: True
+                background_normal: ""
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            Label:
+                text: "MIS CONSULTAS"
+                font_size: "18sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+        # =========================
+        # FILTRO
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: "58dp"
+            padding: ["16dp", "8dp", "16dp", "8dp"]
+            spacing: "10dp"
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+                Color:
+                    rgba: 0.88, 0.90, 0.93, 1
+                Line:
+                    points: [self.x, self.y, self.right, self.y]
+                    width: 1
+
+            Label:
+                text: "Filtrar:"
+                size_hint_x: None
+                width: "70dp"
+                font_size: "14sp"
+                bold: True
+                color: 0.35, 0.40, 0.52, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+            Spinner:
+                id: filtro_spinner
+                text: "Todos"
+                values: ["Todos", "pendiente", "pagado", "en_curso", "videollamada", "finalizado"]
+                font_size: "14sp"
+                size_hint_x: 1
+                background_color: 0.24, 0.17, 0.55, 1
+                color: 1, 1, 1, 1
+                on_text: root.aplicar_filtro(self.text)
+
+        # =========================
+        # LISTA
+        # =========================
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "6dp"
+
+            BoxLayout:
+                id: lista
+                orientation: "vertical"
+                padding: ["14dp", "12dp", "14dp", "90dp"]
+                spacing: "12dp"
+                size_hint_y: None
+                height: self.minimum_height

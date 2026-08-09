@@ -1,0 +1,357 @@
+#:import dp kivy.metrics.dp
+
+<AbogadoPanelScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.95, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # TOPBAR
+        BoxLayout:
+            size_hint_y: None
+            height: "96dp"
+            padding: ["16dp", "12dp", "16dp", "12dp"]
+            spacing: "10dp"
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: "2dp"
+                Label:
+                    text: "LEGAL APP"
+                    font_size: "22sp"
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "28dp"
+                Label:
+                    text: "Panel Profesional"
+                    font_size: "11sp"
+                    color: 0.75, 0.72, 0.92, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "16dp"
+
+            Button:
+                text: "Avisos"
+                size_hint: None, None
+                size: dp(58), dp(38)
+                font_size: "11sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.35, 0.28, 0.70, 1
+                color: 1, 1, 1, 1
+                on_release: root.ver_notificaciones()
+
+            AsyncImage:
+                id: img_avatar_abogado
+                source: "assets/avatar_default.png"
+                size_hint: None, None
+                size: dp(40), dp(40)
+                allow_stretch: True
+                keep_ratio: True
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: "2dp"
+                size_hint_x: 0.48
+                Label:
+                    id: lbl_nombre_abogado
+                    text: ""
+                    font_size: "14sp"
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: "right"
+                    valign: "top"
+                    text_size: self.width, None
+                    size_hint_y: None
+                    height: "38dp"
+                Label:
+                    text: "Abogado"
+                    font_size: "11sp"
+                    color: 0.75, 0.72, 0.92, 1
+                    halign: "right"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "16dp"
+
+        # BOTON ESTADO
+        Button:
+            id: btn_estado
+            text: "DISPONIBLE"
+            size_hint_y: None
+            height: "46dp"
+            bold: True
+            font_size: "16sp"
+            background_normal: ""
+            on_release: root.cambiar_estado()
+
+        # STATS
+        BoxLayout:
+            size_hint_y: None
+            height: "116dp"
+            spacing: "12dp"
+            padding: ["16dp", "10dp", "16dp", "4dp"]
+
+            # Card Consultas
+            BoxLayout:
+                orientation: "vertical"
+                padding: ["14dp", "12dp"]
+                spacing: "4dp"
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 0.07
+                    RoundedRectangle:
+                        pos: self.x + 2, self.y - 4
+                        size: self.width - 4, self.height
+                        radius: [dp(18)]
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(18)]
+
+                Label:
+                    text: "CONSULTAS"
+                    font_size: "11sp"
+                    bold: True
+                    color: 0.50, 0.45, 0.62, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "16dp"
+
+                Label:
+                    id: lbl_consultas
+                    text: "0"
+                    font_size: "36sp"
+                    bold: True
+                    color: 0.24, 0.17, 0.55, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "44dp"
+
+            # Card Honorarios
+            BoxLayout:
+                orientation: "vertical"
+                padding: ["14dp", "8dp"]
+                spacing: "4dp"
+                on_touch_down: self.collide_point(*args[1].pos) and root.solicitar_retiro_popup()
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 0.12
+                    RoundedRectangle:
+                        pos: self.x + 2, self.y - 4
+                        size: self.width - 4, self.height
+                        radius: [dp(18)]
+                    Color:
+                        rgba: 0.24, 0.17, 0.55, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(18)]
+
+                Label:
+                    text: "HONORARIOS"
+                    font_size: "11sp"
+                    bold: True
+                    color: 0.75, 0.72, 0.92, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "16dp"
+
+                Label:
+                    id: lbl_honorarios
+                    text: "$0"
+                    font_size: "24sp"
+                    bold: True
+                    color: 0.18, 0.90, 0.50, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "34dp"
+
+                Label:
+                    text: "Toca para retirar"
+                    font_size: "10sp"
+                    color: 0.60, 0.65, 0.85, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+                    size_hint_y: None
+                    height: "14dp"
+
+        # FILTROS DE CONSULTAS
+        BoxLayout:
+            size_hint_y: None
+            height: "42dp"
+            spacing: "6dp"
+            padding: ["12dp", "6dp", "12dp", "4dp"]
+
+            Button:
+                id: filtro_todas
+                text: "Todas"
+                font_size: "12sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.24, 0.17, 0.55, 1
+                color: 1, 1, 1, 1
+                on_release: root.filtrar("todas")
+
+            Button:
+                id: filtro_activas
+                text: "Activas"
+                font_size: "12sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.90, 0.90, 0.96, 1
+                color: 0.24, 0.17, 0.55, 1
+                on_release: root.filtrar("activas")
+
+            Button:
+                id: filtro_finalizadas
+                text: "Fin"
+                font_size: "12sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.90, 0.90, 0.96, 1
+                color: 0.24, 0.17, 0.55, 1
+                on_release: root.filtrar("finalizadas")
+
+            Button:
+                id: filtro_chat
+                text: "Chat"
+                font_size: "12sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.90, 0.96, 0.92, 1
+                color: 0.18, 0.60, 0.35, 1
+                on_release: root.filtrar("chat")
+
+            Button:
+                id: filtro_video
+                text: "Video"
+                font_size: "12sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.90, 0.94, 0.98, 1
+                color: 0.10, 0.45, 0.75, 1
+                on_release: root.filtrar("video")
+
+            Button:
+                id: filtro_urgente
+                text: "Urgente"
+                font_size: "12sp"
+                bold: True
+                background_normal: ""
+                background_color: 0.98, 0.90, 0.90, 1
+                color: 0.75, 0.20, 0.20, 1
+                on_release: root.filtrar("urgente")
+
+        # LABEL SECCION
+        BoxLayout:
+            size_hint_y: None
+            height: "36dp"
+            padding: ["18dp", "8dp"]
+            Label:
+                text: "CONSULTAS RECIENTES"
+                font_size: "13sp"
+                bold: True
+                color: 0.35, 0.30, 0.50, 1
+                halign: "left"
+                text_size: self.size
+
+        # LISTA
+        ScrollView:
+            GridLayout:
+                id: lista_consultas
+                cols: 1
+                spacing: "10dp"
+                padding: ["14dp", "0dp", "14dp", "10dp"]
+                size_hint_y: None
+                height: self.minimum_height
+
+        # BOTTOM NAV
+        BoxLayout:
+            size_hint_y: None
+            height: "72dp"
+            spacing: 0
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+                Color:
+                    rgba: 0.85, 0.82, 0.94, 1
+                Line:
+                    points: [self.x, self.top, self.right, self.top]
+                    width: 1.2
+
+            # PANEL - activo
+            BoxLayout:
+                orientation: "vertical"
+                padding: ["4dp", "6dp", "4dp", "4dp"]
+                spacing: 0
+                canvas.before:
+                    Color:
+                        rgba: 0.92, 0.89, 0.98, 1
+                    RoundedRectangle:
+                        pos: [self.x + 3, self.y + 3]
+                        size: [self.width - 6, self.height - 6]
+                        radius: [dp(14)]
+
+                Label:
+                    text: "Panel"
+                    font_size: "14sp"
+                    bold: True
+                    color: 0.30, 0.23, 0.67, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.size
+
+            # PERFIL
+            Button:
+                size_hint_x: 1
+                font_size: "13sp"
+                bold: True
+                text: "Perfil"
+                background_normal: ""
+                background_color: 0, 0, 0, 0
+                color: 0.50, 0.46, 0.62, 1
+                on_release: root.ir_perfil()
+
+            # SALIR
+            Button:
+                size_hint_x: 1
+                font_size: "13sp"
+                bold: True
+                text: "Salir"
+                background_normal: ""
+                background_color: 0, 0, 0, 0
+                color: 0.80, 0.25, 0.25, 1
+                on_release: root.logout()
