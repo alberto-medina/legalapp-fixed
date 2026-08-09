@@ -332,8 +332,9 @@
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
-                    height: "70dp"
+                    height: max(dp(70), self.minimum_height)
                     padding: ["16dp", "12dp"]
+                    spacing: dp(2)
                     canvas.before:
                         Color:
                             rgba: 0.23, 0.18, 0.55, 1
@@ -348,12 +349,22 @@
                         font_size: "18sp"
                         bold: True
                         color: 1, 1, 1, 1
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.width, None
+                        size_hint_y: None
+                        height: self.texture_size[1]
 
                     Label:
                         id: lbl_detalle_precio
                         text: "Suscripcion base"
                         font_size: "11sp"
                         color: 0.85, 0.85, 1, 1
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.width, None
+                        size_hint_y: None
+                        height: self.texture_size[1]
 
                 # PASSWORD
                 BoxLayout:

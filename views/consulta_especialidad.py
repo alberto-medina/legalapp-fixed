@@ -72,14 +72,16 @@ EspecialidadCard:
             color: 0.08, 0.12, 0.28, 1
             halign: "left"
             valign: "middle"
-            text_size: self.size
+            text_size: self.width, None
+            size_hint_y: None
+            height: max(dp(22), self.texture_size[1])
         Label:
             text: "{item["descripcion"]}"
             font_size: "13sp"
             color: 0.45, 0.50, 0.60, 1
             halign: "left"
-            valign: "middle"
-            text_size: self.size
+            valign: "top"
+            text_size: self.width, None
 ''')
             container.add_widget(card)
 

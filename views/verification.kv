@@ -59,7 +59,7 @@
                 orientation: 'vertical'
                 size_hint: None, None
                 width: min(root.width * 0.88, dp(430))
-                height: dp(324)
+                height: self.minimum_height
                 pos_hint: {"center_x": 0.5, "top": 0.82}
                 padding: dp(26), dp(26)
                 spacing: dp(14)
@@ -110,6 +110,8 @@
                     height: dp(44)
 
                 Widget:
+                    size_hint_y: None
+                    height: dp(4)
 
                 Button:
                     text: "Ya abrí el link"

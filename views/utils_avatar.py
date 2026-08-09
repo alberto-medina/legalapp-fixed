@@ -1,5 +1,4 @@
 import os
-import time
 
 AVATAR_DEFAULT = "assets/avatar_default.png"
 
@@ -33,8 +32,7 @@ def _avatar_local_por_email(email):
 
 def get_avatar_source(foto_path, email=None):
     if foto_path and str(foto_path).startswith(("http://", "https://")):
-        separador = "&" if "?" in str(foto_path) else "?"
-        return f"{foto_path}{separador}v={int(time.time() // 30)}"
+        return str(foto_path)
 
     if foto_path and os.path.isfile(foto_path):
         return os.path.abspath(foto_path)

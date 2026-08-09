@@ -136,7 +136,7 @@ class AdminPanelScreen(Screen):
 
     def aprobar_abogado(self, uid):
         try:
-            ok, mensaje = fb.aprobar_abogado(uid)
+            ok, mensaje = fb.aprobar_abogado(uid, session.id_token)
             if ok:
                 self.mostrar_exito(mensaje)
                 self.cargar_abogados()
@@ -147,7 +147,7 @@ class AdminPanelScreen(Screen):
 
     def bloquear_abogado(self, uid):
         try:
-            ok = fb.desactivar_suscripcion_abogado(uid)
+            ok = fb.desactivar_suscripcion_abogado(uid, session.id_token)
             if ok:
                 self.mostrar_exito("Abogado bloqueado")
                 self.cargar_abogados()
@@ -158,7 +158,7 @@ class AdminPanelScreen(Screen):
 
     def reactivar_abogado(self, uid):
         try:
-            ok, mensaje = fb.reactivar_abogado(uid)
+            ok, mensaje = fb.reactivar_abogado(uid, session.id_token)
             if ok:
                 self.mostrar_exito(mensaje)
                 self.cargar_abogados()
@@ -275,7 +275,7 @@ class AdminPanelScreen(Screen):
 
     def cargar_retiros(self):
         try:
-            retiros = fb.listar_retiros_pendientes()
+            retiros = fb.listar_retiros_pendientes(session.id_token)
         except:
             retiros = []
 
@@ -405,7 +405,7 @@ class AdminPanelScreen(Screen):
             self.mostrar_error("Error: No hay usuario logueado")
             return
 
-        ok, mensaje = fb.procesar_retiro(retiro_id, user.get('uid'))
+        ok, mensaje = fb.procesar_retiro(retiro_id, session.id_token)
 
         if ok:
             self.mostrar_exito(mensaje)
@@ -512,7 +512,7 @@ class AdminPanelScreen(Screen):
             return
 
         print(f"ADMIN: guardando {clave} = {valor}")
-        ok = fb.actualizar_configuracion(clave, valor)
+        ok = fb.actualizar_configuracion(clave, valor, session.id_token)
         print(f"ADMIN: resultado = {ok}")
 
         if ok:

@@ -93,7 +93,7 @@
                 BoxLayout:
                     orientation: "vertical"
                     size_hint_y: None
-                    height: "80dp"
+                    height: max(dp(80), self.minimum_height)
                     padding: ["14dp", "10dp"]
                     spacing: "4dp"
 
@@ -125,7 +125,9 @@
                         bold: True
                         color: 0.10, 0.12, 0.18, 1
                         halign: "center"
-                        text_size: self.size
+                        text_size: self.width, None
+                        size_hint_y: None
+                        height: max(dp(20), self.texture_size[1])
 
                     Label:
                         id: lbl_url
@@ -133,7 +135,9 @@
                         font_size: "10sp"
                         color: 0.50, 0.55, 0.65, 1
                         halign: "center"
-                        text_size: self.size
+                        text_size: self.width, None
+                        size_hint_y: None
+                        height: self.texture_size[1]
 
                 Label:
                     text: "La sala es privada y unica para esta consulta."
