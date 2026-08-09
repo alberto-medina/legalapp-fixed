@@ -16,12 +16,12 @@ requirements = python3,kivy,kivymd,pillow,requests,pyjnius,certifi,urllib3,chars
 
 orientation = portrait
 
-android.permissions = INTERNET,CAMERA,RECORD_AUDIO,READ_EXTERNAL_STORAGE,READ_MEDIA_IMAGES,READ_MEDIA_VIDEO,READ_MEDIA_AUDIO,VIBRATE,WAKE_LOCK,RECEIVE_BOOT_COMPLETED,POST_NOTIFICATIONS
+android.permissions = INTERNET,CAMERA,RECORD_AUDIO,READ_EXTERNAL_STORAGE,READ_MEDIA_IMAGES,READ_MEDIA_AUDIO,VIBRATE,WAKE_LOCK,RECEIVE_BOOT_COMPLETED,POST_NOTIFICATIONS
 
 android.minapi = 26
-android.targetapi = 33
+android.api = 36
 android.ndk = 25c
-android.sdk_build_tools_version = 34.0.0
+android.sdk_build_tools_version = 36.0.0
 
 android.release_artifact = apk
 

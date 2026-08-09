@@ -29,6 +29,10 @@ google-services.json
 firebase-debug.log
 firebase-debug.*.log
 
+# Keystore de firma de release (jamas debe ir al repo)
+*.keystore
+*.jks
+
 # Kivy
 .kivy/
 
