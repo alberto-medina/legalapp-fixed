@@ -1,0 +1,234 @@
+#:import dp kivy.metrics.dp
+
+<ConsultaTipoScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # =================================================
+        # TOPBAR
+        # =================================================
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            padding: [dp(12), dp(10), dp(16), dp(10)]
+
+            canvas.before:
+                Color:
+                    rgba: 0.10, 0.12, 0.18, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint_x: None
+                width: dp(36)
+                font_size: "22sp"
+                bold: True
+                background_color: 0,0,0,0
+                color: 1,1,1,1
+                on_release: root.volver()
+
+            Label:
+                text: "TIPO DE CONSULTA"
+                font_size: "16sp"
+                bold: True
+                color: 1,1,1,1
+                halign: "left"
+                valign: "middle"
+                text_size: self.width, None
+
+        # =================================================
+        # ABOGADO
+        # =================================================
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: dp(92)
+            padding: [dp(16), dp(10)]
+            spacing: dp(12)
+
+            canvas.before:
+                Color:
+                    rgba: 1,1,1,1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            AsyncImage:
+                id: img_abogado
+                source: "assets/avatar_default.png"
+                size_hint: None, None
+                size: dp(56), dp(56)
+                pos_hint: {"center_y": 0.5}
+                allow_stretch: True
+                keep_ratio: True
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: dp(2)
+
+                Label:
+                    id: lbl_abogado
+                    text: ""
+                    font_size: "16sp"
+                    bold: True
+                    color: 0.12, 0.12, 0.16, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.width, None
+
+                Label:
+                    id: lbl_especialidad
+                    text: ""
+                    font_size: "12sp"
+                    color: 0.35, 0.38, 0.48, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.width, None
+
+        # =================================================
+        # BANNER
+        # =================================================
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(40)
+            padding: [dp(16), dp(8)]
+
+            canvas.before:
+                Color:
+                    rgba: 0.94, 0.96, 0.97, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                id: lbl_banner
+                text: ""
+                font_size: "12sp"
+                bold: True
+                halign: "center"
+                valign: "middle"
+                text_size: self.width, None
+
+        # =================================================
+        # SERVICIOS
+        # =================================================
+
+        ScrollView:
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [dp(16), dp(20), dp(16), dp(20)]
+                spacing: dp(16)
+
+                # CHAT
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(92)
+                    spacing: dp(4)
+
+                    Button:
+                        id: btn_chat
+                        text: "Chat"
+                        size_hint_y: None
+                        height: dp(62)
+                        bold: True
+                        font_size: "15sp"
+                        background_normal: ""
+                        background_color: 0.18, 0.80, 0.44, 1
+                        color: 1,1,1,1
+                        on_release: root.seleccionar("chat")
+
+                    Label:
+                        id: lbl_chat_estado
+                        text: ""
+                        size_hint_y: None
+                        height: dp(20)
+                        font_size: "11sp"
+                        halign: "center"
+                        text_size: self.width, None
+
+                # VIDEO
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(92)
+                    spacing: dp(4)
+
+                    Button:
+                        id: btn_video
+                        text: "Videollamada"
+                        size_hint_y: None
+                        height: dp(62)
+                        bold: True
+                        font_size: "15sp"
+                        background_normal: ""
+                        background_color: 0.18, 0.80, 0.44, 1
+                        color: 1,1,1,1
+                        on_release: root.seleccionar("video")
+
+                    Label:
+                        id: lbl_video_estado
+                        text: ""
+                        size_hint_y: None
+                        height: dp(20)
+                        font_size: "11sp"
+                        halign: "center"
+                        text_size: self.width, None
+
+                # URGENTE
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: dp(92)
+                    spacing: dp(4)
+
+                    Button:
+                        id: btn_urgente
+                        text: "URGENTE"
+                        size_hint_y: None
+                        height: dp(62)
+                        bold: True
+                        font_size: "15sp"
+                        background_normal: ""
+                        background_color: 0.91, 0.30, 0.24, 1
+                        color: 1,1,1,1
+                        on_release: root.seleccionar("urgente")
+
+                    Label:
+                        id: lbl_urgente_estado
+                        text: ""
+                        size_hint_y: None
+                        height: dp(20)
+                        font_size: "11sp"
+                        halign: "center"
+                        text_size: self.width, None
+
+                Widget:
+
+        Button:
+            text: "Volver"
+            size_hint_y: None
+            height: dp(50)
+            font_size: "13sp"
+            background_color: 0,0,0,0
+            color: 0.45, 0.50, 0.58, 1
+            on_release: root.volver()

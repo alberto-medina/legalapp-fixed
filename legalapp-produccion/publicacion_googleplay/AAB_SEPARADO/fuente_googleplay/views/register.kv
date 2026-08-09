@@ -1,0 +1,394 @@
+#:import dp kivy.metrics.dp
+
+<RegisterScreen>:
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: "120dp"
+            padding: ["20dp", "20dp"]
+            canvas.before:
+                Color:
+                    rgba: 0.23, 0.18, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            BoxLayout:
+                orientation: "vertical"
+                spacing: "4dp"
+
+                Label:
+                    text: "LEGAL APP"
+                    font_size: "26sp"
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: "center"
+                    text_size: self.size
+
+                Label:
+                    text: "Crear cuenta"
+                    font_size: "14sp"
+                    color: 0.80, 0.78, 1, 1
+                    halign: "center"
+                    text_size: self.size
+
+        ScrollView:
+            id: register_scroll
+            do_scroll_x: False
+            bar_width: "3dp"
+
+            BoxLayout:
+                orientation: "vertical"
+                padding: ["18dp", "20dp", "18dp", "40dp"]
+                spacing: "10dp"
+                size_hint_y: None
+                height: self.minimum_height
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    padding: ["16dp", "16dp"]
+                    spacing: "10dp"
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(16)]
+
+                    Label:
+                        text: "Registrate como cliente"
+                        font_size: "15sp"
+                        bold: True
+                        color: 0.23, 0.18, 0.55, 1
+                        size_hint_y: None
+                        height: "24dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    Label:
+                        text: "NOMBRE COMPLETO *"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: username
+                        hint_text: "Tu nombre completo"
+                        multiline: False
+                        size_hint_y: None
+                        height: "46dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        cursor_color: 0.23, 0.18, 0.55, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "EMAIL *"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: email
+                        hint_text: "tu@email.com"
+                        multiline: False
+                        size_hint_y: None
+                        height: "46dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        cursor_color: 0.23, 0.18, 0.55, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "DNI"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: dni
+                        hint_text: "Tu DNI (opcional)"
+                        multiline: False
+                        input_filter: "int"
+                        size_hint_y: None
+                        height: "46dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        cursor_color: 0.23, 0.18, 0.55, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "TELEFONO"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: telefono
+                        hint_text: "+54 9 xxx-xxxxxxx"
+                        multiline: False
+                        size_hint_y: None
+                        height: "46dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        cursor_color: 0.23, 0.18, 0.55, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "DIRECCION"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    TextInput:
+                        id: direccion
+                        hint_text: "Tu direccion (opcional)"
+                        multiline: False
+                        size_hint_y: None
+                        height: "46dp"
+                        background_color: 0.96, 0.97, 0.98, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.65, 0.68, 0.75, 1
+                        cursor_color: 0.23, 0.18, 0.55, 1
+                        padding: ["12dp", "12dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "CONTRASENA *"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    BoxLayout:
+                        orientation: "horizontal"
+                        size_hint_y: None
+                        height: "46dp"
+                        spacing: "4dp"
+
+                        TextInput:
+                            id: password
+                            hint_text: "Minimo 8 caracteres"
+                            password: True
+                            multiline: False
+                            size_hint_y: None
+                            height: "46dp"
+                            background_color: 0.96, 0.97, 0.98, 1
+                            foreground_color: 0.10, 0.12, 0.18, 1
+                            hint_text_color: 0.65, 0.68, 0.75, 1
+                            cursor_color: 0.23, 0.18, 0.55, 1
+                            padding: ["12dp", "12dp"]
+                            font_size: "15sp"
+                            write_tab: False
+
+                        Button:
+                            size_hint_x: None
+                            width: "56dp"
+                            text: "Ver"
+                            font_size: "13sp"
+                            bold: True
+                            background_normal: ""
+                            background_color: 0.90, 0.89, 0.97, 1
+                            color: 0.30, 0.23, 0.67, 1
+                            on_release: password.password = not password.password
+
+                    Label:
+                        text: "REPETIR CONTRASENA *"
+                        font_size: "11sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "16dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    BoxLayout:
+                        orientation: "horizontal"
+                        size_hint_y: None
+                        height: "46dp"
+                        spacing: "4dp"
+
+                        TextInput:
+                            id: password_confirm
+                            hint_text: "Repeti tu contrasena"
+                            password: True
+                            multiline: False
+                            size_hint_y: None
+                            height: "46dp"
+                            background_color: 0.96, 0.97, 0.98, 1
+                            foreground_color: 0.10, 0.12, 0.18, 1
+                            hint_text_color: 0.65, 0.68, 0.75, 1
+                            cursor_color: 0.23, 0.18, 0.55, 1
+                            padding: ["12dp", "12dp"]
+                            font_size: "15sp"
+                            write_tab: False
+
+                        Button:
+                            size_hint_x: None
+                            width: "56dp"
+                            text: "Ver"
+                            font_size: "13sp"
+                            bold: True
+                            background_normal: ""
+                            background_color: 0.90, 0.89, 0.97, 1
+                            color: 0.30, 0.23, 0.67, 1
+                            on_release: password_confirm.password = not password_confirm.password
+
+                    BoxLayout:
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: ["12dp", "12dp"]
+                        spacing: "8dp"
+                        canvas.before:
+                            Color:
+                                rgba: 0.94, 0.92, 0.99, 1
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(12)]
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: "44dp"
+                            spacing: "8dp"
+
+                            CheckBox:
+                                id: terms_check
+                                size_hint_x: None
+                                width: "40dp"
+
+                            Label:
+                                text: "Acepto terminos, politica de privacidad y bases del servicio *"
+                                bold: True
+                                color: 0.23, 0.18, 0.55, 1
+                                halign: "left"
+                                valign: "middle"
+                                text_size: self.size
+
+                        Label:
+                            text: "Es obligatorio para crear la cuenta y usar Legal App."
+                            font_size: "11sp"
+                            color: 0.42, 0.45, 0.55, 1
+                            size_hint_y: None
+                            height: "18dp"
+                            halign: "left"
+                            text_size: self.size
+
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "36dp"
+                        spacing: "8dp"
+
+                        Button:
+                            text: "Ver Terminos y bases"
+                            font_size: "12sp"
+                            background_normal: ""
+                            background_color: 0.23, 0.18, 0.55, 1
+                            color: 1, 1, 1, 1
+                            on_release: app.root.current = "terms_screen"
+
+                        Button:
+                            text: "Ver Privacidad"
+                            font_size: "12sp"
+                            background_normal: ""
+                            background_color: 0.18, 0.80, 0.44, 1
+                            color: 1, 1, 1, 1
+                            on_release: app.root.current = "privacy_screen"
+
+                    Label:
+                        id: error
+                        text: ""
+                        color: 0.90, 0.25, 0.25, 1
+                        size_hint_y: None
+                        height: "36dp"
+                        halign: "left"
+                        text_size: self.size
+
+                    Button:
+                        text: "Crear cuenta"
+                        size_hint_y: None
+                        height: "52dp"
+                        bold: True
+                        font_size: "16sp"
+                        background_normal: ""
+                        background_color: 0.18, 0.80, 0.44, 1
+                        color: 1, 1, 1, 1
+                        on_release: root.register()
+
+                Label:
+                    text: "o"
+                    font_size: "13sp"
+                    color: 0.60, 0.63, 0.70, 1
+                    size_hint_y: None
+                    height: "24dp"
+                    halign: "center"
+                    text_size: self.size
+
+                Button:
+                    text: "Soy abogado - Registrarme como profesional"
+                    size_hint_y: None
+                    height: "52dp"
+                    bold: True
+                    font_size: "14sp"
+                    background_normal: ""
+                    background_color: 0.23, 0.18, 0.55, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.ir_registro_abogado()
+
+                Button:
+                    text: "Ya tengo cuenta"
+                    size_hint_y: None
+                    height: "44dp"
+                    font_size: "14sp"
+                    background_color: 0, 0, 0, 0
+                    color: 0.45, 0.50, 0.58, 1
+                    on_release: root.go_back()

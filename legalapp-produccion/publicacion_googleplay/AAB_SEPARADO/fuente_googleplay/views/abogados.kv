@@ -1,0 +1,145 @@
+#:import dp kivy.metrics.dp
+
+<AbogadosScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # =========================
+        # TOPBAR
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: dp(72)
+            padding: [dp(14), dp(12), dp(18), dp(12)]
+
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint_x: None
+                width: dp(42)
+                font_size: "24sp"
+                bold: True
+                background_normal: ""
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            BoxLayout:
+                orientation: "vertical"
+
+                Label:
+                    text: "ABOGADOS"
+                    font_size: "22sp"
+                    bold: True
+                    color: 1, 1, 1, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                Label:
+                    id: lbl_area
+                    text: ""
+                    font_size: "13sp"
+                    color: 0.82, 0.80, 0.95, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+        # =========================
+        # BUSCADOR
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: dp(74)
+            padding: [dp(16), dp(14), dp(16), dp(10)]
+
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            TextInput:
+                id: buscador
+                hint_text: "Buscar por nombre, experiencia o especialidad..."
+                multiline: False
+                size_hint_y: None
+                height: dp(46)
+                background_normal: ""
+                background_active: ""
+                background_color: 1, 1, 1, 1
+                foreground_color: 0.10, 0.06, 0.14, 1
+                hint_text_color: 0.55, 0.52, 0.66, 1
+                cursor_color: 0.30, 0.23, 0.67, 1
+                padding: [dp(16), dp(12)]
+                font_size: "15sp"
+                on_text: root.filtrar()
+
+        # =========================
+        # FILTROS
+        # =========================
+        BoxLayout:
+            size_hint_y: None
+            height: dp(64)
+            padding: [dp(14), dp(8), dp(14), dp(10)]
+            spacing: dp(10)
+
+            canvas.before:
+                Color:
+                    rgba: 1, 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Spinner:
+                id: filtro_estado
+                text: "Todos"
+                values: ["Todos", "disponible", "guardia", "ocupado"]
+                font_size: "13sp"
+                background_normal: ""
+                background_color: 0.92, 0.90, 0.98, 1
+                color: 0.18, 0.12, 0.40, 1
+                on_text: root.filtrar()
+
+            Spinner:
+                id: filtro_orden
+                text: "Mejor valorados"
+                values:
+                    [
+                    "Mejor valorados",
+                    "Mayor experiencia",
+                    "Nombre A-Z"
+                    ]
+                font_size: "13sp"
+                background_normal: ""
+                background_color: 0.92, 0.90, 0.98, 1
+                color: 0.18, 0.12, 0.40, 1
+                on_text: root.filtrar()
+
+        # =========================
+        # LISTA
+        # =========================
+        ScrollView:
+
+            BoxLayout:
+                id: lista
+                orientation: "vertical"
+                padding: [dp(16), dp(16), dp(16), dp(90)]
+                spacing: dp(14)
+                size_hint_y: None
+                height: self.minimum_height

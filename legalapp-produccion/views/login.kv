@@ -1,0 +1,211 @@
+#:import dp kivy.metrics.dp
+
+<LoginScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.95, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # HEADER
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: None
+            height: dp(180)
+            padding: dp(20), dp(24)
+            spacing: dp(4)
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Widget:
+                size_hint_y: 0.4
+
+            Label:
+                id: titulo_app
+                text: "LEGAL APP"
+                font_size: "34sp"
+                bold: True
+                color: 1,1,1,1
+                halign: "center"
+                valign: "middle"
+                text_size: self.width, None
+                size_hint_y: None
+                height: dp(44)
+
+            Label:
+                text: "Tu consulta legal en minutos"
+                font_size: "16sp"
+                color: 0.85,0.82,0.96,1
+                halign: "center"
+                valign: "middle"
+                text_size: self.width, None
+                size_hint_y: None
+                height: dp(24)
+
+            Widget:
+                size_hint_y: 0.3
+
+        # BODY
+        ScrollView:
+            id: login_scroll
+            do_scroll_x: False
+            bar_width: 0
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [dp(20), dp(20), dp(20), dp(20) + app.keyboard_height]
+                spacing: dp(12)
+
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: self.minimum_height
+                    size_hint_x: 1
+                    canvas.before:
+                        Color:
+                            rgba: 0,0,0,0.07
+                        RoundedRectangle:
+                            pos: self.x, self.y - dp(3)
+                            size: self.size
+                            radius: [dp(24)]
+                        Color:
+                            rgba: 1,1,1,1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(24)]
+
+                    BoxLayout:
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: dp(26), dp(26)
+                        spacing: dp(12)
+
+                        Label:
+                            text: "Iniciar sesion"
+                            font_size: "22sp"
+                            bold: True
+                            color: 0.10,0.06,0.14,1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.width, None
+                            size_hint_y: None
+                            height: dp(34)
+
+                        TextInput:
+                            id: email
+                            hint_text: "ejemplo@correo.com"
+                            multiline: False
+                            size_hint_y: None
+                            height: dp(56)
+                            font_size: "16sp"
+                            padding: dp(14), dp(16)
+                            background_normal: ""
+                            background_active: ""
+                            background_color: 0.95,0.94,0.97,1
+                            foreground_color: 0.10,0.06,0.14,1
+                            hint_text_color: 0.60,0.57,0.68,1
+                            cursor_color: 0.30,0.23,0.67,1
+
+                        # CAMPO PASSWORD CON OJO
+                        BoxLayout:
+                            orientation: "horizontal"
+                            size_hint_y: None
+                            height: dp(56)
+                            spacing: dp(4)
+
+                            TextInput:
+                                id: password
+                                hint_text: "Contrasena"
+                                password: True
+                                multiline: False
+                                size_hint_y: None
+                                height: dp(56)
+                                font_size: "16sp"
+                                padding: dp(14), dp(16)
+                                background_normal: ""
+                                background_active: ""
+                                background_color: 0.95,0.94,0.97,1
+                                foreground_color: 0.10,0.06,0.14,1
+                                hint_text_color: 0.60,0.57,0.68,1
+                                cursor_color: 0.30,0.23,0.67,1
+
+                            Button:
+                                size_hint_x: None
+                                width: dp(62)
+                                text: "Ver"
+                                font_size: "14sp"
+                                bold: True
+                                background_normal: ""
+                                background_color: 0.90,0.89,0.97,1
+                                color: 0.30,0.23,0.67,1
+                                on_release: password.password = not password.password
+
+                        Label:
+                            id: error
+                            text: ""
+                            color: 0.85,0.22,0.22,1
+                            font_size: "13sp"
+                            halign: "center"
+                            valign: "middle"
+                            text_size: self.width, None
+                            size_hint_y: None
+                            height: dp(18)
+
+                        Button:
+                            text: "Ingresar"
+                            size_hint_y: None
+                            height: dp(56)
+                            font_size: "18sp"
+                            bold: True
+                            background_normal: ""
+                            background_down: ""
+                            background_color: 0.30,0.23,0.67,1
+                            color: 1,1,1,1
+                            on_release: root.login()
+
+                        Button:
+                            text: "Crear cuenta"
+                            size_hint_y: None
+                            height: dp(52)
+                            font_size: "16sp"
+                            bold: True
+                            background_normal: ""
+                            background_down: ""
+                            background_color: 1,1,1,1
+                            color: 0.30,0.23,0.67,1
+                            on_release: root.go_register()
+
+                        Button:
+                            text: "No recibi el codigo de verificacion"
+                            size_hint_y: None
+                            height: dp(44)
+                            font_size: "14sp"
+                            background_normal: ""
+                            background_down: ""
+                            background_color: 1,1,1,1
+                            color: 0.50,0.47,0.58,1
+                            on_release: root.reenviar_codigo()
+
+                        Button:
+                            text: "Olvide mi contrasena"
+                            size_hint_y: None
+                            height: dp(40)
+                            font_size: "13sp"
+                            background_normal: ""
+                            background_down: ""
+                            background_color: 1,1,1,1
+                            color: 0.30,0.23,0.67,1
+                            on_release: root.recuperar_password()

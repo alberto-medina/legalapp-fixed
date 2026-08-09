@@ -1,0 +1,176 @@
+<PagoMPScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.95, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            padding: ["12dp", "12dp", "16dp", "12dp"]
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint_x: None
+                width: "36dp"
+                font_size: "22sp"
+                bold: True
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            Label:
+                text: "PAGAR CON MERCADOPAGO"
+                font_size: "15sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                text_size: self.size
+
+        ScrollView:
+            do_scroll_x: False
+            bar_width: "4dp"
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+
+                # INFO ABOGADO
+                BoxLayout:
+                    size_hint_y: None
+                    height: "48dp"
+                    padding: ["20dp", "12dp"]
+                    canvas.before:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+
+                    Label:
+                        id: lbl_abogado_mp
+                        text: ""
+                        font_size: "13sp"
+                        color: 0.45, 0.40, 0.58, 1
+                        halign: "left"
+                        text_size: self.size
+
+                # CARD PAGO
+                BoxLayout:
+                    orientation: "vertical"
+                    padding: ["20dp", "24dp", "20dp", "20dp"]
+                    spacing: "12dp"
+                    size_hint_y: None
+                    height: self.minimum_height
+
+                    Label:
+                        text: "MercadoPago"
+                        font_size: "22sp"
+                        bold: True
+                        color: 0.00, 0.55, 0.88, 1
+                        size_hint_y: None
+                        height: "40dp"
+                        halign: "center"
+                        text_size: self.size
+
+                    Label:
+                        id: lbl_precio_mp
+                        text: "$0"
+                        font_size: "48sp"
+                        bold: True
+                        color: 0.24, 0.17, 0.55, 1
+                        size_hint_y: None
+                        height: "70dp"
+                        halign: "center"
+                        text_size: self.size
+
+                    Label:
+                        id: lbl_tipo_mp
+                        text: ""
+                        font_size: "14sp"
+                        color: 0.45, 0.40, 0.58, 1
+                        size_hint_y: None
+                        height: "26dp"
+                        halign: "center"
+                        text_size: self.size
+
+                    Label:
+                        id: lbl_estado_mp
+                        text: ""
+                        font_size: "12sp"
+                        color: 0.55, 0.50, 0.65, 1
+                        size_hint_y: None
+                        height: "34dp"
+                        halign: "center"
+                        valign: "middle"
+                        text_size: self.size
+
+                    Widget:
+                        size_hint_y: None
+                        height: "6dp"
+
+                    Button:
+                        id: btn_ir_mp
+                        text: "Ir a pagar en MercadoPago"
+                        size_hint_y: None
+                        height: "54dp"
+                        bold: True
+                        font_size: "16sp"
+                        background_normal: ""
+                        background_color: 0.00, 0.55, 0.88, 1
+                        color: 1, 1, 1, 1
+                        disabled: True
+                        on_release: root.ir_a_pagar()
+
+                    Button:
+                        id: btn_verificar
+                        text: "Verificar pago"
+                        size_hint_y: None
+                        height: "0dp"
+                        bold: True
+                        font_size: "15sp"
+                        background_normal: ""
+                        background_color: 0.18, 0.80, 0.44, 1
+                        color: 1, 1, 1, 1
+                        disabled: True
+                        opacity: 0
+                        on_release: root.verificar_pago()
+
+                    Button:
+                        id: btn_confirmar
+                        text: "Ya pague - Continuar"
+                        size_hint_y: None
+                        height: "48dp"
+                        bold: True
+                        font_size: "15sp"
+                        background_normal: ""
+                        background_color: 0.30, 0.23, 0.67, 1
+                        color: 1, 1, 1, 1
+                        disabled: True
+                        on_release: root.confirmar_pago()
+
+                    Label:
+                        text: "Pagos procesados de forma segura"
+                        font_size: "11sp"
+                        color: 0.60, 0.57, 0.68, 1
+                        size_hint_y: None
+                        height: "22dp"
+                        halign: "center"
+                        text_size: self.size
+
+                    Widget:
+                        size_hint_y: None
+                        height: "20dp"

@@ -1,0 +1,144 @@
+#:import dp kivy.metrics.dp
+
+<VerificationScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(10)
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.95, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(126)
+            padding: dp(18), dp(18)
+            spacing: dp(2)
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Widget:
+                size_hint_y: 0.3
+
+            Label:
+                text: "VERIFICACIÓN"
+                font_size: "24sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.width - dp(8), None
+                size_hint_y: None
+                height: dp(34)
+
+            Label:
+                text: "Activá tu cuenta"
+                font_size: "13sp"
+                color: 0.85, 0.82, 0.96, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.width - dp(8), None
+                size_hint_y: None
+                height: dp(18)
+
+            Widget:
+                size_hint_y: 0.2
+
+        FloatLayout:
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                width: min(root.width * 0.88, dp(430))
+                height: dp(324)
+                pos_hint: {"center_x": 0.5, "top": 0.82}
+                padding: dp(26), dp(26)
+                spacing: dp(14)
+
+                canvas.before:
+                    Color:
+                        rgba: 0, 0, 0, 0.07
+                    RoundedRectangle:
+                        pos: self.x, self.y - dp(3)
+                        size: self.size
+                        radius: [dp(24)]
+
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(24)]
+
+                Label:
+                    id: info_label
+                    text: "Verificación de Email"
+                    font_size: "14sp"
+                    color: 0.40, 0.45, 0.55, 1
+                    halign: "center"
+                    valign: "top"
+                    text_size: self.width - dp(8), None
+                    size_hint_y: None
+                    height: dp(132)
+
+                TextInput:
+                    id: codigo
+                    opacity: 0
+                    disabled: True
+                    size_hint_y: None
+                    height: 0
+                    multiline: False
+
+                Label:
+                    id: error
+                    text: ""
+                    color: 0.90, 0.25, 0.25, 1
+                    font_size: "12sp"
+                    halign: "center"
+                    valign: "middle"
+                    text_size: self.width - dp(8), None
+                    size_hint_y: None
+                    height: dp(44)
+
+                Widget:
+
+                Button:
+                    text: "Ya abrí el link"
+                    size_hint_y: None
+                    height: dp(56)
+                    font_size: "18sp"
+                    bold: True
+                    background_normal: ""
+                    background_down: ""
+                    background_color: 0.30, 0.23, 0.67, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.verificar_codigo()
+
+                Button:
+                    text: "Reenviar email"
+                    size_hint_y: None
+                    height: dp(48)
+                    font_size: "14sp"
+                    background_normal: ""
+                    background_down: ""
+                    background_color: 1, 1, 1, 1
+                    color: 0.30, 0.23, 0.67, 1
+                    on_release: root.reenviar_codigo()
+
+                Button:
+                    text: "Volver al login"
+                    size_hint_y: None
+                    height: dp(44)
+                    font_size: "14sp"
+                    background_color: 0, 0, 0, 0
+                    color: 0.45, 0.50, 0.58, 1
+                    on_release: root.ir_a_login()

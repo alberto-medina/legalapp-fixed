@@ -1,0 +1,326 @@
+#:import dp kivy.metrics.dp
+
+<ChatScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.95, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # ==================================================
+        # TOPBAR
+        # ==================================================
+        BoxLayout:
+            size_hint_y: None
+            height: dp(112)
+            orientation: "vertical"
+            padding: [dp(10), dp(8), dp(10), dp(8)]
+            spacing: dp(6)
+
+            canvas.before:
+                Color:
+                    rgba: 0.24, 0.17, 0.55, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(48)
+                spacing: dp(8)
+
+                Button:
+                    text: "<"
+                    size_hint_x: None
+                    width: dp(40)
+                    font_size: "22sp"
+                    bold: True
+                    background_normal: ""
+                    background_color: 0, 0, 0, 0
+                    color: 1, 1, 1, 1
+                    on_release: root.volver()
+
+                BoxLayout:
+                    size_hint_x: None
+                    width: dp(46)
+
+                    AsyncImage:
+                        id: img_avatar_chat
+                        source: "assets/avatar_default.png"
+                        size_hint: None, None
+                        size: dp(46), dp(46)
+                        pos_hint: {"center_y": 0.5}
+                        allow_stretch: True
+                        keep_ratio: True
+
+                # ==================================================
+                # INFO CHAT
+                # ==================================================
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_x: 1
+                    spacing: dp(1)
+                    padding: [dp(0), dp(2), dp(0), dp(2)]
+
+                    Label:
+                        id: lbl_chat_titulo
+                        text: ""
+                        size_hint_y: None
+                        height: dp(20)
+                        font_size: "15sp"
+                        bold: True
+                        color: 1, 1, 1, 1
+                        halign: "left"
+                        valign: "middle"
+                        text_size: (self.width, None)
+                        shorten: True
+                        shorten_from: "right"
+
+                    Label:
+                        id: lbl_chat_tipo
+                        text: ""
+                        size_hint_y: None
+                        height: dp(14)
+                        font_size: "10sp"
+                        color: 0.82, 0.80, 0.95, 1
+                        halign: "left"
+                        valign: "middle"
+                        text_size: (self.width, None)
+                        shorten: True
+                        shorten_from: "right"
+
+                    Label:
+                        id: lbl_estado_linea
+                        text: ""
+                        size_hint_y: None
+                        height: dp(14)
+                        font_size: "10sp"
+                        bold: True
+                        color: 0.18, 0.90, 0.50, 1
+                        halign: "left"
+                        valign: "middle"
+                        text_size: (self.width, None)
+                        shorten: True
+                        shorten_from: "right"
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(42)
+                spacing: dp(8)
+
+                Widget:
+
+                Button:
+                    id: btn_unirse_video
+                    text: "Unirse"
+                    size_hint_x: None
+                    width: dp(92) if self.opacity else 0
+                    size_hint_y: None
+                    height: dp(38) if self.opacity else 0
+                    opacity: 0
+                    disabled: True
+                    bold: True
+                    font_size: "11sp"
+                    background_normal: ""
+                    background_color: 0.18, 0.70, 0.40, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.ir_video()
+
+                Button:
+                    id: btn_invitar_video
+                    text: "Video"
+                    size_hint_x: None
+                    width: dp(82) if self.opacity else 0
+                    size_hint_y: None
+                    height: dp(38) if self.opacity else 0
+                    opacity: 0
+                    disabled: True
+                    bold: True
+                    font_size: "11sp"
+                    background_normal: ""
+                    background_color: 0.10, 0.55, 0.85, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.invitar_videollamada()
+
+                Button:
+                    id: btn_finalizar
+                    text: "Finalizar"
+                    size_hint_x: None
+                    width: dp(98) if self.opacity else 0
+                    size_hint_y: None
+                    height: dp(38) if self.opacity else 0
+                    opacity: 0
+                    disabled: True
+                    bold: True
+                    font_size: "11sp"
+                    background_normal: ""
+                    background_color: 0.85, 0.18, 0.18, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.finalizar_consulta()
+
+        # ==================================================
+        # BANNER FINALIZADO
+        # ==================================================
+        BoxLayout:
+            id: banner_finalizado
+            size_hint_y: None
+            height: 0
+            padding: [dp(14), dp(6)]
+            canvas.before:
+                Color:
+                    rgba: 0.97, 0.94, 0.85, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                id: lbl_banner_fin
+                text: ""
+                font_size: "12sp"
+                bold: True
+                color: 0.55, 0.38, 0.05, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+        BoxLayout:
+            id: banner_error_chat
+            size_hint_y: None
+            height: 0
+            opacity: 0
+            padding: [dp(14), dp(6)]
+            canvas.before:
+                Color:
+                    rgba: 0.99, 0.92, 0.92, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                id: lbl_banner_error_chat
+                text: ""
+                font_size: "12sp"
+                bold: True
+                color: 0.78, 0.18, 0.18, 1
+                halign: "center"
+                valign: "middle"
+                text_size: self.size
+
+        # ==================================================
+        # CONTENIDO CHAT
+        # ==================================================
+        BoxLayout:
+            orientation: "vertical"
+
+            # ==================================================
+            # MENSAJES
+            # ==================================================
+            ScrollView:
+                id: scroll_chat
+                do_scroll_x: False
+                bar_width: dp(6)
+                canvas.before:
+                    Color:
+                        rgba: 0.96, 0.95, 0.98, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+
+                GridLayout:
+                    id: chat_box
+                    cols: 1
+                    spacing: dp(10)
+                    padding: [dp(14), dp(14), dp(14), dp(14)]
+                    size_hint_y: None
+                    height: self.minimum_height
+
+            # ==================================================
+            # INPUT - se levanta con el teclado via keyboard_height
+            # ==================================================
+            BoxLayout:
+                id: input_area
+                orientation: "horizontal"
+                size_hint_y: None
+                height: dp(72) + app.keyboard_height
+                spacing: dp(8)
+                padding: [dp(10), dp(8), dp(10), dp(8) + app.keyboard_height]
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                    Color:
+                        rgba: 0.88, 0.86, 0.94, 1
+                    Line:
+                        points: [self.x, self.top, self.right, self.top]
+                        width: 1
+
+                Button:
+                    text: "+"
+                    size_hint_x: None
+                    width: dp(42)
+                    font_size: "22sp"
+                    background_normal: ""
+                    background_color: 0.92, 0.89, 0.98, 1
+                    color: 0.30, 0.23, 0.67, 1
+                    on_release: root.adjuntar()
+
+                Button:
+                    text: "Cam"
+                    size_hint_x: None
+                    width: dp(48)
+                    font_size: "12sp"
+                    bold: True
+                    background_normal: ""
+                    background_color: 0.92, 0.89, 0.98, 1
+                    color: 0.30, 0.23, 0.67, 1
+                    on_release: root.abrir_camara()
+
+                TextInput:
+                    id: input_mensaje
+                    hint_text: "Escribe un mensaje..."
+                    multiline: False
+                    input_type: "text"
+                    keyboard_suggestions: True
+                    size_hint_y: None
+                    height: dp(56)
+                    background_normal: ""
+                    background_active: ""
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.06, 0.06, 0.10, 1
+                    hint_text_color: 0.45, 0.45, 0.54, 1
+                    cursor_color: 0.30, 0.23, 0.67, 1
+                    padding: [dp(14), dp(14), dp(14), dp(10)]
+                    font_size: "16sp"
+                    on_focus: root.on_input_focus(self.focus)
+                    on_text_validate: root.enviar()
+
+                Button:
+                    id: btn_audio
+                    text: "Mic"
+                    size_hint_x: None
+                    width: dp(48)
+                    bold: True
+                    font_size: "13sp"
+                    background_normal: ""
+                    background_color: 0.92, 0.89, 0.98, 1
+                    color: 0.30, 0.23, 0.67, 1
+                    on_press: root.iniciar_audio()
+                    on_release: root.finalizar_audio()
+
+                Button:
+                    text: ">"
+                    size_hint_x: None
+                    width: dp(48)
+                    bold: True
+                    font_size: "20sp"
+                    background_normal: ""
+                    background_color: 0.30, 0.23, 0.67, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.enviar()

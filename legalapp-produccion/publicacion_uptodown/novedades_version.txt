@@ -1,0 +1,10 @@
+NOVEDADES VERSION 1.1.10
+
+- Mejora general de estabilidad
+- Flujo de registro y validacion de email mas consistente
+- Mejoras en pagos de consultas y suscripciones
+- Mejoras en chat, audio, imagenes, PDF y documentos
+- Mejoras en videollamadas
+- Mejoras en visual de paneles y pantallas moviles
+- Ajustes en perfil profesional, especialidades y resenas
+- Endurecimiento del flujo de aprobacion de abogados

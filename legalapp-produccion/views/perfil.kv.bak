@@ -1,0 +1,512 @@
+#:import dp kivy.metrics.dp
+
+<PerfilScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # TOPBAR
+        BoxLayout:
+            size_hint_y: None
+            height: "68dp"
+            padding: ["14dp", "12dp", "14dp", "12dp"]
+            canvas.before:
+                Color:
+                    rgba: 0.10, 0.12, 0.18, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Button:
+                text: "<"
+                size_hint_x: None
+                width: "48dp"
+                font_size: "24sp"
+                bold: True
+                background_normal: ""
+                background_color: 0, 0, 0, 0
+                color: 1, 1, 1, 1
+                on_release: root.volver()
+
+            Label:
+                text: "MI PERFIL"
+                font_size: "20sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+        ScrollView:
+            id: perfil_scroll
+            do_scroll_x: False
+            bar_width: "4dp"
+
+            BoxLayout:
+                orientation: "vertical"
+                padding: [dp(16), dp(16), dp(16), dp(120) + app.keyboard_height]
+                spacing: "12dp"
+                size_hint_y: None
+                height: self.minimum_height
+
+                # AVATAR CARD
+                BoxLayout:
+                    orientation: "vertical"
+                    size_hint_y: None
+                    height: "220dp"
+                    spacing: "10dp"
+                    padding: ["0dp", "18dp", "0dp", "14dp"]
+                    canvas.before:
+                        Color:
+                            rgba: 0.10, 0.12, 0.18, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(18)]
+
+                    AsyncImage:
+                        id: img_avatar
+                        source: "assets/avatar_default.png"
+                        size_hint: None, None
+                        size: "90dp", "90dp"
+                        pos_hint: {"center_x": 0.5}
+
+                    Label:
+                        id: lbl_rol_badge
+                        text: ""
+                        font_size: "14sp"
+                        bold: True
+                        size_hint_y: None
+                        height: "24dp"
+                        halign: "center"
+                        valign: "middle"
+                        text_size: self.size
+                        color: 1, 1, 1, 1
+
+                    Button:
+                        text: "Cambiar foto"
+                        size_hint: None, None
+                        size: "160dp", "40dp"
+                        pos_hint: {"center_x": 0.5}
+                        font_size: "14sp"
+                        background_normal: ""
+                        background_color: 0.18, 0.80, 0.44, 1
+                        color: 1, 1, 1, 1
+                        bold: True
+                        on_release: root.elegir_foto()
+
+                # NOMBRE
+                Label:
+                    text: "NOMBRE"
+                    font_size: "12sp"
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: "20dp"
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                TextInput:
+                    id: nombre
+                    hint_text: "Tu nombre completo"
+                    multiline: False
+                    size_hint_y: None
+                    height: "50dp"
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
+
+                # TELEFONO
+                Label:
+                    text: "TELEFONO"
+                    font_size: "12sp"
+                    bold: True
+                    color: 0.40, 0.45, 0.55, 1
+                    size_hint_y: None
+                    height: "20dp"
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.size
+
+                TextInput:
+                    id: telefono
+                    hint_text: "+54 9 xxx-xxx"
+                    multiline: False
+                    size_hint_y: None
+                    height: "50dp"
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: ["14dp", "14dp"]
+                    font_size: "15sp"
+                    write_tab: False
+
+                # FOTO URL (oculta visualmente pero funcional)
+                TextInput:
+                    id: foto
+                    opacity: 0
+                    size_hint_y: None
+                    height: "0dp"
+                    multiline: False
+
+             # SECCION ABOGADO — oculta por defecto, Python la muestra si es abogado
+                BoxLayout:
+                    id: seccion_abogado
+                    orientation: "vertical"
+                    spacing: "12dp"
+                    size_hint_y: None
+                    height: self.minimum_height if self.opacity else 0
+                    opacity: 0
+                    disabled: True
+
+                    # DATOS PROFESIONALES
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
+
+                        Label:
+                            text: "DATOS PROFESIONALES"
+                            font_size: "13sp"
+                            bold: True
+                            color: 0.23, 0.18, 0.55, 1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    Label:
+                        text: "MATRICULA"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: matricula
+                        hint_text: "Numero de matricula"
+                        multiline: False
+                        size_hint_y: None
+                        height: "50dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "PROVINCIA"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: provincia
+                        hint_text: "Ej: Salta, CABA, Cordoba..."
+                        multiline: False
+                        size_hint_y: None
+                        height: "50dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "CIUDAD"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: ciudad
+                        hint_text: "Ej: Salta Capital"
+                        multiline: False
+                        size_hint_y: None
+                        height: "50dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "ANOS DE EXPERIENCIA"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: experiencia
+                        hint_text: "Ej: 8 anos"
+                        multiline: False
+                        size_hint_y: None
+                        height: "50dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    Label:
+                        text: "BIO / DESCRIPCION"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: descripcion
+                        hint_text: "Contanos sobre tu especialidad..."
+                        multiline: True
+                        size_hint_y: None
+                        height: "100dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "12dp"]
+                        font_size: "15sp"
+
+                    # ESPECIALIDADES (solo lectura)
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
+
+                        Label:
+                            text: "ESPECIALIDADES"
+                            font_size: "13sp"
+                            bold: True
+                            color: 0.23, 0.18, 0.55, 1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    Label:
+                        id: lbl_especialidades
+                        text: "-"
+                        font_size: "13sp"
+                        color: 0.30, 0.23, 0.67, 1
+                        size_hint_y: None
+                        height: max(dp(40), self.texture_size[1] + dp(10))
+                        halign: "left"
+                        valign: "top"
+                        text_size: self.width, None
+
+                    # FIX: Botón para agregar especialidad
+                    Button:
+                        id: btn_agregar_especialidad
+                        text: "+ Agregar especialidad"
+                        size_hint_y: None
+                        height: "48dp"
+                        font_size: "14sp"
+                        bold: True
+                        background_normal: ""
+                        background_color: 0.23, 0.18, 0.55, 1
+                        color: 1, 1, 1, 1
+                        on_release: root.agregar_especialidad()
+
+                    # SUSCRIPCION (solo lectura)
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
+
+                        Label:
+                            text: "SUSCRIPCION"
+                            font_size: "13sp"
+                            bold: True
+                            color: 0.23, 0.18, 0.55, 1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    Label:
+                        id: lbl_suscripcion
+                        text: "-"
+                        font_size: "13sp"
+                        color: 0.18, 0.80, 0.44, 1
+                        size_hint_y: None
+                        height: max(dp(30), self.texture_size[1] + dp(8))
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.width, None
+
+                    # DATOS BANCARIOS
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
+
+                        Label:
+                            text: "DATOS BANCARIOS"
+                            font_size: "13sp"
+                            bold: True
+                            color: 0.23, 0.18, 0.55, 1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    Label:
+                        text: "CBU / ALIAS"
+                        font_size: "12sp"
+                        bold: True
+                        color: 0.40, 0.45, 0.55, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                    TextInput:
+                        id: cuenta_bancaria
+                        hint_text: "CBU o alias de tu cuenta"
+                        multiline: False
+                        size_hint_y: None
+                        height: "50dp"
+                        background_color: 1, 1, 1, 1
+                        foreground_color: 0.10, 0.12, 0.18, 1
+                        hint_text_color: 0.60, 0.63, 0.70, 1
+                        cursor_color: 0.18, 0.80, 0.44, 1
+                        padding: ["14dp", "14dp"]
+                        font_size: "15sp"
+                        write_tab: False
+
+                    # RESENAS
+                    BoxLayout:
+                        size_hint_y: None
+                        height: "42dp"
+                        padding: ["0dp", "0dp", "0dp", "0dp"]
+                        canvas.before:
+                            Color:
+                                rgba: 0.23, 0.18, 0.55, 0.08
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(8)]
+
+                        Label:
+                            text: "OPINIONES DE CLIENTES"
+                            font_size: "13sp"
+                            bold: True
+                            color: 0.23, 0.18, 0.55, 1
+                            halign: "left"
+                            valign: "middle"
+                            text_size: self.size
+
+                    Label:
+                        id: lbl_promedio
+                        text: "-"
+                        font_size: "15sp"
+                        bold: True
+                        color: 0.85, 0.55, 0.05, 1
+                        size_hint_y: None
+                        height: max(dp(30), self.texture_size[1] + dp(8))
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.width, None
+
+                    BoxLayout:
+                        id: resenas_box
+                        orientation: "vertical"
+                        spacing: "8dp"
+                        size_hint_y: None
+                        height: self.minimum_height
+
+                Widget:
+                    size_hint_y: None
+                    height: "10dp"
+
+                Button:
+                    text: "GUARDAR CAMBIOS"
+                    size_hint_y: None
+                    height: "54dp"
+                    bold: True
+                    font_size: "16sp"
+                    background_normal: ""
+                    background_color: 0.10, 0.12, 0.18, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.guardar()
+
+                Button:
+                    text: "BORRAR CUENTA"
+                    size_hint_y: None
+                    height: "50dp"
+                    bold: True
+                    font_size: "15sp"
+                    background_normal: ""
+                    background_color: 0.86, 0.20, 0.20, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.borrar_cuenta_popup()

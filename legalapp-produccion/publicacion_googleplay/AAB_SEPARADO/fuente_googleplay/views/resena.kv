@@ -1,0 +1,144 @@
+#:import dp kivy.metrics.dp
+
+<ResenaScreen>:
+
+    BoxLayout:
+        orientation: "vertical"
+
+        canvas.before:
+            Color:
+                rgba: 0.96, 0.97, 0.98, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # ==================================================
+        # TOPBAR
+        # ==================================================
+        BoxLayout:
+            size_hint_y: None
+            height: dp(58)
+            padding: [dp(16), dp(10)]
+            canvas.before:
+                Color:
+                    rgba: 0.10, 0.12, 0.18, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                text: "CALIFICA TU CONSULTA"
+                font_size: "16sp"
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "center"
+                valign: "middle"
+                text_size: (self.width, None)
+
+        # ==================================================
+        # CONTENIDO con ScrollView para que el teclado no tape
+        # ==================================================
+        ScrollView:
+            do_scroll_x: False
+            bar_width: 0
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [dp(20), dp(24), dp(20), dp(16)]
+                spacing: dp(18)
+
+                # Nombre del abogado - altura dinamica
+                Label:
+                    id: lbl_abogado_resena
+                    text: ""
+                    font_size: "15sp"
+                    bold: True
+                    color: 0.24, 0.17, 0.55, 1
+                    halign: "center"
+                    valign: "middle"
+                    size_hint_y: None
+                    text_size: (self.width, None)
+                    height: self.texture_size[1] + dp(8)
+
+                Label:
+                    text: "Puntaje del 1 al 5"
+                    size_hint_y: None
+                    height: dp(24)
+                    font_size: "13sp"
+                    bold: True
+                    color: 0.35, 0.40, 0.50, 1
+                    halign: "center"
+                    valign: "middle"
+                    text_size: (self.width, None)
+
+                # ==================================================
+                # ESTRELLAS
+                # ==================================================
+                BoxLayout:
+                    id: estrellas_box
+                    size_hint_y: None
+                    height: dp(54)
+                    spacing: dp(8)
+                    padding: [dp(20), dp(2)]
+
+                Label:
+                    text: "Comentario (opcional)"
+                    size_hint_y: None
+                    height: dp(24)
+                    font_size: "13sp"
+                    bold: True
+                    color: 0.35, 0.40, 0.50, 1
+                    halign: "left"
+                    valign: "middle"
+                    text_size: (self.width, None)
+
+                # ==================================================
+                # INPUT
+                # ==================================================
+                TextInput:
+                    id: input_comentario
+                    hint_text: "Contanos como fue tu experiencia..."
+                    multiline: True
+                    size_hint_y: None
+                    height: dp(100)
+                    background_normal: ""
+                    background_active: ""
+                    background_color: 1, 1, 1, 1
+                    foreground_color: 0.10, 0.12, 0.18, 1
+                    hint_text_color: 0.60, 0.63, 0.70, 1
+                    cursor_color: 0.18, 0.80, 0.44, 1
+                    padding: [dp(14), dp(12)]
+                    font_size: "14sp"
+
+                Widget:
+                    size_hint_y: None
+                    height: dp(8)
+
+                # ==================================================
+                # BOTON ENVIAR
+                # ==================================================
+                Button:
+                    text: "ENVIAR RESENA"
+                    size_hint_y: None
+                    height: dp(54)
+                    bold: True
+                    font_size: "16sp"
+                    background_normal: ""
+                    background_color: 0.18, 0.80, 0.44, 1
+                    color: 1, 1, 1, 1
+                    on_release: root.enviar_resena()
+
+                # ==================================================
+                # OMITIR
+                # ==================================================
+                Button:
+                    text: "Omitir"
+                    size_hint_y: None
+                    height: dp(40)
+                    font_size: "13sp"
+                    background_normal: ""
+                    background_color: 0, 0, 0, 0
+                    color: 0.55, 0.58, 0.65, 1
+                    on_release: root.omitir()

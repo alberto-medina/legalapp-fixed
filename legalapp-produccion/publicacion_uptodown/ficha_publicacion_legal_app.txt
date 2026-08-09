@@ -1,0 +1,49 @@
+NOMBRE
+Legal App
+
+SUBTITULO
+Consultas legales en minutos
+
+DESCRIPCION CORTA
+Conecta clientes con abogados por chat, videollamada y consultas urgentes, con pagos integrados y seguimiento simple.
+
+DESCRIPCION LARGA
+Legal App es una plataforma pensada para acercar consultas legales a clientes y abogados de forma rapida, clara y profesional.
+
+La app permite:
+- registrarse como cliente o abogado
+- validar email para mayor seguridad
+- buscar abogados por especialidad y ubicacion
+- iniciar consultas por chat, videollamada o modalidad urgente
+- pagar consultas y suscripciones desde la app
+- enviar mensajes, audios, imagenes, PDF y documentos
+- dejar resenas luego de una consulta finalizada
+- gestionar estados, honorarios y retiros del lado profesional
+
+Legal App fue pensada para ofrecer una experiencia simple, directa y util tanto para quien necesita orientacion legal como para profesionales que quieren atender consultas desde el celular.
+
+FUNCIONES PRINCIPALES
+- Registro y login con validacion de email
+- Consulta por chat, videollamada y urgente
+- Busqueda de abogados por especialidad
+- Pagos integrados
+- Historial de consultas
+- Envio de archivos y multimedia
+- Perfil profesional con resenas
+- Panel administrativo y aprobacion de abogados
+
+PUBLICO OBJETIVO
+- Clientes que necesitan orientacion legal inicial
+- Abogados que quieren atender consultas online
+
+IDIOMA
+- Espanol
+
+PAIS / MARCO
+- Argentina
+
+CONTACTO
+- privacidad@legalapp.com.ar
+
+NOTA
+Antes de publicar, reemplazar el email de contacto si ya existe uno definitivo.

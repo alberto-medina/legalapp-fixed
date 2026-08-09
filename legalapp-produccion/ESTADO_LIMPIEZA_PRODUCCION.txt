@@ -1,0 +1,43 @@
+LEGAL APP - LIMPIEZA PRODUCCION
+Fecha: 2026-06-23
+
+Se creo esta copia de trabajo a partir de C:\legalapp-fixed para preparar una version de produccion sin tocar la base actual.
+
+YA LIMPIADO EN ESTA CARPETA
+- Se elimino .env
+- Se elimino serviceAccountKey.json
+- Se eliminaron scripts de auditoria y prueba
+- Se elimino la carpeta functions/ vieja
+- Se elimino la carpeta publicacion_uptodown
+- Se quitaron del buildozer.spec las contrasenas del keystore en texto plano
+- Se quitaron del cliente:
+  - RESEND_API_KEY
+  - MP_ACCESS_TOKEN
+  - MP_WEBHOOK_SECRET
+  - MP_PUBLIC_KEY
+- Se conecto el flujo de pagos del cliente a una Edge Function gratis de Supabase:
+  - supabase/functions/mercadopago-proxy
+- Se quitaron archivos de Firebase que no hacen falta para la APK:
+  - firebase.json
+  - firestore.indexes.json
+  - firestore.rules
+- Se elimino utils/supabase_client.BACKUP.py
+
+ESTADO ACTUAL
+- config.py ya no contiene secretos privados del backend.
+- Mercado Pago ahora debe resolverse mediante la Edge Function mercadopago-proxy.
+- google-services.json queda porque si corresponde para Android cliente.
+- supabase/* sigue en esta copia para poder desplegar backend, pero buildozer lo excluye de la APK.
+
+FALTA PARA USAR ESTA COPIA EN SERIO
+1. Desplegar la funcion:
+   supabase functions deploy mercadopago-proxy
+
+2. Confirmar que el secret ya exista en Supabase:
+   MP_ACCESS_TOKEN
+
+3. Compilar la APK desde esta carpeta de produccion.
+
+NOTA DE COSTO
+- La limpieza fue pensada usando solo servicios que ya tenes.
+- No agrega ningun servicio pago nuevo.

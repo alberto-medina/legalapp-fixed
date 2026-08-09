@@ -1,0 +1,21 @@
+Legal App conecta clientes con abogados de forma simple, rapida y profesional.
+
+Desde la app podes registrarte, validar tu email, buscar abogados por especialidad y ubicacion, iniciar consultas por chat, videollamada o modalidad urgente, y realizar pagos integrados de forma clara.
+
+Para clientes:
+- nueva consulta en pocos pasos
+- historial de consultas
+- chat con envio de audios, imagenes, PDF y documentos
+- acceso a videollamadas
+- perfil y seguimiento simple
+- resenas luego de finalizar la consulta
+
+Para abogados:
+- panel profesional desde el celular
+- gestion de estado disponible, guardia u ocupado
+- recepcion de consultas pagadas
+- honorarios y retiros
+- perfil profesional con foto, bio, experiencia y especialidades
+- aprobacion administrativa previa para mayor control
+
+Legal App busca hacer mas accesible la consulta legal inicial, manteniendo una experiencia ordenada, movil y enfocada en el uso real.
