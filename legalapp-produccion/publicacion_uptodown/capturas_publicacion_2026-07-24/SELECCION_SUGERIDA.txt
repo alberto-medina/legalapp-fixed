@@ -1,0 +1,53 @@
+SELECCION SUGERIDA DE CAPTURAS PARA PUBLICACION
+Fecha: 2026-07-24
+
+Objetivo: mostrar el flujo real de Legal App para cliente y abogado,
+sin pantallas repetidas ni capturas vacias.
+
+ORDEN RECOMENDADO (6 a 8 capturas)
+
+1. Inicio cliente
+   - Dashboard del cliente con boton "Nueva Consulta"
+   - Muestra entrada clara a la app
+
+2. Area legal / especialidades
+   - Pantalla con las ramas legales
+   - Sirve para explicar como arranca la consulta
+
+3. Elegir abogado
+   - Listado de abogados por especialidad
+   - Ideal si se ve foto, estado, experiencia y boton elegir
+
+4. Chat de consulta
+   - Mostrar mensajes reales y envio de archivos
+   - Es una de las funciones mas fuertes
+
+5. Mis consultas
+   - Historial del cliente con estados
+   - Refuerza seguimiento y orden
+
+6. Panel del abogado
+   - Dashboard con consultas, honorarios y filtros
+   - Muy importante para mostrar el lado profesional
+
+7. Perfil profesional del abogado
+   - Foto, matricula, experiencia, bio
+   - Ayuda a mostrar confianza y datos reales
+
+8. Videollamada
+   - Preferible una captura donde se vea el flujo util
+   - Mejor la vista de reunion o el chat de video si se entiende bien
+
+CAPTURAS A DEJAR AFUERA
+- Pantallas repetidas del mismo flujo
+- Pantallas con mucho espacio vacio
+- Pantallas con botones desactivados que parezcan error
+- Capturas con notificaciones externas o elementos ajenos a la app
+- Pantallas donde texto o componentes se pisen
+
+NOTA
+Si hay dos versiones de una misma pantalla, elegir siempre la que:
+- se vea mas completa
+- tenga menos espacio vacio
+- no tenga textos cortados
+- se vea mas limpia visualmente

@@ -1,37 +1,124 @@
-BORRADOR DATA SAFETY - LEGAL APP
+DATA SAFETY - LEGAL APP - RESPUESTAS LISTAS PARA CARGAR EN PLAY CONSOLE
+Verificado directo contra el codigo (supabase_config.py, fcm_service.py,
+videollamada.py, network_security_config.xml) el 2026-07-25. No son supuestos.
 
-Atencion:
-Esto es un borrador de trabajo. Antes de completar el formulario de Google Play hay que validar cada punto contra el comportamiento real de la app y los SDK/servicios usados.
+===========================================
+PREGUNTA 1: Seguridad de los datos - cifrado en transito
+===========================================
+Respuesta: SI, todos los datos se envian cifrados en transito.
 
-Datos que probablemente intervienen en la app:
-- nombre
-- email
-- telefono
-- uid de usuario
-- mensajes de chat
-- archivos adjuntos
-- imagenes
-- audio
-- datos de perfil profesional
-- datos de suscripcion
-- identificadores de dispositivo / token push
+Evidencia:
+- network_security_config.xml tiene cleartextTrafficPermitted="false" como base
+  (bloquea HTTP sin cifrar). Las unicas excepciones son localhost/IPs de red local
+  (10.0.0.0, 192.168.0.0, 127.0.0.1), usadas solo en desarrollo, nunca en produccion.
+- Supabase: todas las llamadas van a https://xzkojjgymuvhscphvsdw.supabase.co (HTTPS)
+- Firebase: SDK oficial, HTTPS por defecto
+- MercadoPago: se accede via Edge Function de Supabase (HTTPS) que devuelve un
+  link de checkout hosteado por MercadoPago (tambien HTTPS)
 
-Funciones que impactan en la declaracion:
-- autenticacion
-- recuperacion/verificacion por email
-- chat en tiempo real
-- envio de archivos
-- camara
-- microfono
-- videollamada
-- notificaciones push
-- pagos / suscripciones
+===========================================
+PREGUNTA 2: Eliminacion de datos
+===========================================
+Respuesta: SI, se puede solicitar la eliminacion de los datos.
 
-Tareas pendientes para cerrar este formulario:
-[ ] Mapear exactamente que datos se recolectan
-[ ] Mapear que datos se almacenan en Supabase
-[ ] Mapear que datos pasan por Firebase
-[ ] Confirmar si algun SDK recolecta diagnostico o analytics
-[ ] Confirmar cifrado en transito
-[ ] Confirmar mecanismo para borrar cuenta y datos relacionados
-[ ] Redactar respuesta consistente con politica de privacidad
+Evidencia:
+- Mecanismo en la app: boton "BORRAR CUENTA" en Mi Perfil (views/perfil.py,
+  funcion _eliminar_cuenta -> supabase_config.eliminar_cuenta_completa).
+  Borra en cascada: mensajes de chat, resenas, codigos de verificacion,
+  solicitudes de retiro, consultas (como cliente y como abogado), foto de
+  perfil del storage, y el registro de usuario. Tambien revoca el token de
+  sesion de Firebase.
+- Mecanismo web (sin necesidad de instalar la app):
+  https://cumbrelabs.com.ar/legalapp/eliminacion-de-cuenta.html
+
+===========================================
+PREGUNTA 3: Tipos de datos recolectados
+===========================================
+
+-- INFORMACION PERSONAL --
+[x] Nombre                  - Recolectado y compartido: NO compartido. Uso: funcionalidad de la app (identificar al usuario en consultas/chat)
+[x] Direccion de email      - Recolectado, no compartido. Uso: cuenta, autenticacion, comunicaciones
+[x] Numero de telefono      - Recolectado, no compartido. Uso: funcionalidad de la app (contacto)
+[x] ID de usuario           - Recolectado, no compartido. Uso: cuenta (uid interno)
+[x] Direccion fisica        - CORREGIDO 2026-07-25: SI se recolecta. views/register.py
+    pide "dni" y "direccion" al registrar un cliente (no solo provincia/ciudad).
+    Recolectado, no compartido. Uso: funcionalidad de la app (identificacion para
+    la consulta legal)
+[x] Otra info personal      - Recomendado declarar aca la info profesional del
+    abogado (matricula, experiencia, bio, especialidades). Recolectado, no
+    compartido. Uso: funcionalidad de la app
+
+-- INFORMACION FINANCIERA --
+[x] Info de cuenta bancaria - Recolectado (CBU/alias de retiro del abogado, campo
+    cuenta_bancaria), no compartido con terceros salvo el propio abogado. Uso:
+    funcionalidad de la app (pagar honorarios)
+[x] Historial de compras    - Recolectado (registro de consultas pagadas, montos,
+    suscripciones). Uso: funcionalidad de la app
+[ ] Numero de tarjeta/datos de pago - NO se recolecta directamente: el pago se
+    hace en el checkout hosteado de MercadoPago (init_point), la app nunca ve
+    ni almacena numero de tarjeta. IMPORTANTE marcar que se COMPARTE con
+    MercadoPago como procesador de pagos para completar la transaccion.
+
+-- MENSAJES --
+[x] Otros mensajes in-app   - Recolectado (mensajes de chat entre cliente y
+    abogado), no compartido con terceros fuera de las partes de la consulta.
+    Uso: funcionalidad de la app
+
+-- FOTOS Y VIDEOS --
+[x] Fotos                   - Recolectado (foto de perfil, imagenes adjuntas en
+    chat). Uso: funcionalidad de la app
+[ ] Videos                  - NO se recolectan archivos de video en chat (solo
+    imagenes, audio y documentos). Las videollamadas se hacen por Jitsi Meet
+    (enlace externo, se abre en navegador/app aparte) - Legal App NO procesa
+    ni almacena el audio/video de la llamada, solo genera el link de la sala.
+
+-- ARCHIVOS DE AUDIO --
+[x] Grabaciones de voz      - Recolectado (notas de audio en el chat). Uso:
+    funcionalidad de la app
+
+-- ARCHIVOS Y DOCUMENTOS --
+[x] Archivos y documentos   - Recolectado (PDF y documentos adjuntos en chat).
+    Uso: funcionalidad de la app
+
+-- ACTIVIDAD EN LA APP --
+[x] Contenido generado por el usuario - Recolectado (resenas/calificaciones a
+    abogados). Uso: funcionalidad de la app
+
+-- IDENTIFICADORES DEL DISPOSITIVO O DE OTRO TIPO --
+[x] Identificadores de dispositivo - Recolectado (token de FCM para notificaciones
+    push, campo fcm_token). Uso: funcionalidad de la app (notificaciones)
+
+-- NO SE RECOLECTA (marcar explicitamente que NO en el formulario) --
+[ ] Ubicacion (precisa o aproximada) - NO usa GPS ni permisos de ubicacion
+[ ] Historial de navegacion web
+[ ] Historial de busqueda en la app
+[ ] Contactos
+[ ] Calendario
+[ ] Informacion de salud/fitness
+[ ] Datos de rendimiento/diagnostico/crash reports - NO hay SDK de Crashlytics,
+    Sentry ni similar integrado (se verifico en el codigo, no esta)
+[ ] Datos de analytics - se saco firebase-analytics del build (no se usa)
+
+===========================================
+CON QUIEN SE COMPARTEN DATOS (terceros)
+===========================================
+- Supabase (base de datos, autenticacion, storage de archivos) - infraestructura
+- Firebase (autenticacion + notificaciones push FCM) - infraestructura
+- MercadoPago (procesamiento de pagos) - recibe email y monto para generar el
+  checkout; los datos de tarjeta los procesa MercadoPago directamente, nunca
+  pasan por los servidores de Legal App
+- Jitsi Meet (videollamadas) - solo recibe el nombre de sala generado, no datos
+  personales del usuario mas alla de lo que el propio Jitsi pida al conectarse
+
+No se vende informacion a terceros con fines publicitarios. No hay SDK de
+publicidad ni de analytics de terceros en la app.
+
+===========================================
+PENDIENTE (fuera de mi alcance, requiere decision de Cumbre Labs)
+===========================================
+[ ] Decidir si declaran "informacion profesional del abogado" (matricula,
+    experiencia, bio) como categoria aparte en "Otra info personal"
+    (recomendado que si, para ser mas transparentes)
+[ ] Confirmar en Supabase que las tablas realmente tienen RLS (Row Level
+    Security) activado - no se pudo verificar desde el codigo del cliente,
+    esto se confirma desde el dashboard de Supabase directamente

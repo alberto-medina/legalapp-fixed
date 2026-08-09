@@ -12,8 +12,13 @@ Minimo recomendado:
 - contacto para soporte o reclamos
 - procedimiento para solicitar borrado de cuenta o datos
 Estado:
-- falta definir documento final
-- falta publicarlo en URL estable HTTPS
+- documento final ya redactado (politica_privacidad_web_legalapp.md)
+- ya publicado, URLs reales confirmadas:
+  - Politica de privacidad: https://cumbrelabs.com.ar/legalapp/politica-de-privacidad.html
+  - Terminos y condiciones: https://cumbrelabs.com.ar/legalapp/terminos-y-condiciones.html
+  - Eliminacion de cuenta y datos: https://cumbrelabs.com.ar/legalapp/eliminacion-de-cuenta.html
+- estas 3 URLs son las que van a pedir en Google Play Console (politica de privacidad
+  y el formulario de eliminacion de cuenta piden URL exacta)
 Sugerencia:
 - alojarla en cumbrelabs.com.ar o dominio equivalente
 - dejar una version simple y clara, alineada con lo que realmente hace la app

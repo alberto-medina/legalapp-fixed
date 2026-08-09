@@ -18,4 +18,6 @@ Para abogados:
 - perfil profesional con foto, bio, experiencia y especialidades
 - aprobacion administrativa previa para mayor control
 
+Legal App actua como un medio de acercamiento entre personas que necesitan orientacion legal inicial y abogados que ofrecen sus servicios. La plataforma no reemplaza el criterio profesional, el asesoramiento juridico personalizado ni el trabajo de un estudio juridico. Cada consulta y cada respuesta corresponden al profesional interviniente.
+
 Legal App busca hacer mas accesible la consulta legal inicial, manteniendo una experiencia ordenada, movil y enfocada en el uso real.

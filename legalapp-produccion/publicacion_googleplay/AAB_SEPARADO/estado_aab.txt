@@ -1,20 +1,93 @@
-﻿ESTADO AAB
+ESTADO AAB
 Estado actual:
-- generado correctamente
+- LISTO PARA SUBIR A PLAY CONSOLE (recompilado y firmado 2026-08-07, version final)
+- versionCode=123 (122 fue el ultimo subido/consumido, el 2026-07-25)
+- version=1.1.11
+- verificado targetSdkVersion="36" REAL en el manifest fusionado (no solo en el .spec)
+- verificado minSdkVersion="26"
+- motivo de esta recompilacion: Google Play paso a exigir Android 16 (API 36)
+  como target minimo a partir de 2026-08-30 (el target anterior, API 35, dejaba
+  de servir para poder seguir actualizando la app)
+- permisos finales (10): INTERNET, CAMERA, RECORD_AUDIO, READ_EXTERNAL_STORAGE,
+  READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, VIBRATE, WAKE_LOCK, RECEIVE_BOOT_COMPLETED,
+  POST_NOTIFICATIONS (+ ACCESS_NETWORK_STATE agregado automaticamente por una libreria)
+- se saco READ_MEDIA_VIDEO: no hay ninguna funcion de video en el chat, Google
+  exige declarar el uso real de este permiso y no habia justificacion honesta
+  posible. Corregido tambien en buildozer.spec de legalapp-produccion,
+  legalapp-escritorio y raiz para que no se repita en proximas versiones.
+- sin firebase-analytics (dependencia no usada, se saco del build)
+- compilado con Buildozer en WSL, BUILD SUCCESSFUL (ver bug nuevo mas abajo,
+  hubo que parchear python-for-android a mano para que compilara)
+- firmado con jarsigner (legalapp-release.keystore, alias legalapp) - "jar verified"
+  (los warnings de certificado autofirmado/sin timestamp son normales, no bloquean Play)
+- zip integro verificado
+- tamano: ~48MB
+
 Archivo generado:
-- C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay\legalapp-1.1.10-arm64-v8a_armeabi-v7a-release.aab
-Fecha detectada:
-- 2026-06-29 20:30:50
-Objetivo:
+- C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay\legalapp-1.1.11-arm64-v8a_armeabi-v7a-release.aab
+  (el .aab anterior, 1.1.10 con targetSdkVersion=35, se dejo en la misma carpeta
+  como referencia - no subir ese a Play, usar el 1.1.11)
+
+CUIDADO - BUG DETECTADO Y CORREGIDO (2026-07-25):
+La clave "android.targetapi" que se uso originalmente en buildozer.spec NO EXISTE
+en Buildozer - se ignora en silencio y Buildozer usa su default interno (33) pase
+lo que pase en el .spec. La clave real es "android.api". Esto causo 2 builds
+fallidos (Play Console rechazo la primera version por seguir targeteando API 33
+pese a que el .spec decia 35) antes de detectarlo leyendo el codigo fuente de
+buildozer/targets/android.py.
+Si en el futuro hay que tocar el target API de nuevo:
+1. usar "android.api = XX" en buildozer.spec, NUNCA "android.targetapi"
+2. borrar la carpeta dists cacheada antes de recompilar:
+   rm -rf .buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists
+3. verificar el resultado real en el manifest fusionado, no confiar en el .spec:
+   grep -o 'targetSdkVersion="[0-9]*"' .buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists/legalapp/build/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml
+
+Historial:
+- 2026-06-29: primer .aab generado, permisos incompletos (detectado 2026-07-24)
+- 2026-07-25 (1ra recompilacion): permisos corregidos, pero targetapi seguia en 33
+  por el bug de la clave "android.targetapi" - Play Console lo rechazo
+- 2026-07-25 (2da recompilacion, borrando cache de dist): mismo resultado, 33 -
+  confirmo que el problema era la clave, no la cache
+- 2026-07-25 (3ra recompilacion, con "android.api = 35" correcto + cache borrada):
+  targetSdkVersion=35 confirmado en el manifest real. Version final (v1.1.10).
+- 2026-08-07: subida a android.api = 36 (Google Play paso a exigirlo). Primeros
+  2 intentos fallaron con el mismo error, sin relacion con el target API:
+  "ImportError: cannot import name 'BuildDependencyInstallError' from
+  'pip._internal.exceptions'" dentro de la venv que python-for-android crea
+  para instalar los modulos Python puros (build.py, funcion
+  run_pymodules_install). La causa real: p4a (rama master) construye un
+  hostpython3 en Python 3.14.2 y despues corre "pip install -U pip" adentro de
+  una venv nueva; ese auto-upgrade a la ultima version de pip de PyPI dejaba
+  la venv en un estado inconsistente (mezcla de versiones de pip) - probable
+  cambio reciente del lado de PyPI/pip, no algo que tocamos nosotros. El
+  "ResolutionImpossible" de kivymd que aparece antes en el log es un WARNING
+  benigno (process_python_modules lo atrapa y sigue, no rompe el build) -
+  no confundirlo con la causa real.
+  Fix aplicado: en la copia local de python-for-android
+  (.buildozer/android/platform/python-for-android/pythonforandroid/build.py,
+  funcion run_pymodules_install, linea ~878) se cambio
+  "source venv/bin/activate && pip install -U pip" por
+  "source venv/bin/activate && pip --version" (se salta el auto-upgrade, usa
+  el pip que ya viene con la venv nueva vía ensurepip, que anda bien solo).
+  Tambien hubo que borrar a mano la venv vieja ya corrupta
+  (.buildozer/android/platform/build-arm64-v8a_armeabi-v7a/build/venv) para
+  que el parche tuviera efecto - si no se borra, sigue usando la venv rota
+  de un intento anterior aunque el parche ya este aplicado.
+  OJO: este parche es local a esta copia de python-for-android en WSL. Si se
+  borra `.buildozer` entero o se clona python-for-android de nuevo, hay que
+  volver a aplicar el parche (o esperar a que el bug se arregle upstream).
+  4to intento (con el parche + venv vieja borrada): compilo OK,
+  targetSdkVersion=36 confirmado en el manifest real. Version final (v1.1.11,
+  versionCode=123).
+
+Objetivo original:
 - sacar un .aab desde una copia separada
 - dejar el APK estable intacto
+
 Carpeta destino esperada:
 C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay
-Estado del flujo:
-- el APK estable quedo intacto
-- el AAB se genero desde copia separada
-- la estrategia de separar APK y AAB funciono bien
+
 Observaciones:
-- seguir usando la copia separada para Google Play
+- seguir usando la copia separada (/home/eto_/legalapp-googleplay-build) para Google Play
 - no cambiar legalapp-produccion estable a modo AAB
 - si se recompila, volver a copiar el nuevo .aab a esta misma carpeta

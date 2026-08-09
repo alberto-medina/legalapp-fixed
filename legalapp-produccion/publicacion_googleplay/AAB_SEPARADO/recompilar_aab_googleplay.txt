@@ -1,16 +1,114 @@
-﻿RECOMPILAR AAB GOOGLE PLAY
-Este archivo es para copiar y pegar cuando haya que volver a generar el bundle sin tocar el APK estable.
-POWERSHELL
-New-Item -ItemType Directory -Force "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build"
-robocopy "C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay\AAB_SEPARADO\fuente_googleplay" "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build" /MIR /XD .buildozer bin __pycache__
-UBUNTU
+RECOMPILAR AAB GOOGLE PLAY - GUIA COMPLETA (actualizada 2026-07-24)
+
+Motivo de esta recompilacion:
+- el .aab anterior (2026-06-29) tenia permisos incompletos en el manifest
+  (faltaban READ_EXTERNAL_STORAGE, READ_MEDIA_IMAGES, READ_MEDIA_VIDEO,
+  READ_MEDIA_AUDIO, WAKE_LOCK, RECEIVE_BOOT_COMPLETED)
+- se copia FRESCO desde legalapp-produccion (ya corregido) en vez de reusar
+  la copia vieja de fuente_googleplay
+
+===========================================
+PASO 1 - POWERSHELL (Windows) - copiar fuente actualizada a WSL
+===========================================
+
+New-Item -ItemType Directory -Force "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build" | Out-Null
+robocopy "C:\legalapp-fixed\legalapp-produccion" "\\wsl$\Ubuntu\home\eto_\legalapp-googleplay-build" /MIR /XD .buildozer bin __pycache__ publicacion_uptodown publicacion_googleplay
+
+(el /MIR deja la carpeta de WSL identica a legalapp-produccion, borrando
+cualquier resto viejo. Es normal que tarde unos minutos por la cantidad
+de archivos).
+
+===========================================
+PASO 2 - UBUNTU (WSL) - activar el entorno
+===========================================
+
 cd /home/eto_/legalapp-googleplay-build
+
+# Si ya existe el entorno de antes (el mismo que usan para compilar el APK), solo activarlo:
 source /home/eto_/buildozer-env/bin/activate
+
+# Si por algun motivo no existe (primera vez / entorno borrado), crearlo:
+#   python3 -m venv /home/eto_/buildozer-env
+#   source /home/eto_/buildozer-env/bin/activate
+#   pip install --upgrade pip
+#   pip install buildozer cython==0.29.33
+#   sudo apt update
+#   sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config \
+#       zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+
+===========================================
+PASO 3 - UBUNTU - ajustar buildozer.spec SOLO en esta copia (AAB, no APK)
+===========================================
+
+OJO - CLAVE CORREGIDA 2026-07-25: la clave real que usa Buildozer para el
+target SDK es "android.api", NO "android.targetapi". Esa clave "android.targetapi"
+no existe en Buildozer, se ignora en silencio y Buildozer usa su default interno
+(33) sin importar lo que diga el .spec. Confirmado leyendo buildozer/targets/android.py
+(la property android_api lee 'android.api', no 'android.targetapi').
+Esto costo dos recompilaciones fallidas antes de detectarlo - no repetir el error.
+
+sed -i 's/android.targetapi = 33/android.api = 35/' buildozer.spec
+sed -i 's/android.release_artifact = apk/android.release_artifact = aab/' buildozer.spec
+
+# Verificar que quedo bien antes de compilar (NO debe aparecer "android.targetapi"):
+grep -E "android.api|android.targetapi|android.release_artifact|android.permissions|gradle_dependencies" buildozer.spec
+
+===========================================
+PASO 4 - UBUNTU - borrar cache de dist si ya habia una build previa
+===========================================
+
+Si esta carpeta ya compilo antes con otro target API, Buildozer reutiliza el
+"dist" cacheado en .buildozer y puede no regenerar el manifest correctamente.
+Borrar antes de compilar cada vez que se cambia android.api:
+
+rm -rf .buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists
+
+===========================================
+PASO 5 - UBUNTU - compilar
+===========================================
+
 buildozer android release
-VERIFICAR SALIDA
-ls -lh /home/eto_/legalapp-googleplay-build/bin
-COPIAR EL AAB A WINDOWS
-cp /home/eto_/legalapp-googleplay-build/bin/*.aab /mnt/c/legalapp-fixed/legalapp-produccion/publicacion_googleplay/
+
+(la primera vez puede tardar bastante -- descarga NDK/SDK. Si ya compilaron
+ahi antes, deberia ser bastante mas rapido por el cache de .buildozer, salvo
+que se haya borrado el dist en el paso anterior)
+
+===========================================
+PASO 6 - UBUNTU - verificar el target SDK real (no confiar solo en el .spec)
+===========================================
+
+grep -o 'targetSdkVersion="[0-9]*"' .buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists/legalapp/build/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml
+
+Debe decir targetSdkVersion="35". Si dice otra cosa, no seguir - repetir desde el paso 4.
+
+===========================================
+PASO 7 - UBUNTU - verificar salida y firma
+===========================================
+
+ls -lh bin/
+
+# Verificar si el .aab ya quedo firmado:
+jarsigner -verify -verbose -certs bin/*.aab
+
+# Si NO esta firmado (el comando anterior dice "jar is unsigned"), firmarlo:
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+    -keystore legalapp-release.keystore bin/legalapp-*-release.aab legalapp
+# (va a pedir la contrasena del keystore)
+
+===========================================
+PASO 8 - UBUNTU - copiar el AAB de vuelta a Windows
+===========================================
+
+cp bin/*.aab /mnt/c/legalapp-fixed/legalapp-produccion/publicacion_googleplay/
+
+===========================================
 RESULTADO ESPERADO
+===========================================
+
 Archivo final en:
 C:\legalapp-fixed\legalapp-produccion\publicacion_googleplay\
+
+IMPORTANTE:
+- este flujo NO toca el APK estable ni legalapp-produccion original
+- una vez copiado de vuelta, pedirle a Claude que verifique el .aab antes
+  de subirlo a Play Console (integridad del zip, tamano, permisos)

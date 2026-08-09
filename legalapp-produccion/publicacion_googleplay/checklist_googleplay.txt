@@ -1,10 +1,10 @@
 ﻿CHECKLIST GOOGLE PLAY - LEGAL APP
-[ ] 1. Crear cuenta de Google Play Console
+[x] 1. Crear cuenta de Google Play Console
 [ ] 2. Completar verificacion de identidad del titular
 [ ] 3. Completar verificacion desde dispositivo Android en Play Console si la pide
 [ ] 4. Confirmar si la cuenta entra en testing obligatorio para cuentas personales nuevas
-[ ] 5. Preparar build Android App Bundle (.aab)
-[ ] 6. Confirmar target API exigido por Google Play al momento de subir
+[x] 5. Preparar build Android App Bundle (.aab)
+[x] 6. Confirmar target API exigido por Google Play al momento de subir
 [x] 7. Verificar versionCode y versionName para publicacion
 [x] 8. Preparar icono final 512x512
 [ ] 9. Preparar feature graphic para Google Play
@@ -12,12 +12,12 @@
 [x] 11. Cargar nombre de la app
 [x] 12. Cargar descripcion corta
 [x] 13. Cargar descripcion completa
-[ ] 14. Cargar email de soporte
+[x] 14. Cargar email de soporte
 [x] 15. Cargar web de soporte
 [x] 16. Elegir categoria correcta
 [ ] 17. Completar clasificacion de contenido
-[ ] 18. Completar formulario Data safety
-[ ] 19. Publicar politica de privacidad accesible por HTTPS
+[x] 18. Completar formulario Data safety (respuestas listas en data_safety_borrador.txt, falta cargarlas en consola)
+[x] 19. Publicar politica de privacidad accesible por HTTPS
 [x] 20. Revisar permisos sensibles: camara, microfono, archivos, notificaciones
 [x] 21. Revisar flujo de pagos y textos de suscripcion
 [ ] 22. Revisar estabilidad final en segundo plano y retorno a la app

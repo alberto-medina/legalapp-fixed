@@ -1,0 +1,58 @@
+ORDEN FINAL DE PUBLICACION - ACTUALIZADO
+Fecha: 2026-07-24 (revision post-rechazo Uptodown)
+
+Se filtraron las 17 capturas originales a las 8 que realmente sirven para
+publicar. Se descartaron las que tenian pantallas vacias, mensajes de
+overlay del sistema, chats repetidos o texto informal de prueba.
+Ademas se corrigieron con edicion de imagen los datos personales reales
+que aparecian en pantalla (emails, nombre y foto de perfil), reemplazandolos
+por datos de demostracion ("Dr. Demo", "Cliente Demo", emails @demo.com y
+el avatar por defecto de la app). Esto es probablemente lo que motivo el
+rechazo por "requisito minimo" la primera vez.
+
+USAR ESTAS 8 CAPTURAS, EN ESTE ORDEN
+
+1. captura_01.jpeg -> INICIO_CLIENTE_DASHBOARD
+   Dashboard cliente, "Como podemos ayudarte?", boton "Nueva Consulta".
+   Nombre real reemplazado por "Demo" y avatar por el default de la app.
+   PORTADA RECOMENDADA.
+
+2. captura_02.jpeg -> PANEL_ABOGADO_DASHBOARD
+   Panel profesional del abogado: disponible, consultas, honorarios.
+   Nombre reemplazado por "Dr. Demo", avatar por default, y los 3 emails
+   reales de clientes reemplazados por emails de demo.
+
+3. captura_03.jpeg -> PERFIL_ABOGADO
+   "Mi Perfil" del abogado con matricula, provincia y ciudad.
+   Foto reemplazada por el avatar default, nombre por "Dr. Demo Abogado".
+
+4. captura_04.jpeg -> ELEGIR_ABOGADO
+   Listado de abogados por especialidad (Derecho de Familia). Sin cambios,
+   no tenia datos sensibles.
+
+5. captura_05.jpeg -> MIS_CONSULTAS
+   Historial de consultas del cliente con distintos estados.
+   Email real reemplazado por email de demo en las 6 filas.
+
+6. captura_06.jpeg -> AREA_LEGAL
+   Seleccion de especialidad legal. Sin cambios, no tenia datos sensibles.
+
+7. captura_07.jpeg -> MI_PERFIL_CLIENTE (extra, opcional)
+   Perfil del cliente. Foto reemplazada por avatar default, nombre por
+   "Cliente Demo".
+
+8. captura_08.jpeg -> SPLASH_LEGAL_APP
+   Pantalla azul con logo. Sin cambios. Usar como extra, no como portada.
+
+DESCARTADAS Y ELIMINADAS DE ESTA CARPETA (no usar)
+- Pantallas vacias ("Pendiente de pago", "Esperando que el abogado acepte...")
+- Chat con 6 burbujas repetidas "El abogado inicio una videollamada"
+- Captura con el menu flotante de edicion de Android superpuesto
+- Chats con mensajes de prueba informales ("hola hno", "jolaaa", "bien hermano")
+- Formularios de ubicacion vacios o a medio completar
+
+PENDIENTE SI SE QUIERE MEJORAR MAS ADELANTE
+- No quedo ninguna captura de un chat con mensajes reales visibles (todas
+  las que existian tenian mensajes informales o estaban vacias/repetidas).
+  Si se puede, conviene tomar una nueva con una conversacion de prueba
+  prolija antes de la proxima actualizacion.

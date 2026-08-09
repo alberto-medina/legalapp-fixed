@@ -21,16 +21,36 @@ source /home/eto_/buildozer-env/bin/activate
 
 PASO 4 - UBUNTU - AJUSTAR buildozer.spec SOLO EN LA COPIA AAB
 
-sed -i 's/android.targetapi = 33/android.targetapi = 35/' buildozer.spec
+IMPORTANTE: la clave real que usa Buildozer para el target SDK es "android.api",
+NO "android.targetapi" (esa clave no existe, Buildozer la ignora en silencio y
+usa su valor por defecto de todos modos). Confirmado leyendo el codigo fuente
+de buildozer/targets/android.py (property android_api lee 'android.api').
+
+sed -i 's/android.targetapi = 33/android.api = 35/' buildozer.spec
 sed -i 's/android.release_artifact = apk/android.release_artifact = aab/' buildozer.spec
 
-PASO 5 - UBUNTU - COMPILAR
+Verificar ANTES de compilar que quedo bien:
+grep -E "android.api|android.targetapi|android.release_artifact" buildozer.spec
+(no deberia aparecer ninguna linea "android.targetapi" - si aparece, el sed fallo)
+
+PASO 5 - UBUNTU - BORRAR CACHE DE DIST SI YA HABIA UNA COMPILACION PREVIA
+
+Si esta carpeta ya tiene una build anterior en .buildozer, Buildozer reutiliza
+el "dist" cacheado y puede no regenerar el manifest con el nuevo target SDK.
+Borrar la carpeta de dist antes de compilar cuando se cambia el target API:
+
+rm -rf /home/eto_/legalapp-googleplay-build/.buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists
+
+PASO 6 - UBUNTU - COMPILAR
 
 buildozer android release
 
-PASO 6 - UBUNTU - VERIFICAR SALIDA
+PASO 7 - UBUNTU - VERIFICAR SALIDA Y EL TARGET SDK REAL
 
 ls -lh /home/eto_/legalapp-googleplay-build/bin
+
+Verificar el target SDK real en el manifest fusionado (no confiar solo en el .spec):
+grep -o 'targetSdkVersion="[0-9]*"' /home/eto_/legalapp-googleplay-build/.buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists/legalapp/build/intermediates/merged_manifests/release/processReleaseManifest/AndroidManifest.xml
 
 RESULTADO ESPERADO:
 - un archivo .aab dentro de /home/eto_/legalapp-googleplay-build/bin
