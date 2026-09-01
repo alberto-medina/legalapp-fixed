@@ -30,7 +30,7 @@ android.release_keyalias = legalapp
 
 android.network_security_config = network_security_config.xml
 
-android.gradle_dependencies = com.google.firebase:firebase-messaging:23.4.0,com.google.firebase:firebase-analytics:21.5.0
+android.gradle_dependencies = com.google.firebase:firebase-messaging:23.4.0
 
 android.gradle_plugins = com.google.gms.google-services
 
