@@ -12,8 +12,10 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 # ============================================
 FIREBASE_API_KEY = "AIzaSyBmBKc5MkGmWBjeEa2YPOqCKa9Ve3fxWbE"
 
-# Web Client ID de Google Sign-In (no es secreto, es un identificador publico
-# que Google usa para saber a que proyecto corresponde el login)
+# Web client ID de Google Sign-In (Firebase Authentication > Google > Web SDK
+# configuration). No es un secreto -- es un identificador publico, igual que
+# FIREBASE_API_KEY; la seguridad real la da la validacion del id_token del
+# lado del servidor de Firebase, no ocultar este valor.
 GOOGLE_WEB_CLIENT_ID = "511934443513-25u1356r43s8795sr6j2u1j0ed13stdg.apps.googleusercontent.com"
 
 # ============================================

@@ -141,6 +141,7 @@
                                 foreground_color: 0.10,0.06,0.14,1
                                 hint_text_color: 0.60,0.57,0.68,1
                                 cursor_color: 0.30,0.23,0.67,1
+                                on_focus: root._on_password_focus(self, self.focus)
 
                             Button:
                                 size_hint_x: None
@@ -180,11 +181,11 @@
                             text: "o"
                             font_size: "13sp"
                             color: 0.60,0.63,0.70,1
-                            size_hint_y: None
-                            height: dp(20)
                             halign: "center"
                             valign: "middle"
-                            text_size: self.size
+                            text_size: self.width, None
+                            size_hint_y: None
+                            height: dp(20)
 
                         Button:
                             text: "Continuar con Google"
@@ -194,9 +195,15 @@
                             bold: True
                             background_normal: ""
                             background_down: ""
-                            background_color: 0.95,0.94,0.97,1
-                            color: 0.10,0.06,0.14,1
-                            on_release: root.iniciar_sesion_google()
+                            background_color: 1,1,1,1
+                            color: 0.20,0.20,0.22,1
+                            canvas.before:
+                                Color:
+                                    rgba: 0.82,0.83,0.87,1
+                                Line:
+                                    rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
+                                    width: dp(1.2)
+                            on_release: root.login_con_google()
 
                         Label:
                             text: "Solo para clientes. Los abogados ingresan con su email y contrasena."

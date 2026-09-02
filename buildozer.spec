@@ -15,12 +15,13 @@ source.exclude_patterns = firebase.json,firestore.indexes.json,firestore.rules,*
 requirements = python3,kivy,kivymd,pillow,requests,pyjnius,certifi,urllib3,charset-normalizer,idna,plyer,android
 
 orientation = portrait
+android.manifest.orientation = unspecified
 
-android.permissions = INTERNET,CAMERA,RECORD_AUDIO,READ_EXTERNAL_STORAGE,READ_MEDIA_IMAGES,READ_MEDIA_AUDIO,VIBRATE,WAKE_LOCK,RECEIVE_BOOT_COMPLETED,POST_NOTIFICATIONS
+android.permissions = INTERNET,CAMERA,RECORD_AUDIO,READ_EXTERNAL_STORAGE,READ_MEDIA_AUDIO,VIBRATE,WAKE_LOCK,RECEIVE_BOOT_COMPLETED,POST_NOTIFICATIONS,USE_BIOMETRIC
 
 android.minapi = 26
 android.api = 36
-android.ndk = 25c
+android.ndk = 28c
 android.sdk_build_tools_version = 36.0.0
 
 android.release_artifact = apk
@@ -30,7 +31,9 @@ android.release_keyalias = legalapp
 
 android.network_security_config = network_security_config.xml
 
-android.gradle_dependencies = com.google.firebase:firebase-messaging:23.4.0
+android.add_src = java_src
+
+android.gradle_dependencies = com.google.firebase:firebase-messaging:23.4.0,androidx.fragment:fragment:1.2.1,androidx.activity:activity:1.9.3,org.jetbrains.kotlin:kotlin-stdlib:1.8.22,org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22,org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22,com.google.android.gms:play-services-auth:21.2.0
 
 android.gradle_plugins = com.google.gms.google-services
 
@@ -40,6 +43,7 @@ p4a.branch = master
 
 icon.filename = assets/icon_512.png
 presplash.filename = assets/splash_1080.png
+android.presplash_color = #0052CA
 
 log_level = 2
 warn_on_root = 1
