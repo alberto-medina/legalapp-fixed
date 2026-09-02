@@ -14,9 +14,6 @@ class RegisterScreen(FormKeyboardMixin, Screen):
     def on_enter(self):
         self._setup_form_keyboard("register_scroll")
 
-    def on_leave(self):
-        self._teardown_form_keyboard()
-
     def register(self):
 
         if self._registro_en_proceso:
@@ -166,14 +163,12 @@ class RegisterScreen(FormKeyboardMixin, Screen):
         self.manager.current = 'register_abogado'
 
     def registrar_con_google(self):
-        # No hay un flujo de alta separado para Google -- login_con_google
-        # ya crea la cuenta automaticamente si es la primera vez (ver
-        # supabase_config.login_con_google). Se reusa el mismo boton/logica
-        # de LoginScreen en vez de duplicar el ruteo post-login (verificar
-        # rol, suscripcion, etc.) aca.
-        login_screen = self.manager.get_screen('login')
+        """No duplica el ruteo post-login (verificar rol/suscripcion/
+        aprobacion) — navega a LoginScreen y dispara el mismo flujo de
+        Google que ya usa el login, para reusar esa logica en un solo
+        lugar en vez de mantener dos copias."""
         self.manager.current = 'login'
-        Clock.schedule_once(lambda dt: login_screen.login_con_google(), 0.1)
+        Clock.schedule_once(lambda dt: self.manager.get_screen('login').iniciar_sesion_google(), 0.1)
 
     def limpiar_campos(self):
         self.ids.username.text = ""

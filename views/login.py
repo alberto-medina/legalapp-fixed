@@ -5,6 +5,7 @@ import threading
 
 import supabase_config as fb
 import session
+import google_signin
 from views.form_keyboard import FormKeyboardMixin
 
 
@@ -14,7 +15,6 @@ class LoginScreen(FormKeyboardMixin, Screen):
     _ultimo_toque = 0
     _login_en_proceso = False
     _email_next_bound = False
-    _huella_en_progreso = False
 
     def on_enter(self):
         self._toques_titulo = 0
@@ -23,23 +23,6 @@ class LoginScreen(FormKeyboardMixin, Screen):
         self._setup_form_keyboard("login_scroll")
 
         self.ids.error.text = ""
-
-        # Prellenar con las credenciales recordadas de un login anterior
-        # (independiente del token de sesion -- esto sobrevive a un logout
-        # a proposito, ver session.guardar_credenciales). Solo si el campo
-        # esta vacio, para no pisar algo que el usuario ya este escribiendo.
-        if not self.ids.email.text and not self.ids.password.text:
-            email_guardado = session.cargar_email_guardado()
-            if email_guardado:
-                self.ids.email.text = email_guardado
-                if session.hay_password_con_huella():
-                    # La contrasena esta cifrada -- no se puede prellenar
-                    # directo, hace falta la huella para descifrarla. Se
-                    # dispara el prompt con una demora chica para que la
-                    # pantalla ya este armada cuando aparezca.
-                    Clock.schedule_once(lambda dt: self._intentar_login_con_huella(), 0.3)
-                else:
-                    self.ids.password.text = session.cargar_password_plano()
 
         if 'titulo_app' in self.ids:
             self.ids.titulo_app.bind(on_touch_down=self._on_titulo_touch)
@@ -53,67 +36,6 @@ class LoginScreen(FormKeyboardMixin, Screen):
         if not self._email_next_bound and 'email' in self.ids and 'password' in self.ids:
             self.ids.email.bind(on_text_validate=self._ir_a_password)
             self._email_next_bound = True
-
-    def on_leave(self):
-        self._teardown_form_keyboard()
-
-    def _on_password_focus(self, widget, tiene_foco):
-        # Si cancelaste la huella sin querer (o cualquier motivo), tocar de
-        # nuevo el campo de contrasena la vuelve a intentar -- sin esto,
-        # quedabas atascado escribiendo a mano el resto de la sesion.
-        if not tiene_foco or widget.text or self._huella_en_progreso:
-            return
-        if session.hay_password_con_huella():
-            self._intentar_login_con_huella()
-
-    def login_con_google(self):
-        if self._login_en_proceso:
-            return
-
-        import google_signin
-        if not google_signin.disponible():
-            self.ids.error.color = (0.90, 0.25, 0.25, 1)
-            self.ids.error.text = "Google Sign-In no disponible en este dispositivo"
-            return
-
-        self._login_en_proceso = True
-        self.ids.error.color = (0.35, 0.38, 0.50, 1)
-        self.ids.error.text = "Conectando con Google..."
-        google_signin.iniciar_login(self._on_google_resultado)
-
-    def _on_google_resultado(self, id_token, email, nombre):
-        if not id_token:
-            self._login_en_proceso = False
-            self.ids.error.text = ""
-            return
-
-        self.ids.error.text = "Ingresando..."
-
-        def _worker():
-            try:
-                ok, user_data, error = fb.login_con_google(id_token, nombre)
-                Clock.schedule_once(
-                    lambda dt, ok=ok, data=user_data, err=error, mail=email: self._post_login(ok, data, err, mail, es_google=True),
-                    0
-                )
-            except Exception as e:
-                Clock.schedule_once(lambda dt, err=str(e): self._login_fallido_inesperado(err), 0)
-
-        threading.Thread(target=_worker, daemon=True).start()
-
-    def _intentar_login_con_huella(self):
-        self._huella_en_progreso = True
-        session.cargar_password_con_huella(self._on_password_con_huella)
-
-    def _on_password_con_huella(self, password):
-        # password es None si el usuario cancelo, eligio "Usar contrasena",
-        # o cualquier error -- en todos esos casos se deja el campo vacio
-        # para que escriba a mano, sin mensaje de error (no fue un intento
-        # fallido de login, fue simplemente no usar la huella).
-        self._huella_en_progreso = False
-        if password:
-            self.ids.password.text = password
-            self.login()
 
     def _ir_a_password(self, widget):
         self.ids.password.focus = True
@@ -194,6 +116,38 @@ class LoginScreen(FormKeyboardMixin, Screen):
             )
 
             self._login_en_proceso = False
+
+    def iniciar_sesion_google(self):
+        """Boton 'Continuar con Google' — SOLO para clientes. El registro de
+        abogado sigue con su propio flujo (matricula/provincia/especialidad/
+        suscripcion/aprobacion), que no encaja en un login de un toque, por
+        eso este boton no existe en la pantalla de alta de abogado."""
+        if self._login_en_proceso:
+            return
+
+        self._login_en_proceso = True
+        self.ids.error.color = (0.35, 0.38, 0.50, 1)
+        self.ids.error.text = "Conectando con Google..."
+
+        def _on_resultado(id_token, email, nombre):
+            if not id_token:
+                self._login_en_proceso = False
+                self.ids.error.text = ""
+                return
+
+            def _worker():
+                try:
+                    ok, user_data, error = fb.login_con_google(id_token, nombre)
+                    Clock.schedule_once(
+                        lambda dt, ok=ok, data=user_data, err=error, mail=email: self._post_login(ok, data, err, mail, es_google=True),
+                        0
+                    )
+                except Exception as e:
+                    Clock.schedule_once(lambda dt, err=str(e): self._login_fallido_inesperado(err), 0)
+
+            threading.Thread(target=_worker, daemon=True).start()
+
+        google_signin.iniciar_login(_on_resultado)
 
     def _post_login(self, ok, user_data, error, email, es_google=False):
         try:
@@ -276,12 +230,6 @@ class LoginScreen(FormKeyboardMixin, Screen):
                 session.pending_email = None
                 session.abogado_registrando_uid = None
                 session.guardar()
-                # Un login con Google no tiene contrasena escrita a mano --
-                # no hay nada valido para guardar/cifrar aca. Se deja
-                # intacto lo que ya haya guardado de un login anterior con
-                # email/contrasena.
-                if not es_google:
-                    session.guardar_credenciales(email, self.ids.password.text.strip())
 
                 self.ids.email.text = ""
                 self.ids.password.text = ""
@@ -342,14 +290,8 @@ class LoginScreen(FormKeyboardMixin, Screen):
         from kivy.uix.textinput import TextInput as _TI
         from kivy.uix.button import Button as _Btn
         from kivy.uix.label import Label as _Lbl
-        from kivy.metrics import dp as _dp
 
-        # Todas las medidas de este popup estaban en pixeles crudos (sin
-        # dp()), asi que en pantallas de densidad alta el popup terminaba
-        # bastante mas chico de lo esperado y el contenido se superponia /
-        # se salia de los bordes. Con dp() escala igual en cualquier
-        # densidad.
-        layout = _BL(orientation='vertical', padding=_dp(16), spacing=_dp(12))
+        layout = _BL(orientation='vertical', padding=16, spacing=12)
 
         lbl_info = _Lbl(
             text='Ingresa tu email para recibir un link de restablecimiento.',
@@ -357,7 +299,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
             font_size='13sp',
             color=(0.35, 0.38, 0.50, 1),
             size_hint_y=None,
-            height=_dp(48),
+            height=48,
         )
         lbl_info.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
 
@@ -367,7 +309,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
             text=email_prefill,
             multiline=False,
             size_hint_y=None,
-            height=_dp(46),
+            height=46,
             font_size='15sp',
             background_normal='',
             background_active='',
@@ -375,7 +317,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
             foreground_color=(0.10, 0.06, 0.14, 1),
             hint_text_color=(0.60, 0.57, 0.68, 1),
             cursor_color=(0.30, 0.23, 0.67, 1),
-            padding=[_dp(14), _dp(12)],
+            padding=[14, 12],
         )
 
         lbl_resultado = _Lbl(
@@ -384,14 +326,14 @@ class LoginScreen(FormKeyboardMixin, Screen):
             font_size='12sp',
             color=(0.18, 0.80, 0.44, 1),
             size_hint_y=None,
-            height=_dp(20),
+            height=20,
         )
         lbl_resultado.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
 
         btn_enviar = _Btn(
             text='Enviar link de recuperacion',
             size_hint_y=None,
-            height=_dp(50),
+            height=50,
             bold=True,
             font_size='15sp',
             background_normal='',
@@ -402,7 +344,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
         btn_cerrar = _Btn(
             text='Cancelar',
             size_hint_y=None,
-            height=_dp(38),
+            height=38,
             font_size='13sp',
             background_normal='',
             background_color=(0, 0, 0, 0),
@@ -419,7 +361,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
             title='Recuperar contrasena',
             content=layout,
             size_hint=(0.88, None),
-            height=_dp(380),
+            height=380,
             separator_color=(0.30, 0.23, 0.67, 1),
         )
 

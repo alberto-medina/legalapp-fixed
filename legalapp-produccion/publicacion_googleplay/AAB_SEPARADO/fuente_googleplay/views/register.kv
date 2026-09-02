@@ -298,37 +298,21 @@
 
                         BoxLayout:
                             size_hint_y: None
-                            height: max(dp(48), lbl_terminos.texture_size[1])
+                            height: "44dp"
                             spacing: "8dp"
 
                             CheckBox:
                                 id: terms_check
-                                size_hint: None, None
-                                size: "48dp", "48dp"
-                                pos_hint: {"top": 1}
-                                canvas.before:
-                                    Color:
-                                        rgba: 1, 1, 1, 1
-                                    RoundedRectangle:
-                                        pos: (self.x + dp(9), self.y + dp(9))
-                                        size: (self.width - dp(18), self.height - dp(18))
-                                        radius: [dp(5)]
-                                    Color:
-                                        rgba: 0.29, 0.24, 0.55, 1
-                                    Line:
-                                        rounded_rectangle: (self.x + dp(9), self.y + dp(9), self.width - dp(18), self.height - dp(18), dp(5))
-                                        width: dp(1.6)
+                                size_hint_x: None
+                                width: "40dp"
 
                             Label:
-                                id: lbl_terminos
                                 text: "Acepto terminos, politica de privacidad y bases del servicio *"
                                 bold: True
                                 color: 0.23, 0.18, 0.55, 1
                                 halign: "left"
-                                valign: "top"
-                                size_hint_y: None
-                                text_size: (self.width, None)
-                                height: self.texture_size[1]
+                                valign: "middle"
+                                text_size: self.size
 
                         Label:
                             text: "Es obligatorio para crear la cuenta y usar Legal App."
@@ -392,18 +376,12 @@
                     Button:
                         text: "Continuar con Google"
                         size_hint_y: None
-                        height: "52dp"
+                        height: "48dp"
                         bold: True
-                        font_size: "15sp"
+                        font_size: "14sp"
                         background_normal: ""
-                        background_color: 1, 1, 1, 1
-                        color: 0.20, 0.20, 0.22, 1
-                        canvas.before:
-                            Color:
-                                rgba: 0.82, 0.83, 0.87, 1
-                            Line:
-                                rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
-                                width: dp(1.2)
+                        background_color: 0.96, 0.97, 0.98, 1
+                        color: 0.10, 0.12, 0.18, 1
                         on_release: root.registrar_con_google()
 
                 Label:
