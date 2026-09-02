@@ -162,14 +162,6 @@ class RegisterScreen(FormKeyboardMixin, Screen):
     def ir_registro_abogado(self):
         self.manager.current = 'register_abogado'
 
-    def registrar_con_google(self):
-        """No duplica el ruteo post-login (verificar rol/suscripcion/
-        aprobacion) — navega a LoginScreen y dispara el mismo flujo de
-        Google que ya usa el login, para reusar esa logica en un solo
-        lugar en vez de mantener dos copias."""
-        self.manager.current = 'login'
-        Clock.schedule_once(lambda dt: self.manager.get_screen('login').iniciar_sesion_google(), 0.1)
-
     def limpiar_campos(self):
         self.ids.username.text = ""
         self.ids.email.text = ""

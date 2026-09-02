@@ -5,7 +5,6 @@ import threading
 
 import supabase_config as fb
 import session
-import google_signin
 from views.form_keyboard import FormKeyboardMixin
 
 
@@ -117,39 +116,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
 
             self._login_en_proceso = False
 
-    def iniciar_sesion_google(self):
-        """Boton 'Continuar con Google' — SOLO para clientes. El registro de
-        abogado sigue con su propio flujo (matricula/provincia/especialidad/
-        suscripcion/aprobacion), que no encaja en un login de un toque, por
-        eso este boton no existe en la pantalla de alta de abogado."""
-        if self._login_en_proceso:
-            return
-
-        self._login_en_proceso = True
-        self.ids.error.color = (0.35, 0.38, 0.50, 1)
-        self.ids.error.text = "Conectando con Google..."
-
-        def _on_resultado(id_token, email, nombre):
-            if not id_token:
-                self._login_en_proceso = False
-                self.ids.error.text = ""
-                return
-
-            def _worker():
-                try:
-                    ok, user_data, error = fb.login_con_google(id_token, nombre)
-                    Clock.schedule_once(
-                        lambda dt, ok=ok, data=user_data, err=error, mail=email: self._post_login(ok, data, err, mail, es_google=True),
-                        0
-                    )
-                except Exception as e:
-                    Clock.schedule_once(lambda dt, err=str(e): self._login_fallido_inesperado(err), 0)
-
-            threading.Thread(target=_worker, daemon=True).start()
-
-        google_signin.iniciar_login(_on_resultado)
-
-    def _post_login(self, ok, user_data, error, email, es_google=False):
+    def _post_login(self, ok, user_data, error, email):
         try:
             if ok and user_data:
                 id_token = user_data.get('idToken')
