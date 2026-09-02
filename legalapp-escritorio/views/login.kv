@@ -176,6 +176,38 @@
                             color: 1,1,1,1
                             on_release: root.login()
 
+                        Label:
+                            text: "o"
+                            font_size: "13sp"
+                            color: 0.60,0.63,0.70,1
+                            size_hint_y: None
+                            height: dp(20)
+                            halign: "center"
+                            valign: "middle"
+                            text_size: self.size
+
+                        Button:
+                            text: "Continuar con Google"
+                            size_hint_y: None
+                            height: dp(52)
+                            font_size: "15sp"
+                            bold: True
+                            background_normal: ""
+                            background_down: ""
+                            background_color: 0.95,0.94,0.97,1
+                            color: 0.10,0.06,0.14,1
+                            on_release: root.iniciar_sesion_google()
+
+                        Label:
+                            text: "Solo para clientes. Los abogados ingresan con su email y contrasena."
+                            font_size: "11sp"
+                            color: 0.55,0.58,0.65,1
+                            size_hint_y: None
+                            height: dp(28)
+                            halign: "center"
+                            valign: "middle"
+                            text_size: self.width, None
+
                         Button:
                             text: "Crear cuenta"
                             size_hint_y: None

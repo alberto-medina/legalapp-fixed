@@ -364,6 +364,26 @@
                         color: 1, 1, 1, 1
                         on_release: root.register()
 
+                    Label:
+                        text: "o"
+                        font_size: "13sp"
+                        color: 0.60, 0.63, 0.70, 1
+                        size_hint_y: None
+                        height: "20dp"
+                        halign: "center"
+                        text_size: self.size
+
+                    Button:
+                        text: "Continuar con Google"
+                        size_hint_y: None
+                        height: "48dp"
+                        bold: True
+                        font_size: "14sp"
+                        background_normal: ""
+                        background_color: 0.96, 0.97, 0.98, 1
+                        color: 0.10, 0.12, 0.18, 1
+                        on_release: root.registrar_con_google()
+
                 Label:
                     text: "o"
                     font_size: "13sp"
