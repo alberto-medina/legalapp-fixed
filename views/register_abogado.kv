@@ -488,21 +488,37 @@
 
                         BoxLayout:
                             size_hint_y: None
-                            height: "44dp"
+                            height: max(dp(48), lbl_terminos.texture_size[1])
                             spacing: "8dp"
 
                             CheckBox:
                                 id: terms_check
-                                size_hint_x: None
-                                width: "40dp"
+                                size_hint: None, None
+                                size: "48dp", "48dp"
+                                pos_hint: {"top": 1}
+                                canvas.before:
+                                    Color:
+                                        rgba: 1, 1, 1, 1
+                                    RoundedRectangle:
+                                        pos: (self.x + dp(9), self.y + dp(9))
+                                        size: (self.width - dp(18), self.height - dp(18))
+                                        radius: [dp(5)]
+                                    Color:
+                                        rgba: 0.29, 0.24, 0.55, 1
+                                    Line:
+                                        rounded_rectangle: (self.x + dp(9), self.y + dp(9), self.width - dp(18), self.height - dp(18), dp(5))
+                                        width: dp(1.6)
 
                             Label:
+                                id: lbl_terminos
                                 text: "Acepto terminos, condiciones, politica de privacidad y bases del servicio *"
                                 bold: True
                                 color: 0.23, 0.18, 0.55, 1
                                 halign: "left"
-                                valign: "middle"
-                                text_size: self.size
+                                valign: "top"
+                                size_hint_y: None
+                                text_size: (self.width, None)
+                                height: self.texture_size[1]
 
                         Label:
                             text: "Incluye reglas de suscripcion, cobros, retiros y uso profesional de la plataforma."

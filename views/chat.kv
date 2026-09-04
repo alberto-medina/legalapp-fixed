@@ -1,4 +1,5 @@
 #:import dp kivy.metrics.dp
+#:import CircularAvatar views.utils_avatar
 
 <ChatScreen>:
 
@@ -17,9 +18,9 @@
         # ==================================================
         BoxLayout:
             size_hint_y: None
-            height: dp(112)
+            height: dp(136)
             orientation: "vertical"
-            padding: [dp(10), dp(8), dp(10), dp(8)]
+            padding: [dp(10), dp(32), dp(10), dp(8)]
             spacing: dp(6)
 
             canvas.before:
@@ -49,7 +50,7 @@
                     size_hint_x: None
                     width: dp(46)
 
-                    AsyncImage:
+                    CircularAvatar:
                         id: img_avatar_chat
                         source: "assets/avatar_default.png"
                         size_hint: None, None
@@ -57,13 +58,17 @@
                         pos_hint: {"center_y": 0.5}
                         allow_stretch: True
                         keep_ratio: True
+                        ring_color: 1, 1, 1, 1
+                        ring_width: dp(1.5)
 
                 # ==================================================
                 # INFO CHAT
                 # ==================================================
                 BoxLayout:
                     orientation: "vertical"
-                    size_hint_x: 1
+                    size_hint: 1, None
+                    height: self.minimum_height
+                    pos_hint: {"center_y": 0.5}
                     spacing: dp(1)
                     padding: [dp(0), dp(2), dp(0), dp(2)]
 
@@ -71,8 +76,8 @@
                         id: lbl_chat_titulo
                         text: ""
                         size_hint_y: None
-                        height: dp(20)
-                        font_size: "15sp"
+                        height: dp(24)
+                        font_size: "17sp"
                         bold: True
                         color: 1, 1, 1, 1
                         halign: "left"
@@ -231,24 +236,44 @@
                         pos: self.pos
                         size: self.size
 
-                GridLayout:
-                    id: chat_box
-                    cols: 1
-                    spacing: dp(10)
-                    padding: [dp(14), dp(14), dp(14), dp(14)]
+                BoxLayout:
+                    id: chat_wrapper
+                    orientation: "vertical"
                     size_hint_y: None
-                    height: self.minimum_height
+                    height: max(scroll_chat.height, chat_box.height)
+
+                    # Cuando hay pocos mensajes, chat_box (altura fija =
+                    # minimum_height) queda mas chico que el viewport del
+                    # ScrollView -- sin este spacer, Kivy ancla el contenido
+                    # arriba y deja el resto como hueco en blanco pegado al
+                    # input_area (invisible antes porque el teclado lo
+                    # tapaba; expuesto al arreglar el tapado). Este Widget
+                    # absorbe ese sobrante ARRIBA de los mensajes, asi los
+                    # mensajes quedan pegados abajo, contra el campo de
+                    # escribir. Cuando hay muchos mensajes (mas altos que el
+                    # viewport) su altura calcula 0 y no afecta el scroll.
+                    Widget:
+                        size_hint_y: None
+                        height: max(0, chat_wrapper.height - chat_box.height)
+
+                    GridLayout:
+                        id: chat_box
+                        cols: 1
+                        spacing: dp(10)
+                        padding: [dp(14), dp(14), dp(14), dp(14)]
+                        size_hint_y: None
+                        height: self.minimum_height
 
             # ==================================================
-            # INPUT - se levanta con el teclado via keyboard_height
+            # INPUT
             # ==================================================
             BoxLayout:
                 id: input_area
                 orientation: "horizontal"
                 size_hint_y: None
-                height: dp(72) + app.keyboard_height
+                height: dp(72)
                 spacing: dp(8)
-                padding: [dp(10), dp(8), dp(10), dp(8) + app.keyboard_height]
+                padding: [dp(10), dp(8), dp(10), dp(8)]
                 canvas.before:
                     Color:
                         rgba: 1, 1, 1, 1
@@ -324,3 +349,14 @@
                     background_color: 0.30, 0.23, 0.67, 1
                     color: 1, 1, 1, 1
                     on_release: root.enviar()
+
+            # SIN spacer manual a proposito: se confirmo con logcat en
+            # dispositivo real que Kivy ya posiciona input_area exactamente
+            # donde deberia (input_area.y == app.keyboard_height, cero hueco
+            # en la contabilidad interna de Kivy) usando solo el modo
+            # 'below_target' por defecto -- Android mueve la superficie
+            # renderizada por su cuenta ademas de eso (probablemente porque
+            # SDL2 usa un EditText nativo oculto para conectar con el
+            # teclado, y Android le aplica su propio paneo). Agregar este
+            # spacer sumaba una segunda compensacion arriba de la que
+            # Android ya hace solo, dejando un hueco del tamano del teclado.

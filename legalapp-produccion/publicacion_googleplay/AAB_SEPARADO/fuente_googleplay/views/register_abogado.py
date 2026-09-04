@@ -110,6 +110,9 @@ class RegisterAbogadoScreen(FormKeyboardMixin, Screen):
 
         return suscripcion_base, extra
 
+    def on_leave(self):
+        self._teardown_form_keyboard()
+
     def on_enter(self):
         self._setup_form_keyboard("register_abogado_scroll")
         self._especialidades_seleccionadas = []

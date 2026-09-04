@@ -40,6 +40,7 @@ class PerfilBaseMixin(FormKeyboardMixin):
 
     _chooser_abierto = False
     _cargando_datos = False
+    _scroll_event = None
 
     def on_enter(self):
         Window.bind(on_key_down=self.on_key_down)
@@ -95,12 +96,12 @@ class PerfilBaseMixin(FormKeyboardMixin):
     def _aplicar_datos_rol(self, user_data):
         raise NotImplementedError
 
-    def _cargar_imagen(self, source, email=None):
+    def _cargar_imagen(self, source, email=None, force=False):
         img = self.ids.img_avatar
-        Clock.schedule_once(lambda dt, src=source, mail=email: self._set_source(img, src, mail), 0)
+        Clock.schedule_once(lambda dt, src=source, mail=email, f=force: self._set_source(img, src, mail, f), 0)
 
-    def _set_source(self, img, source, email=None):
-        set_avatar_image(img, source, email or session.get_email())
+    def _set_source(self, img, source, email=None, force=False):
+        set_avatar_image(img, source, email or session.get_email(), force=force)
 
     def _obtener_foto_local(self):
         email = session.get_email()
@@ -311,7 +312,7 @@ class PerfilBaseMixin(FormKeyboardMixin):
     def _post_subir_foto(self, ok, url):
         if ok and url:
             self.ids.foto.text = url
-            self._cargar_imagen(url)
+            self._cargar_imagen(url, force=True)
             if session.current_user:
                 session.current_user['foto_url'] = url
                 session.guardar()

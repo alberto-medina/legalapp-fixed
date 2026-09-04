@@ -12,7 +12,7 @@ from kivy.resources import resource_find
 from kivy.animation import Animation
 import supabase_config as fb
 import session
-from views.utils_avatar import get_avatar_source
+from views.utils_avatar import get_avatar_source, CircularAvatar
 
 RATING_FONT = resource_find("data/fonts/DejaVuSans.ttf") or "data/fonts/DejaVuSans.ttf"
 
@@ -368,11 +368,18 @@ class AbogadosScreen(Screen):
         )
         top.bind(minimum_height=lambda w, v: setattr(w, "height", max(v, _dp(92))))
 
-        avatar = AsyncImage(
+        avatar = CircularAvatar(
             source=get_avatar_source(foto, email),
             size_hint=(None, None),
             size=(_dp(72), _dp(72)),
+            pos_hint={"center_y": 0.5},
+            ring_color=ESTADO_COLOR.get((estado or "disponible").lower(), ESTADO_COLOR["disponible"]),
+            ring_width=_dp(2.5),
         )
+        # Dispara la descarga+redimensionado en segundo plano de la foto
+        # remota (si hace falta) y actualiza este mismo widget cuando este
+        # lista la version chica en cache -- ver utils_avatar.
+        get_avatar_source(foto, email, widget=avatar)
         top.add_widget(avatar)
 
         info = BoxLayout(
@@ -565,12 +572,15 @@ class AbogadosScreen(Screen):
         content = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
         content.bind(minimum_height=content.setter("height"))
 
-        avatar = AsyncImage(
+        avatar = CircularAvatar(
             source=get_avatar_source(foto, email),
             size_hint=(None, None),
             size=(dp(96), dp(96)),
             pos_hint={"center_x": 0.5},
+            ring_color=ESTADO_COLOR.get((estado or "disponible").lower(), ESTADO_COLOR["disponible"]),
+            ring_width=dp(3),
         )
+        get_avatar_source(foto, email, widget=avatar)
         content.add_widget(avatar)
 
         def _lbl(texto, size="14sp", color=(0.10, 0.12, 0.18, 1), bold=False, h=None, font_name=None):

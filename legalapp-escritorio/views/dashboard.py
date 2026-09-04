@@ -23,6 +23,8 @@ class DashboardScreen(Screen):
     _cargando_dashboard = False
     _checking_video = False
     _video_event = None
+    _avisos_event = None
+    _checking_avisos = False
 
     def on_tap_titulo(self):
         """Easter egg: 7 taps rapidos en LEGAL APP abre el panel admin."""
@@ -59,10 +61,41 @@ class DashboardScreen(Screen):
             self._video_event = Clock.schedule_interval(self.check_videollamada, 2)
         self.check_videollamada(0)
 
+        if self._avisos_event is None:
+            self._avisos_event = Clock.schedule_interval(self._actualizar_badge_avisos, 20)
+        self._actualizar_badge_avisos(0)
+
     def on_leave(self):
         if self._video_event is not None:
             self._video_event.cancel()
             self._video_event = None
+        if self._avisos_event is not None:
+            self._avisos_event.cancel()
+            self._avisos_event = None
+
+    def _actualizar_badge_avisos(self, dt):
+        user = session.current_user
+        if not user or self._checking_avisos:
+            return
+
+        uid = user.get('uid')
+        self._checking_avisos = True
+
+        def _check():
+            total = 0
+            try:
+                total = fb.contar_avisos_no_leidos(uid, 'cliente')
+            except Exception as e:
+                print(f"ERROR contar_avisos_no_leidos: {e}")
+            finally:
+                Clock.schedule_once(lambda dt, n=total: self._aplicar_badge_avisos(n), 0)
+
+        threading.Thread(target=_check, daemon=True).start()
+
+    def _aplicar_badge_avisos(self, total):
+        self._checking_avisos = False
+        if "lbl_badge_avisos" in self.ids:
+            self.ids.lbl_badge_avisos.text = str(total) if total > 0 else "0"
 
     def check_videollamada(self, dt):
         user = session.current_user
@@ -175,13 +208,17 @@ class DashboardScreen(Screen):
         self.manager.current = "historial"
 
     def ir_perfil(self):
-        self.manager.current = "perfil"
+        self.manager.current = "perfil_cliente"
 
     def ver_notificaciones(self):
         user = session.current_user or {}
         uid = user.get("uid")
         if not uid:
             return
+
+        if "lbl_badge_avisos" in self.ids:
+            self.ids.lbl_badge_avisos.text = "0"
+        threading.Thread(target=lambda: fb.marcar_avisos_vistos(uid), daemon=True).start()
 
         consultas = fb.obtener_consultas_usuario(uid, "cliente")
         items = []

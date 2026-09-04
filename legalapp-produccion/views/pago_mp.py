@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import threading
 
 import session
 import supabase_config as fb
@@ -833,16 +834,35 @@ class PagoMPScreen(Screen):
         if not self._external_reference:
             return
 
+        # FIX: este chequeo llama a la API de Mercado Pago (red) -- si
+        # corria en el hilo principal, volver del navegador de MP sin pagar
+        # (o con la red lenta reconectando) podia colgar la UI el tiempo
+        # suficiente como para que Android la matara (ANR) -- se ve como un
+        # crash aunque el error real sea "app no responde". Se saca el
+        # llamado de red a un hilo aparte, igual que el resto de los
+        # llamados a Supabase/MP en la app.
+        self.ids.btn_verificar.disabled = True
         self.ids.lbl_estado_mp.text = (
             "Verificando pago..."
         )
 
-        pagado = _verificar_pago_mp(
-            self._external_reference,
-            self._preference_id,
-            payer_email=self._cliente_email_pago(),
-            monto=self._monto_pago(),
-        ) or self._pago_procesado_en_supabase()
+        def _worker():
+            try:
+                pagado = _verificar_pago_mp(
+                    self._external_reference,
+                    self._preference_id,
+                    payer_email=self._cliente_email_pago(),
+                    monto=self._monto_pago(),
+                ) or self._pago_procesado_en_supabase()
+            except Exception as e:
+                print("ERROR verificar_pago (background):", e)
+                pagado = False
+            Clock.schedule_once(lambda dt, p=pagado: self._aplicar_resultado_verificar_pago(p), 0)
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _aplicar_resultado_verificar_pago(self, pagado):
+        self.ids.btn_verificar.disabled = False
 
         if pagado:
             self._pago_verificado = True
@@ -886,19 +906,45 @@ class PagoMPScreen(Screen):
             self.ids.lbl_estado_mp.text = "Verificando pago..."
             self.ids.lbl_estado_mp.color = (0.55, 0.50, 0.65, 1)
 
-            if _verificar_pago_mp(
-                self._external_reference,
-                self._preference_id,
-                payer_email=self._cliente_email_pago(),
-                monto=self._monto_pago(),
-            ) or self._pago_procesado_en_supabase():
-                self._pago_verificado = True
-            else:
-                self.ids.lbl_estado_mp.text = "Pago no encontrado. Espera unos segundos y toca Continuar."
-                self.ids.lbl_estado_mp.color = (0.90, 0.25, 0.25, 1)
-                self.ids.btn_confirmar.disabled = False
-                return
+            # FIX: mismo problema que verificar_pago() -- este chequeo llama
+            # a la API de Mercado Pago (red) y corria en el hilo principal.
+            # Es exactamente el camino que se dispara al volver del
+            # navegador de MP SIN pagar y tocar "Confirmar": la app se
+            # quedaba colgada esperando la respuesta de red justo despues
+            # de volver de background (momento en que el celular suele
+            # tardar mas en reconectar), lo suficiente como para que
+            # Android la matara (se veia como un crash). Se saca el
+            # llamado de red a un hilo aparte; el resto de la logica
+            # (crear consulta, etc.) sigue igual, corriendo recien cuando
+            # se confirma que el pago existe.
+            def _worker():
+                try:
+                    verificado = _verificar_pago_mp(
+                        self._external_reference,
+                        self._preference_id,
+                        payer_email=self._cliente_email_pago(),
+                        monto=self._monto_pago(),
+                    ) or self._pago_procesado_en_supabase()
+                except Exception as e:
+                    print("ERROR confirmar_pago verificacion (background):", e)
+                    verificado = False
+                Clock.schedule_once(lambda dt, v=verificado: self._confirmar_pago_background(v), 0)
 
+            threading.Thread(target=_worker, daemon=True).start()
+            return
+
+        self._confirmar_pago_logica()
+
+    def _confirmar_pago_background(self, verificado):
+        if verificado:
+            self._pago_verificado = True
+            self._confirmar_pago_logica()
+        else:
+            self.ids.lbl_estado_mp.text = "Pago no encontrado. Espera unos segundos y toca Continuar."
+            self.ids.lbl_estado_mp.color = (0.90, 0.25, 0.25, 1)
+            self.ids.btn_confirmar.disabled = False
+
+    def _confirmar_pago_logica(self):
         # FIX: Si es pago de especialidad extra, actualizar abogado
         if (
             getattr(session, 'pago_tipo', None) == 'especialidad_extra'
@@ -1106,7 +1152,7 @@ class PagoMPScreen(Screen):
         self.ids.lbl_estado_mp.color = (0.18, 0.80, 0.44, 1)
 
         Clock.schedule_once(
-            lambda dt: setattr(self.manager, 'current', 'perfil'),
+            lambda dt: setattr(self.manager, 'current', 'perfil_abogado'),
             1.5
         )
 
@@ -1148,6 +1194,6 @@ class PagoMPScreen(Screen):
 
     def volver(self):
         if getattr(session, 'pago_tipo', None) == 'especialidad_extra':
-            self.manager.current = "perfil"
+            self.manager.current = "perfil_abogado"
         else:
             self.manager.current = "pago"

@@ -1,4 +1,5 @@
 #:import dp kivy.metrics.dp
+#:import CircularAvatar views.utils_avatar
 
 <DashboardScreen>:
 
@@ -39,24 +40,64 @@
                 on_touch_down:
                     if self.collide_point(*args[1].pos): root.on_tap_titulo()
 
-            Button:
-                text: "Avisos"
+            FloatLayout:
+                id: campanita_wrap
                 size_hint: None, None
-                size: dp(58), dp(38)
-                font_size: "11sp"
-                bold: True
-                background_normal: ""
-                background_color: 0.35, 0.28, 0.70, 1
-                color: 1, 1, 1, 1
-                on_release: root.ver_notificaciones()
+                size: dp(48), dp(48)
+                pos_hint: {"center_y": 0.5}
 
-            AsyncImage:
+                Button:
+                    size_hint: None, None
+                    size: campanita_wrap.size
+                    pos: campanita_wrap.pos
+                    background_normal: ""
+                    background_color: 0.35, 0.28, 0.70, 1
+                    on_release: root.ver_notificaciones()
+                    canvas.after:
+                        Color:
+                            rgba: 1, 1, 1, 1
+                        Line:
+                            points: [self.center_x, self.center_y + dp(10), self.center_x, self.center_y + dp(12.5)]
+                            width: dp(1.6)
+                        RoundedRectangle:
+                            pos: self.center_x - dp(7), self.center_y - dp(3)
+                            size: dp(14), dp(13)
+                            radius: [dp(7), dp(7), dp(1.5), dp(1.5)]
+                        RoundedRectangle:
+                            pos: self.center_x - dp(9), self.center_y - dp(5)
+                            size: dp(18), dp(3)
+                            radius: [dp(1.5)]
+                        Ellipse:
+                            pos: self.center_x - dp(2), self.center_y - dp(9)
+                            size: dp(4), dp(4)
+
+                Label:
+                    id: lbl_badge_avisos
+                    text: "0"
+                    font_size: "9sp"
+                    bold: True
+                    color: 1, 1, 1, 1
+                    size_hint: None, None
+                    size: dp(16), dp(16)
+                    pos: campanita_wrap.right - dp(19), campanita_wrap.top - dp(15)
+                    opacity: 1 if self.text != "0" else 0
+                    canvas.before:
+                        Color:
+                            rgba: 0.90, 0.20, 0.20, 1
+                        Ellipse:
+                            pos: self.pos
+                            size: self.size
+
+            CircularAvatar:
                 id: img_avatar_inicio
                 size_hint: None, None
                 size: dp(42), dp(42)
+                pos_hint: {"center_y": 0.5}
                 source: "assets/avatar_default.png"
                 allow_stretch: True
                 keep_ratio: True
+                ring_color: 1, 1, 1, 1
+                ring_width: dp(2)
 
             BoxLayout:
                 orientation: "vertical"

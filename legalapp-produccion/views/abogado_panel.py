@@ -43,10 +43,45 @@ class AbogadoPanelScreen(Screen):
     _filtro = "todas"
     _consultas = []
     _cargando_panel = False
+    _avisos_event = None
+    _checking_avisos = False
 
     def on_enter(self):
         self._filtro = "todas"
         self.cargar_panel()
+
+        if self._avisos_event is None:
+            self._avisos_event = Clock.schedule_interval(self._actualizar_badge_avisos, 20)
+        self._actualizar_badge_avisos(0)
+
+    def on_leave(self):
+        if self._avisos_event is not None:
+            self._avisos_event.cancel()
+            self._avisos_event = None
+
+    def _actualizar_badge_avisos(self, dt):
+        user = session.current_user
+        if not user or self._checking_avisos:
+            return
+
+        uid = user.get('uid')
+        self._checking_avisos = True
+
+        def _check():
+            total = 0
+            try:
+                total = fb.contar_avisos_no_leidos(uid, 'abogado')
+            except Exception as e:
+                print(f"ERROR contar_avisos_no_leidos: {e}")
+            finally:
+                Clock.schedule_once(lambda dt, n=total: self._aplicar_badge_avisos(n), 0)
+
+        threading.Thread(target=_check, daemon=True).start()
+
+    def _aplicar_badge_avisos(self, total):
+        self._checking_avisos = False
+        if "lbl_badge_avisos" in self.ids:
+            self.ids.lbl_badge_avisos.text = str(total) if total > 0 else "0"
 
     def cargar_panel(self):
         if self._cargando_panel:
@@ -356,6 +391,13 @@ class AbogadoPanelScreen(Screen):
         popup.open()
 
     def ver_notificaciones(self):
+        user = session.current_user or {}
+        uid = user.get("uid")
+        if uid:
+            if "lbl_badge_avisos" in self.ids:
+                self.ids.lbl_badge_avisos.text = "0"
+            threading.Thread(target=lambda: fb.marcar_avisos_vistos(uid), daemon=True).start()
+
         layout = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(10))
         with layout.canvas.before:
             from kivy.graphics import Rectangle
@@ -446,7 +488,7 @@ class AbogadoPanelScreen(Screen):
         popup.open()
 
     def ir_perfil(self):
-        self.manager.current = "perfil"
+        self.manager.current = "perfil_abogado"
 
     def logout(self):
         session.cerrar_sesion()

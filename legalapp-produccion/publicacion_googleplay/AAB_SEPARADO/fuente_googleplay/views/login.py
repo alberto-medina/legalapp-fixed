@@ -15,11 +15,13 @@ class LoginScreen(FormKeyboardMixin, Screen):
     _login_en_proceso = False
     _email_next_bound = False
     _huella_en_progreso = False
+    _huella_cancelada = False
 
     def on_enter(self):
         self._toques_titulo = 0
         self._ultimo_toque = 0
         self._login_en_proceso = False
+        self._huella_cancelada = False
         self._setup_form_keyboard("login_scroll")
 
         self.ids.error.text = ""
@@ -58,13 +60,29 @@ class LoginScreen(FormKeyboardMixin, Screen):
         self._teardown_form_keyboard()
 
     def _on_password_focus(self, widget, tiene_foco):
-        # Si cancelaste la huella sin querer (o cualquier motivo), tocar de
-        # nuevo el campo de contrasena la vuelve a intentar -- sin esto,
-        # quedabas atascado escribiendo a mano el resto de la sesion.
+        # FIX: antes, cada vez que se tocaba el campo vacio se volvia a
+        # disparar la huella -- si la cancelabas porque queria escribir a
+        # mano, tocar el campo para escribir la relanzaba de nuevo,
+        # atrapando al usuario en un loop sin poder llegar nunca al
+        # teclado. Ahora el reintento automatico solo pasa una vez; despues
+        # de cancelar, tocar el campo abre el teclado normal.
         if not tiene_foco or widget.text or self._huella_en_progreso:
+            return
+        if self._huella_cancelada:
             return
         if session.hay_password_con_huella():
             self._intentar_login_con_huella()
+            # FIX: el prompt de huella es un dialogo nativo de Android, no
+            # el teclado -- Kivy no se entera de que no hay teclado real
+            # abierto y de todas formas programa un scroll (ver
+            # FormKeyboardMixin._on_form_input_focus, ligado a este mismo
+            # campo). Sin esto la pantalla se corria/bajaba sola cada vez
+            # que aparecia la huella, sin ningun teclado que justifique el
+            # movimiento (en la 133 esto no pasa, la pantalla queda quieta).
+            # Se limpia el input activo en el frame siguiente -- despues de
+            # que ambos manejadores de foco ya corrieron, pero antes de que
+            # el scroll programado (con demora de 0.15s) llegue a ejecutarse.
+            Clock.schedule_once(lambda dt: setattr(self, "_active_input", None), 0)
 
     def login_con_google(self):
         if self._login_en_proceso:
@@ -114,6 +132,8 @@ class LoginScreen(FormKeyboardMixin, Screen):
         if password:
             self.ids.password.text = password
             self.login()
+        else:
+            self._huella_cancelada = True
 
     def _ir_a_password(self, widget):
         self.ids.password.focus = True

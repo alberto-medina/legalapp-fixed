@@ -21,7 +21,7 @@ from kivy.utils import platform
 
 import supabase_config as fb
 import session
-from views.utils_avatar import get_avatar_source
+from views.utils_avatar import get_avatar_source, set_avatar_image
 
 try:
     from plyer import filechooser, camera
@@ -550,17 +550,50 @@ def _make_date_separator(texto):
 
 
 def _make_delete_button(on_delete):
+    """Insignia de "tachito" -- circulo blanco con borde rojo suave y un
+    icono de tacho de basura dibujado a mano (tapa + agarre + cuerpo con
+    Line/RoundedRectangle), mismo criterio sin-fuente-de-iconos que la
+    campanita de avisos (ver dashboard.kv). Reemplaza el cuadrado rojo con
+    "X" de antes."""
+    from kivy.graphics import Color, Ellipse, Line, RoundedRectangle
+
     btn = Button(
-        text="X",
         size_hint=(None, None),
-        width=dp(30),
-        height=dp(30),
-        font_size="11sp",
-        bold=True,
+        width=dp(26),
+        height=dp(26),
         background_normal="",
-        background_color=(0.86, 0.20, 0.20, 1),
-        color=(1, 1, 1, 1),
+        background_color=(0, 0, 0, 0),
     )
+
+    def _dibujar(*_a):
+        btn.canvas.before.clear()
+        btn.canvas.after.clear()
+        with btn.canvas.before:
+            Color(1, 1, 1, 1)
+            Ellipse(pos=btn.pos, size=btn.size)
+        with btn.canvas.after:
+            Color(0.90, 0.30, 0.30, 1)
+            Line(circle=(btn.center_x, btn.center_y, dp(12)), width=dp(1.3))
+
+            Color(0.80, 0.20, 0.20, 1)
+            cx, cy = btn.center_x, btn.center_y
+            # tapa
+            Line(points=[cx - dp(5), cy + dp(3), cx + dp(5), cy + dp(3)], width=dp(1.3))
+            # agarre
+            RoundedRectangle(pos=(cx - dp(2), cy + dp(3)), size=(dp(4), dp(2)), radius=[dp(1)])
+            # cuerpo (tacho)
+            Line(
+                points=[
+                    cx - dp(4), cy + dp(3),
+                    cx - dp(3), cy - dp(5),
+                    cx + dp(3), cy - dp(5),
+                    cx + dp(4), cy + dp(3),
+                ],
+                width=dp(1.3),
+            )
+
+    btn.bind(pos=_dibujar, size=_dibujar)
+    _dibujar()
     btn.bind(on_release=lambda *_: on_delete())
     return btn
 
@@ -800,14 +833,19 @@ class ChatScreen(Screen):
 
         self.ids.lbl_chat_titulo.text = nombre_corto
         self.ids.lbl_chat_tipo.text = f"Consulta {tipo}"
-        self.ids.img_avatar_chat.source = ""
-        self.ids.img_avatar_chat.reload()
-        self.ids.img_avatar_chat.source = get_avatar_source(
+        # FIX: antes esto limpiaba la source a "" y hacia reload() antes de
+        # poner la real -- pensado para forzar una recarga al cambiar de
+        # chat, pero el doble reload() podia dejar el avatar en blanco (la
+        # segunda carga a veces terminaba antes que la primera "limpieza"
+        # terminara de aplicarse). set_avatar_image() con force=True hace
+        # lo mismo (fuerza la recarga) de forma segura, reusando el mismo
+        # cache-buster/fallback ya probado en el resto de la app.
+        self._chat_otro_avatar = set_avatar_image(
+            self.ids.img_avatar_chat,
             (interlocutor_data or {}).get("foto_url", ""),
-            (interlocutor_data or {}).get("email", interlocutor)
+            (interlocutor_data or {}).get("email", interlocutor),
+            force=True,
         )
-        self.ids.img_avatar_chat.reload()
-        self._chat_otro_avatar = self.ids.img_avatar_chat.source
 
         if es_abogado:
             self.ids.lbl_estado_linea.text = "Cliente conectado"

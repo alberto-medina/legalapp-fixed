@@ -36,7 +36,8 @@ from views.chat import ChatScreen
 from views.videollamada import VideollamadaScreen
 from views.historial import HistorialScreen
 from views.abogado_panel import AbogadoPanelScreen
-from views.perfil import PerfilScreen
+from views.perfil_cliente import PerfilClienteScreen
+from views.perfil_abogado import PerfilAbogadoScreen
 from views.resena import ResenaScreen
 from views.admin_panel import AdminPanelScreen
 from views.terms_screen import TermsScreen
@@ -103,7 +104,8 @@ class LegalAppPro(App):
             "views/videollamada.kv",
             "views/historial.kv",
             "views/abogado_panel.kv",
-            "views/perfil.kv",
+            "views/perfil_cliente.kv",
+            "views/perfil_abogado.kv",
             "views/resena.kv",
             "views/admin_panel.kv",
             "views/terms_screen.kv",
@@ -130,7 +132,8 @@ class LegalAppPro(App):
             VideollamadaScreen(name="videollamada"),
             HistorialScreen(name="historial"),
             AbogadoPanelScreen(name="abogado_panel"),
-            PerfilScreen(name="perfil"),
+            PerfilClienteScreen(name="perfil_cliente"),
+            PerfilAbogadoScreen(name="perfil_abogado"),
             ResenaScreen(name="resena"),
             AdminPanelScreen(name="admin_panel"),
             TermsScreen(name="terms_screen"),

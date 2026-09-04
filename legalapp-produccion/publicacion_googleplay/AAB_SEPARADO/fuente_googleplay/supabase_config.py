@@ -1240,6 +1240,63 @@ def obtener_consultas_usuario(uid, rol="cliente"):
         return []
 
 
+def contar_avisos_no_leidos(uid, rol="cliente"):
+    """Cuenta cuantas cosas nuevas tiene el usuario desde la ultima vez que
+    abrio el popup de avisos (campanita): 1 por cada consulta con cambio de
+    estado (nueva consulta, pago aceptado, abogado acepto, finalizacion,
+    etc. -- todo pasa por `estado`, mantenido por el trigger de Postgres
+    `trg_actualizar_estado_timestamp`, ver 07_notificaciones_avisos.sql),
+    mas 1 por cada mensaje de chat nuevo de la OTRA parte (no cuenta los
+    mensajes propios)."""
+    try:
+        usuario = obtener_usuario(uid) or {}
+        ultimo_visto = usuario.get("ultimo_visto_avisos")
+        if ultimo_visto:
+            umbral = datetime.fromisoformat(str(ultimo_visto).replace("Z", "+00:00"))
+        else:
+            umbral = datetime.min.replace(tzinfo=timezone.utc)
+
+        consultas = obtener_consultas_usuario(uid, rol)
+        total = 0
+
+        for consulta_id, consulta in consultas:
+            actualizado = consulta.get("estado_actualizado_at") or consulta.get("created_at")
+            if actualizado:
+                try:
+                    dt = datetime.fromisoformat(str(actualizado).replace("Z", "+00:00"))
+                    if dt > umbral:
+                        total += 1
+                except Exception:
+                    pass
+
+            for msg in (obtener_mensajes(consulta_id) or []):
+                if str(msg.get("emisor_uid") or "") == str(uid):
+                    continue
+                creado = msg.get("created_at")
+                if not creado:
+                    continue
+                try:
+                    dt = datetime.fromisoformat(str(creado).replace("Z", "+00:00"))
+                    if dt > umbral:
+                        total += 1
+                except Exception:
+                    pass
+
+        return total
+    except Exception as e:
+        logger.error(f"ERROR contar_avisos_no_leidos: {e}")
+        return 0
+
+
+def marcar_avisos_vistos(uid):
+    try:
+        actualizar_usuario(uid, {"ultimo_visto_avisos": now_iso()})
+        return True
+    except Exception as e:
+        logger.error(f"ERROR marcar_avisos_vistos: {e}")
+        return False
+
+
 def actualizar_estado_consulta(consulta_id, estado):
     try:
         _rest_patch("consultas", {"estado": estado}, {"id": f"eq.{consulta_id}"})

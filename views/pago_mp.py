@@ -1,7 +1,7 @@
 import os
 import json
-import requests
 import time
+import threading
 
 import session
 import supabase_config as fb
@@ -12,11 +12,7 @@ from kivy.utils import platform
 
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import MP_PUBLIC_KEY, MP_ACCESS_TOKEN
 
-MP_API_URL = "https://api.mercadopago.com/checkout/preferences"
-MP_PAYMENTS_URL = "https://api.mercadopago.com/v1/payments/search"
-MP_MERCHANT_ORDERS_URL = "https://api.mercadopago.com/merchant_orders/search"
 try:
     from config import DEBUG
 except Exception:
@@ -78,84 +74,23 @@ def _crear_preferencia(tipo, abogado_email, user_email, consulta_id=None, extern
             title = f"Consulta {tipo} - Legal App Pro"
             external_reference = external_reference or f"consulta|{consulta_id}|{user_email}|{abogado_email}|{tipo}"
 
-        body = {
-            "items": [{
-                "title": title,
-                "quantity": 1,
-                "unit_price": float(monto),
-                "currency_id": "ARS"
-            }],
-            "payer": {
-                "email": user_email,
-                "name": user_email.split("@")[0]
-            },
-            "external_reference": external_reference,
-            "back_urls": {
-                "success": "https://www.mercadopago.com.ar/",
-                "failure": "https://www.mercadopago.com.ar/",
-                "pending": "https://www.mercadopago.com.ar/"
-            }
-        }
-
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {MP_ACCESS_TOKEN}"
-        }
-
-        response = requests.post(
-            MP_API_URL,
-            json=body,
-            headers=headers,
-            timeout=20
-        )
-
-        if response.status_code in [200, 201]:
-            data = response.json()
-            return (
-                data.get("init_point"),
-                data.get("id")
-            )
-
-        print("MP ERROR:", response.text)
-        return None, None
+        return fb.mp_crear_preferencia(title, monto, user_email, external_reference)
 
     except Exception as e:
         print("ERROR CREANDO PREFERENCIA:", e)
         return None, None
 
+
 def _verificar_pago_mp(external_reference, preference_id=None, payer_email=None, monto=None):
     try:
-        headers = {
-            "Authorization": f"Bearer {MP_ACCESS_TOKEN}"
-        }
-
-        params = {"external_reference": external_reference}
-        response = requests.get(MP_PAYMENTS_URL, headers=headers, params=params, timeout=15)
-        if response.status_code == 200:
-            data = response.json()
-            pagos = data.get("results", [])
-            for pago in pagos:
-                if pago.get("status") == "approved":
-                    return True
-
-        if preference_id:
-            response = requests.get(
-                MP_MERCHANT_ORDERS_URL,
-                headers=headers,
-                params={"preference_id": preference_id},
-                timeout=15
-            )
-            if response.status_code == 200:
-                data = response.json()
-                for order in data.get("elements", []) or []:
-                    for pago in order.get("payments", []) or []:
-                        if pago.get("status") == "approved":
-                            return True
-
-        return False
+        aprobado, payment_id = fb.mp_verificar_pago(external_reference, preference_id)
+        if payment_id:
+            return True
+        return bool(aprobado)
     except Exception as e:
         print("ERROR verificando pago:", e)
         return False
+
 
 def _abrir_url(url):
     try:
@@ -899,16 +834,35 @@ class PagoMPScreen(Screen):
         if not self._external_reference:
             return
 
+        # FIX: este chequeo llama a la API de Mercado Pago (red) -- si
+        # corria en el hilo principal, volver del navegador de MP sin pagar
+        # (o con la red lenta reconectando) podia colgar la UI el tiempo
+        # suficiente como para que Android la matara (ANR) -- se ve como un
+        # crash aunque el error real sea "app no responde". Se saca el
+        # llamado de red a un hilo aparte, igual que el resto de los
+        # llamados a Supabase/MP en la app.
+        self.ids.btn_verificar.disabled = True
         self.ids.lbl_estado_mp.text = (
             "Verificando pago..."
         )
 
-        pagado = _verificar_pago_mp(
-            self._external_reference,
-            self._preference_id,
-            payer_email=self._cliente_email_pago(),
-            monto=self._monto_pago(),
-        ) or self._pago_procesado_en_supabase()
+        def _worker():
+            try:
+                pagado = _verificar_pago_mp(
+                    self._external_reference,
+                    self._preference_id,
+                    payer_email=self._cliente_email_pago(),
+                    monto=self._monto_pago(),
+                ) or self._pago_procesado_en_supabase()
+            except Exception as e:
+                print("ERROR verificar_pago (background):", e)
+                pagado = False
+            Clock.schedule_once(lambda dt, p=pagado: self._aplicar_resultado_verificar_pago(p), 0)
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _aplicar_resultado_verificar_pago(self, pagado):
+        self.ids.btn_verificar.disabled = False
 
         if pagado:
             self._pago_verificado = True
@@ -952,19 +906,45 @@ class PagoMPScreen(Screen):
             self.ids.lbl_estado_mp.text = "Verificando pago..."
             self.ids.lbl_estado_mp.color = (0.55, 0.50, 0.65, 1)
 
-            if _verificar_pago_mp(
-                self._external_reference,
-                self._preference_id,
-                payer_email=self._cliente_email_pago(),
-                monto=self._monto_pago(),
-            ) or self._pago_procesado_en_supabase():
-                self._pago_verificado = True
-            else:
-                self.ids.lbl_estado_mp.text = "Pago no encontrado. Espera unos segundos y toca Continuar."
-                self.ids.lbl_estado_mp.color = (0.90, 0.25, 0.25, 1)
-                self.ids.btn_confirmar.disabled = False
-                return
+            # FIX: mismo problema que verificar_pago() -- este chequeo llama
+            # a la API de Mercado Pago (red) y corria en el hilo principal.
+            # Es exactamente el camino que se dispara al volver del
+            # navegador de MP SIN pagar y tocar "Confirmar": la app se
+            # quedaba colgada esperando la respuesta de red justo despues
+            # de volver de background (momento en que el celular suele
+            # tardar mas en reconectar), lo suficiente como para que
+            # Android la matara (se veia como un crash). Se saca el
+            # llamado de red a un hilo aparte; el resto de la logica
+            # (crear consulta, etc.) sigue igual, corriendo recien cuando
+            # se confirma que el pago existe.
+            def _worker():
+                try:
+                    verificado = _verificar_pago_mp(
+                        self._external_reference,
+                        self._preference_id,
+                        payer_email=self._cliente_email_pago(),
+                        monto=self._monto_pago(),
+                    ) or self._pago_procesado_en_supabase()
+                except Exception as e:
+                    print("ERROR confirmar_pago verificacion (background):", e)
+                    verificado = False
+                Clock.schedule_once(lambda dt, v=verificado: self._confirmar_pago_background(v), 0)
 
+            threading.Thread(target=_worker, daemon=True).start()
+            return
+
+        self._confirmar_pago_logica()
+
+    def _confirmar_pago_background(self, verificado):
+        if verificado:
+            self._pago_verificado = True
+            self._confirmar_pago_logica()
+        else:
+            self.ids.lbl_estado_mp.text = "Pago no encontrado. Espera unos segundos y toca Continuar."
+            self.ids.lbl_estado_mp.color = (0.90, 0.25, 0.25, 1)
+            self.ids.btn_confirmar.disabled = False
+
+    def _confirmar_pago_logica(self):
         # FIX: Si es pago de especialidad extra, actualizar abogado
         if (
             getattr(session, 'pago_tipo', None) == 'especialidad_extra'
@@ -1172,7 +1152,7 @@ class PagoMPScreen(Screen):
         self.ids.lbl_estado_mp.color = (0.18, 0.80, 0.44, 1)
 
         Clock.schedule_once(
-            lambda dt: setattr(self.manager, 'current', 'perfil'),
+            lambda dt: setattr(self.manager, 'current', 'perfil_abogado'),
             1.5
         )
 
@@ -1214,6 +1194,6 @@ class PagoMPScreen(Screen):
 
     def volver(self):
         if getattr(session, 'pago_tipo', None) == 'especialidad_extra':
-            self.manager.current = "perfil"
+            self.manager.current = "perfil_abogado"
         else:
             self.manager.current = "pago"

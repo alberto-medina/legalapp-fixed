@@ -45,7 +45,7 @@ class FormKeyboardMixin:
     def _on_form_input_focus(self, widget, focused):
         if focused:
             self._active_input = widget
-            Clock.schedule_once(lambda dt: self._scroll_active_input(), 0.15)
+            self._schedule_scroll(0.15)
             return
 
         if self._active_input is widget:
@@ -60,7 +60,10 @@ class FormKeyboardMixin:
 
     def on_keyboard_height_changed(self, height):
         if height and self._active_input and self._active_input.focus:
-            Clock.schedule_once(lambda dt: self._scroll_active_input(), 0.1)
+            self._schedule_scroll(0.1)
+
+    def _schedule_scroll(self, delay):
+        Clock.schedule_once(lambda dt: self._scroll_active_input(), delay)
 
     def _scroll_active_input(self):
         active = self._active_input
