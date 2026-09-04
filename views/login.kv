@@ -189,6 +189,7 @@
 
                         Button:
                             text: "Continuar con Google"
+                            padding: dp(40), 0
                             size_hint_y: None
                             height: dp(52)
                             font_size: "15sp"
@@ -203,6 +204,32 @@
                                 Line:
                                     rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
                                     width: dp(1.2)
+                                # Logo de Google (4 colores), dibujado a mano
+                                # con arcos -- sin depender de ningun asset
+                                # de imagen nuevo.
+                                Color:
+                                    rgba: 0.259, 0.522, 0.957, 1
+                                Line:
+                                    circle: (self.x + dp(26), self.center_y, dp(8), 20, 100)
+                                    width: dp(2.4)
+                                Line:
+                                    points: [self.x + dp(26) + dp(7.5), self.center_y + dp(2.7), self.x + dp(26) + dp(14), self.center_y + dp(2.7)]
+                                    width: dp(2.4)
+                                Color:
+                                    rgba: 0.204, 0.659, 0.325, 1
+                                Line:
+                                    circle: (self.x + dp(26), self.center_y, dp(8), 100, 190)
+                                    width: dp(2.4)
+                                Color:
+                                    rgba: 0.984, 0.737, 0.020, 1
+                                Line:
+                                    circle: (self.x + dp(26), self.center_y, dp(8), 190, 260)
+                                    width: dp(2.4)
+                                Color:
+                                    rgba: 0.918, 0.263, 0.208, 1
+                                Line:
+                                    circle: (self.x + dp(26), self.center_y, dp(8), 260, 340)
+                                    width: dp(2.4)
                             on_release: root.login_con_google()
 
                         Label:
