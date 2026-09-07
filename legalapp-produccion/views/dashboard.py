@@ -2,16 +2,15 @@ from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from kivy.utils import platform
 from kivy.metrics import dp, sp
-from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
-from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
 import threading
 import supabase_config as fb
 import session
 import time
 from views.utils_avatar import set_avatar_image
+from views.popup_estilo import popup_estilizado, boton_estilizado
 
 VIDEO_TIMEOUT_SEGUNDOS = 600
 
@@ -235,24 +234,7 @@ class DashboardScreen(Screen):
                     preview = texto[:44] + "..." if len(texto) > 44 else texto
                     items.append(f"Mensaje reciente\n{preview}")
 
-        layout = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(10))
-        with layout.canvas.before:
-            from kivy.graphics import Color, Rectangle
-            Color(1, 1, 1, 1)
-            layout._bg = Rectangle(pos=layout.pos, size=layout.size)
-        layout.bind(
-            pos=lambda w, v: setattr(w._bg, "pos", v),
-            size=lambda w, v: setattr(w._bg, "size", v),
-        )
-        titulo = Label(
-            text="Avisos recientes",
-            size_hint_y=None,
-            height=dp(26),
-            bold=True,
-            font_size=sp(16),
-            color=(0.18, 0.12, 0.40, 1),
-        )
-        layout.add_widget(titulo)
+        layout = BoxLayout(orientation="vertical", spacing=dp(10))
 
         scroll = ScrollView(do_scroll_x=False)
         contenido = BoxLayout(orientation="vertical", size_hint_y=None, spacing=dp(8), padding=[dp(2), dp(2)])
@@ -287,18 +269,10 @@ class DashboardScreen(Screen):
         scroll.add_widget(contenido)
         layout.add_widget(scroll)
 
-        btn = Button(
-            text="Cerrar",
-            size_hint_y=None,
-            height=dp(44),
-            bold=True,
-            background_normal="",
-            background_color=(0.30, 0.23, 0.67, 1),
-            color=(1, 1, 1, 1),
-        )
+        btn = boton_estilizado(text="Cerrar", height=dp(44))
         layout.add_widget(btn)
 
-        popup = Popup(title="Notificaciones", content=layout, size_hint=(0.88, 0.56))
+        popup = popup_estilizado("Avisos recientes", layout, size_hint=(0.88, 0.56))
         btn.bind(on_release=popup.dismiss)
         popup.open()
 

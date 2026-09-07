@@ -7,11 +7,10 @@ from kivy.metrics import dp, sp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
-from kivy.uix.textinput import TextInput
 from views.utils_avatar import set_avatar_image
+from views.popup_estilo import popup_estilizado, input_estilizado, boton_estilizado
 
 import session
 import supabase_config as fb
@@ -335,34 +334,23 @@ class AbogadoPanelScreen(Screen):
 
         saldo = user.get("saldo", 0) or 0
         cuenta_guardada = str(user.get("cuenta_bancaria", "") or "").strip()
-        layout = BoxLayout(orientation="vertical", padding=dp(16), spacing=dp(10))
+        layout = BoxLayout(orientation="vertical", spacing=dp(10))
 
         info = Label(
             text=f"Saldo disponible: ${saldo:,.0f}",
             font_size=sp(14),
-            color=COLOR_TEXTO,
+            color=(0.35, 0.40, 0.50, 1),
             size_hint_y=None,
             height=dp(32),
         )
-        cuenta = TextInput(
-            hint_text="CBU / Alias / Cuenta destino",
-            text=cuenta_guardada,
-            multiline=False,
-            size_hint_y=None,
-            height=dp(48),
-            font_size=sp(14),
-        )
-        monto = TextInput(
+        cuenta = input_estilizado(hint_text="CBU / Alias / Cuenta destino", text=cuenta_guardada)
+        monto = input_estilizado(
             hint_text="Monto a retirar",
             text=str(int(saldo)) if saldo else "",
             input_filter="int",
-            multiline=False,
-            size_hint_y=None,
-            height=dp(48),
-            font_size=sp(14),
         )
         error = Label(text="", color=(0.90, 0.25, 0.25, 1), font_size=sp(12), size_hint_y=None, height=dp(24))
-        btn = Button(text="Solicitar retiro", size_hint_y=None, height=dp(48), bold=True)
+        btn = boton_estilizado(text="Solicitar retiro")
 
         layout.add_widget(info)
         layout.add_widget(cuenta)
@@ -370,7 +358,7 @@ class AbogadoPanelScreen(Screen):
         layout.add_widget(error)
         layout.add_widget(btn)
 
-        popup = Popup(title="Retirar honorarios", content=layout, size_hint=(0.88, None), height=dp(360))
+        popup = popup_estilizado("Retirar honorarios", layout, size_hint=(0.88, None), height=dp(360))
 
         def _solicitar(instance):
             try:
@@ -398,24 +386,7 @@ class AbogadoPanelScreen(Screen):
                 self.ids.lbl_badge_avisos.text = "0"
             threading.Thread(target=lambda: fb.marcar_avisos_vistos(uid), daemon=True).start()
 
-        layout = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(10))
-        with layout.canvas.before:
-            from kivy.graphics import Rectangle
-            Color(1, 1, 1, 1)
-            layout._bg = Rectangle(pos=layout.pos, size=layout.size)
-        layout.bind(
-            pos=lambda w, v: setattr(w._bg, "pos", v),
-            size=lambda w, v: setattr(w._bg, "size", v),
-        )
-        titulo = Label(
-            text="Avisos recientes",
-            size_hint_y=None,
-            height=dp(26),
-            bold=True,
-            font_size=sp(16),
-            color=(0.18, 0.12, 0.40, 1),
-        )
-        layout.add_widget(titulo)
+        layout = BoxLayout(orientation="vertical", spacing=dp(10))
 
         scroll = ScrollView(do_scroll_x=False)
         contenido = BoxLayout(orientation="vertical", size_hint_y=None, spacing=dp(8), padding=[dp(2), dp(2)])
@@ -472,18 +443,10 @@ class AbogadoPanelScreen(Screen):
         scroll.add_widget(contenido)
         layout.add_widget(scroll)
 
-        btn = Button(
-            text="Cerrar",
-            size_hint_y=None,
-            height=dp(44),
-            bold=True,
-            background_normal="",
-            background_color=(0.30, 0.23, 0.67, 1),
-            color=(1, 1, 1, 1),
-        )
+        btn = boton_estilizado(text="Cerrar", height=dp(44))
         layout.add_widget(btn)
 
-        popup = Popup(title="Notificaciones", content=layout, size_hint=(0.88, 0.56))
+        popup = popup_estilizado("Avisos recientes", layout, size_hint=(0.88, 0.56))
         btn.bind(on_release=popup.dismiss)
         popup.open()
 

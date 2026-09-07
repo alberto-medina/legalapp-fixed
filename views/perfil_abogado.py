@@ -5,10 +5,8 @@ from kivy.clock import Clock
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
-from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.togglebutton import ToggleButton
@@ -18,6 +16,7 @@ from kivy.resources import resource_find
 import supabase_config as fb
 import session
 from views.perfil_common import PerfilBaseMixin
+from views.popup_estilo import popup_estilizado, boton_estilizado
 
 RATING_FONT = resource_find("data/fonts/DejaVuSans.ttf") or "data/fonts/DejaVuSans.ttf"
 
@@ -118,11 +117,7 @@ class PerfilAbogadoScreen(PerfilBaseMixin, Screen):
         except Exception:
             precio_extra = 10000
 
-        layout = BoxLayout(
-            orientation='vertical',
-            padding=[dp(14), dp(12), dp(14), dp(12)],
-            spacing=dp(10)
-        )
+        layout = BoxLayout(orientation='vertical', spacing=dp(10))
         layout.add_widget(Label(
             text='Selecciona especialidades a agregar:',
             size_hint_y=None,
@@ -203,30 +198,14 @@ class PerfilAbogadoScreen(PerfilBaseMixin, Screen):
         layout.add_widget(lbl_precio)
 
         btn_box = BoxLayout(size_hint_y=None, height=dp(52), spacing=dp(8))
-        btn_cancelar = Button(
-            text='Cancelar',
-            font_size='12sp',
-            background_color=(0.55, 0.55, 0.55, 1),
-            color=(1, 1, 1, 1)
-        )
-        btn_pagar = Button(
-            text='Pagar',
-            font_size='12sp',
-            background_color=(0.00, 0.55, 0.88, 1),
-            color=(1, 1, 1, 1),
-            bold=True
-        )
+        btn_cancelar = boton_estilizado(text='Cancelar', font_size='13sp', fill_color=(0.55, 0.55, 0.55, 1))
+        btn_pagar = boton_estilizado(text='Pagar', font_size='13sp', fill_color=(0.00, 0.55, 0.88, 1))
 
         btn_box.add_widget(btn_cancelar)
         btn_box.add_widget(btn_pagar)
         layout.add_widget(btn_box)
 
-        popup = Popup(
-            title='Agregar Especialidad',
-            content=layout,
-            size_hint=(0.92, None),
-            height=dp(470),
-        )
+        popup = popup_estilizado('Agregar Especialidad', layout, size_hint=(0.92, None), height=dp(470))
 
         def cancelar(instance):
             popup.dismiss()

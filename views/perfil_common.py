@@ -6,16 +6,14 @@ import time
 from kivy.clock import Clock
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.uix.popup import Popup
-from kivy.uix.textinput import TextInput
 from kivy.core.window import Window
 
 import supabase_config as fb
 import session
 from views.form_keyboard import FormKeyboardMixin
 from views.utils_avatar import set_avatar_image
+from views.popup_estilo import popup_estilizado, input_estilizado, boton_estilizado
 
 FOTO_DIR = "assets/fotos"
 MAX_FOTO_MB = 5
@@ -321,18 +319,16 @@ class PerfilBaseMixin(FormKeyboardMixin):
             self._mostrar_error("La foto se guardó en el celular, pero no se pudo publicar en la nube todavía.")
 
     def _mostrar_error(self, mensaje):
-        popup = Popup(
-            title='Error',
-            content=Label(text=mensaje, color=(0.9, 0.2, 0.2, 1)),
-            size_hint=(0.8, 0.3)
-        )
+        lbl = Label(text=mensaje, color=(0.20, 0.12, 0.18, 1), halign='center', valign='middle')
+        lbl.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
+        popup = popup_estilizado('Error', lbl, size_hint=(0.8, None), height=dp(160))
         popup.open()
 
     def borrar_cuenta_popup(self):
         user = session.current_user or {}
         email = user.get("email", "")
 
-        layout = BoxLayout(orientation='vertical', padding=dp(16), spacing=dp(10))
+        layout = BoxLayout(orientation='vertical', spacing=dp(10))
         info = Label(
             text=(
                 "Esta accion eliminara tu cuenta y tus datos.\n"
@@ -356,12 +352,7 @@ class PerfilBaseMixin(FormKeyboardMixin):
         )
         detalle.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
 
-        confirmacion = TextInput(
-            hint_text='Escribe BORRAR',
-            multiline=False,
-            size_hint_y=None,
-            height=dp(48),
-        )
+        confirmacion = input_estilizado(hint_text='Escribe BORRAR')
 
         error = Label(
             text='',
@@ -372,20 +363,12 @@ class PerfilBaseMixin(FormKeyboardMixin):
         error.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
 
         botones = BoxLayout(size_hint_y=None, height=dp(46), spacing=dp(10))
-        btn_cancelar = Button(
+        btn_cancelar = boton_estilizado(
             text='Cancelar',
-            background_normal='',
-            background_color=(0.90, 0.90, 0.96, 1),
+            fill_color=(0.90, 0.90, 0.96, 1),
             color=(0.24, 0.17, 0.55, 1),
-            bold=True
         )
-        btn_borrar = Button(
-            text='Borrar cuenta',
-            background_normal='',
-            background_color=(0.86, 0.20, 0.20, 1),
-            color=(1, 1, 1, 1),
-            bold=True
-        )
+        btn_borrar = boton_estilizado(text='Borrar cuenta', fill_color=(0.86, 0.20, 0.20, 1))
         botones.add_widget(btn_cancelar)
         botones.add_widget(btn_borrar)
 
@@ -395,12 +378,8 @@ class PerfilBaseMixin(FormKeyboardMixin):
         layout.add_widget(error)
         layout.add_widget(botones)
 
-        popup = Popup(
-            title='Borrar cuenta',
-            content=layout,
-            size_hint=(0.88, None),
-            height=dp(380),
-            auto_dismiss=False
+        popup = popup_estilizado(
+            'Borrar cuenta', layout, size_hint=(0.88, None), height=dp(380), auto_dismiss=False
         )
 
         btn_cancelar.bind(on_release=popup.dismiss)

@@ -8,6 +8,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.metrics import dp
 from kivy.graphics import Color, RoundedRectangle
+from views.popup_estilo import popup_estilizado, input_estilizado
 import session
 
 # =============================================================
@@ -154,37 +155,17 @@ def abrir_selector(titulo, opciones, callback):
     """Muestra un popup con buscador y lista de opciones.
     Al tocar una opcion llama a callback(opcion)."""
 
-    contenido = BoxLayout(orientation='vertical', spacing=dp(8), padding=dp(10))
+    contenido = BoxLayout(orientation='vertical', spacing=dp(8))
 
     # Buscador
-    buscador = TextInput(
-        hint_text='Buscar...',
-        multiline=False,
-        size_hint_y=None,
-        height=dp(44),
-        background_normal='',
-        background_active='',
-        background_color=(0.95, 0.94, 0.97, 1),
-        foreground_color=(0.10, 0.06, 0.14, 1),
-        hint_text_color=(0.60, 0.57, 0.68, 1),
-        cursor_color=(0.30, 0.23, 0.67, 1),
-        padding=[dp(12), dp(10)],
-        font_size='15sp',
-    )
+    buscador = input_estilizado(hint_text='Buscar...', height=dp(44))
 
     scroll = ScrollView(do_scroll_x=False, bar_width=dp(4))
     grid = GridLayout(cols=1, spacing=dp(4), size_hint_y=None)
     grid.bind(minimum_height=grid.setter('height'))
     scroll.add_widget(grid)
 
-    popup = Popup(
-        title=titulo,
-        content=contenido,
-        size_hint=(0.92, 0.82),
-        separator_color=(0.30, 0.23, 0.67, 1),
-        title_color=(0.10, 0.06, 0.14, 1),
-        title_size='16sp',
-    )
+    popup = popup_estilizado(titulo, contenido, size_hint=(0.92, 0.82))
 
     def _build_lista(filtro=''):
         grid.clear_widgets()

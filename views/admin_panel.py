@@ -1,5 +1,4 @@
 from kivy.uix.screenmanager import Screen
-from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
@@ -7,10 +6,10 @@ from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 from kivy.metrics import dp, sp
 from kivy.core.window import Window
-from kivy.graphics import Color, Rectangle
 
 import supabase_config as fb
 import session
+from views.popup_estilo import popup_estilizado, input_estilizado, boton_estilizado
 
 # Color de texto oscuro para fondos claros
 COLOR_TEXTO = (0.10, 0.12, 0.18, 1)
@@ -171,24 +170,7 @@ class AdminPanelScreen(Screen):
         popup_width = min(Window.width * 0.9, dp(500))
         content_width = popup_width - dp(50)
 
-        # Layout principal con fondo claro
-        main_layout = BoxLayout(
-            orientation='vertical',
-            padding=dp(15),
-            spacing=dp(10),
-        )
-
-        # Fondo claro vía canvas.before
-        with main_layout.canvas.before:
-            Color(rgba=(0.96, 0.97, 0.98, 1))
-            rect = Rectangle(pos=main_layout.pos, size=main_layout.size)
-
-        # Actualizar rectángulo cuando cambie tamaño/posición
-        def update_rect(instance, value):
-            rect.pos = instance.pos
-            rect.size = instance.size
-
-        main_layout.bind(pos=update_rect, size=update_rect)
+        main_layout = BoxLayout(orientation='vertical', spacing=dp(10))
 
         scroll = ScrollView(do_scroll_x=False, size_hint_y=1)
         content = BoxLayout(orientation='vertical', spacing=dp(10), size_hint_y=None)
@@ -244,27 +226,12 @@ class AdminPanelScreen(Screen):
         scroll.add_widget(content)
         main_layout.add_widget(scroll)
 
-        btn_cerrar = Button(
-            text='Cerrar',
-            size_hint_y=None,
-            height=dp(50),
-            background_color=(0.24, 0.17, 0.55, 1),
-            color=(1, 1, 1, 1),
-            font_size=sp(14),
-            bold=True
-        )
+        btn_cerrar = boton_estilizado(text='Cerrar', height=dp(50), font_size=sp(14))
         main_layout.add_widget(btn_cerrar)
 
-        popup = Popup(
-            title='Detalle Abogado',
-            content=main_layout,
-            size_hint=(None, None),
-            width=popup_width,
-            height=min(Window.height * 0.8, dp(600)),
-            background_color=(0.96, 0.97, 0.98, 1),
-            title_color=(0.10, 0.12, 0.18, 1),
-            title_size=dp(18),
-            separator_color=(0.24, 0.17, 0.55, 1),
+        popup = popup_estilizado(
+            'Detalle Abogado', main_layout,
+            size_hint=(None, None), width=popup_width, height=min(Window.height * 0.8, dp(600)),
         )
         btn_cerrar.bind(on_release=popup.dismiss)
         popup.open()
@@ -338,11 +305,7 @@ class AdminPanelScreen(Screen):
             container.add_widget(row)
 
     def confirmar_retiro_pago(self, retiro_id, email, cuenta, monto_neto):
-        layout = BoxLayout(
-            orientation='vertical',
-            padding=dp(16),
-            spacing=dp(10)
-        )
+        layout = BoxLayout(orientation='vertical', spacing=dp(10))
 
         lbl = Label(
             text=f"[b]{email}[/b]\nTransferir: ${monto_neto:,.2f}\nDestino: {cuenta}",
@@ -360,32 +323,16 @@ class AdminPanelScreen(Screen):
             spacing=dp(10)
         )
 
-        btn_cancelar = Button(
-            text='Cancelar',
-            background_normal='',
-            background_color=(0.90, 0.90, 0.96, 1),
-            color=(0.24, 0.17, 0.55, 1),
-            bold=True
-        )
-        btn_confirmar = Button(
-            text='Marcar pagado',
-            background_normal='',
-            background_color=(0.18, 0.8, 0.44, 1),
-            color=(1, 1, 1, 1),
-            bold=True
-        )
+        btn_cancelar = boton_estilizado(text='Cancelar', fill_color=(0.90, 0.90, 0.96, 1), color=(0.24, 0.17, 0.55, 1))
+        btn_confirmar = boton_estilizado(text='Marcar pagado', fill_color=(0.18, 0.8, 0.44, 1))
 
         botones.add_widget(btn_cancelar)
         botones.add_widget(btn_confirmar)
         layout.add_widget(lbl)
         layout.add_widget(botones)
 
-        popup = Popup(
-            title='Confirmar retiro',
-            content=layout,
-            size_hint=(0.88, None),
-            height=dp(250),
-            auto_dismiss=False
+        popup = popup_estilizado(
+            'Confirmar retiro', layout, size_hint=(0.88, None), height=dp(250), auto_dismiss=False
         )
 
         btn_cancelar.bind(on_release=popup.dismiss)
@@ -525,19 +472,15 @@ class AdminPanelScreen(Screen):
     # ============================================================
 
     def mostrar_exito(self, mensaje):
-        popup = Popup(
-            title='Exito',
-            content=Label(text=mensaje, color=(0.18, 0.8, 0.44, 1), font_size=sp(16)),
-            size_hint=(0.8, 0.25)
-        )
+        lbl = Label(text=mensaje, color=(0.14, 0.55, 0.33, 1), font_size=sp(16), halign='center', valign='middle')
+        lbl.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
+        popup = popup_estilizado('Exito', lbl, size_hint=(0.8, None), height=dp(170))
         popup.open()
 
     def mostrar_error(self, mensaje):
-        popup = Popup(
-            title='Error',
-            content=Label(text=mensaje, color=(0.9, 0.2, 0.2, 1), font_size=sp(16)),
-            size_hint=(0.8, 0.25)
-        )
+        lbl = Label(text=mensaje, color=(0.20, 0.12, 0.18, 1), font_size=sp(16), halign='center', valign='middle')
+        lbl.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
+        popup = popup_estilizado('Error', lbl, size_hint=(0.8, None), height=dp(170))
         popup.open()
 
     def volver(self):

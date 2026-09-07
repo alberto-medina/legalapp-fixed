@@ -292,8 +292,15 @@
                     width: dp(42)
                     font_size: "22sp"
                     background_normal: ""
-                    background_color: 0.92, 0.89, 0.98, 1
+                    background_color: 0, 0, 0, 0
                     color: 0.30, 0.23, 0.67, 1
+                    canvas.before:
+                        Color:
+                            rgba: 0.92, 0.89, 0.98, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(12)]
                     on_release: root.adjuntar()
 
                 Button:
@@ -303,8 +310,15 @@
                     font_size: "12sp"
                     bold: True
                     background_normal: ""
-                    background_color: 0.92, 0.89, 0.98, 1
+                    background_color: 0, 0, 0, 0
                     color: 0.30, 0.23, 0.67, 1
+                    canvas.before:
+                        Color:
+                            rgba: 0.92, 0.89, 0.98, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(12)]
                     on_release: root.abrir_camara()
 
                 TextInput:
@@ -334,8 +348,15 @@
                     bold: True
                     font_size: "13sp"
                     background_normal: ""
-                    background_color: 0.92, 0.89, 0.98, 1
+                    background_color: 0, 0, 0, 0
                     color: 0.30, 0.23, 0.67, 1
+                    canvas.before:
+                        Color:
+                            rgba: 0.92, 0.89, 0.98, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(12)]
                     on_press: root.iniciar_audio()
                     on_release: root.finalizar_audio()
 
@@ -346,8 +367,15 @@
                     bold: True
                     font_size: "20sp"
                     background_normal: ""
-                    background_color: 0.30, 0.23, 0.67, 1
+                    background_color: 0, 0, 0, 0
                     color: 1, 1, 1, 1
+                    canvas.before:
+                        Color:
+                            rgba: 0.30, 0.23, 0.67, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(12)]
                     on_release: root.enviar()
 
             # SIN spacer manual a proposito: se confirmo con logcat en

@@ -247,6 +247,29 @@
                             size: self.size
                             radius: [dp(20)]
 
+                    FloatLayout:
+                        size_hint: None, None
+                        size: dp(48), dp(48)
+                        pos_hint: {"center_y": 0.5}
+                        canvas.before:
+                            Color:
+                                rgba: 0.90, 0.87, 0.98, 1
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(14)]
+                            Color:
+                                rgba: 0.30, 0.23, 0.67, 1
+                            Line:
+                                points: [self.center_x - dp(9), self.center_y + dp(8), self.center_x + dp(9), self.center_y + dp(8)]
+                                width: dp(1.8)
+                            Line:
+                                points: [self.center_x - dp(9), self.center_y, self.center_x + dp(9), self.center_y]
+                                width: dp(1.8)
+                            Line:
+                                points: [self.center_x - dp(9), self.center_y - dp(8), self.center_x + dp(4), self.center_y - dp(8)]
+                                width: dp(1.8)
+
                     BoxLayout:
                         orientation: "vertical"
                         size_hint_x: 1
@@ -301,6 +324,27 @@
                             pos: self.pos
                             size: self.size
                             radius: [dp(20)]
+
+                    FloatLayout:
+                        size_hint: None, None
+                        size: dp(48), dp(48)
+                        pos_hint: {"center_y": 0.5}
+                        canvas.before:
+                            Color:
+                                rgba: 0.90, 0.87, 0.98, 1
+                            RoundedRectangle:
+                                pos: self.pos
+                                size: self.size
+                                radius: [dp(14)]
+                            Color:
+                                rgba: 0.30, 0.23, 0.67, 1
+                            Ellipse:
+                                pos: self.center_x - dp(6), self.center_y + dp(1)
+                                size: dp(12), dp(12)
+                            RoundedRectangle:
+                                pos: self.center_x - dp(10), self.center_y - dp(12)
+                                size: dp(20), dp(12)
+                                radius: [dp(10), dp(10), 0, 0]
 
                     BoxLayout:
                         orientation: "vertical"

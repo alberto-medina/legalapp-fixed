@@ -1,5 +1,6 @@
 import threading
 import json
+from kivy.clock import Clock
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import AsyncImage
@@ -13,6 +14,7 @@ from kivy.animation import Animation
 import supabase_config as fb
 import session
 from views.utils_avatar import get_avatar_source, CircularAvatar
+from views.popup_estilo import popup_estilizado, boton_estilizado
 
 RATING_FONT = resource_find("data/fonts/DejaVuSans.ttf") or "data/fonts/DejaVuSans.ttf"
 
@@ -517,6 +519,35 @@ class AbogadosScreen(Screen):
 
         card.add_widget(top)
 
+        # ----- ACCESOS RAPIDOS: arrancar una consulta directo desde la
+        # tarjeta, sin pasar primero por "Ver perfil" -- reusa
+        # ConsultaTipoScreen.seleccionar() (ver elegir_directo()), no
+        # duplica la logica de crear la consulta pendiente/ir a pagar. -----
+        rapidos = BoxLayout(
+            orientation="horizontal",
+            size_hint_y=None,
+            height=_dp(38),
+            spacing=_dp(8),
+        )
+        for tipo, etiqueta, color in (
+            ("chat", "Chat", (0.30, 0.23, 0.67, 1)),
+            ("video", "Video", (0.20, 0.55, 0.85, 1)),
+            ("urgente", "Urgente", (0.90, 0.55, 0.10, 1)),
+        ):
+            btn_rapido = Button(
+                text=etiqueta,
+                font_size="12sp",
+                bold=True,
+                background_normal="",
+                background_color=(0.95, 0.95, 0.97, 1),
+                color=color,
+            )
+            btn_rapido.bind(
+                on_release=lambda x, e=email, est=estado, t=tipo: self.elegir_directo(e, est, t)
+            )
+            rapidos.add_widget(btn_rapido)
+        card.add_widget(rapidos)
+
         # ----- DESCRIPCION con altura dinamica -----
         if descripcion:
             desc = descripcion.strip()
@@ -559,14 +590,7 @@ class AbogadosScreen(Screen):
         cantidad = len(resenas)
         promedio = sum(r.get('puntaje', 0) for r in resenas) / cantidad if cantidad > 0 else 0
 
-        layout = BoxLayout(orientation="vertical", padding=[dp(14), dp(12)], spacing=dp(10))
-        with layout.canvas.before:
-            Color(1, 1, 1, 1)
-            layout.bg = RoundedRectangle(pos=layout.pos, size=layout.size, radius=[dp(18)])
-        layout.bind(
-            pos=lambda w, v: setattr(w.bg, "pos", v),
-            size=lambda w, v: setattr(w.bg, "size", v),
-        )
+        layout = BoxLayout(orientation="vertical", spacing=dp(10))
 
         scroll = ScrollView(do_scroll_x=False)
         content = BoxLayout(orientation="vertical", spacing=dp(10), size_hint_y=None)
@@ -670,35 +694,39 @@ class AbogadosScreen(Screen):
         scroll.add_widget(content)
         layout.add_widget(scroll)
 
+        # Accesos directos por tipo de consulta, en vez de un solo boton
+        # generico "Elegir abogado" -- mismo mecanismo que las tarjetas de
+        # la lista, ver elegir_directo().
+        acciones_directas = BoxLayout(orientation="vertical", size_hint_y=None, height=dp(120), spacing=dp(6))
+        for tipo, etiqueta, color in (
+            ("chat", "Chat", (0.30, 0.23, 0.67, 1)),
+            ("video", "Videollamada", (0.20, 0.55, 0.85, 1)),
+            ("urgente", "Consulta urgente", (0.90, 0.55, 0.10, 1)),
+        ):
+            btn_accion = Button(
+                text=etiqueta,
+                bold=True,
+                background_normal="",
+                background_color=color,
+                color=(1, 1, 1, 1),
+            )
+            btn_accion.bind(
+                on_release=lambda x, t=tipo: (popup.dismiss(), self.elegir_directo(email, estado, t))
+            )
+            acciones_directas.add_widget(btn_accion)
+        content.add_widget(acciones_directas)
+
         botones = BoxLayout(size_hint_y=None, height=dp(46), spacing=dp(8))
-        btn_cerrar = Button(
+        btn_cerrar = boton_estilizado(
             text="Cerrar",
-            background_normal="",
-            background_color=(0.90, 0.89, 0.97, 1),
+            fill_color=(0.90, 0.89, 0.97, 1),
             color=(0.30, 0.23, 0.67, 1),
-            bold=True,
-        )
-        btn_elegir = Button(
-            text="Elegir abogado",
-            background_normal="",
-            background_color=(0.30, 0.23, 0.67, 1),
-            color=(1, 1, 1, 1),
-            bold=True,
         )
         botones.add_widget(btn_cerrar)
-        botones.add_widget(btn_elegir)
         layout.add_widget(botones)
 
-        from kivy.uix.popup import Popup
-        popup = Popup(
-            title="Perfil del abogado",
-            content=layout,
-            size_hint=(0.92, 0.86),
-            separator_color=(0.30, 0.68, 0.95, 1),
-            background_color=(1, 1, 1, 1),
-        )
+        popup = popup_estilizado("Perfil del abogado", layout, size_hint=(0.92, 0.86))
         btn_cerrar.bind(on_release=popup.dismiss)
-        btn_elegir.bind(on_release=lambda *_: (popup.dismiss(), self.seleccionar(email, estado)))
         popup.open()
 
 
@@ -712,6 +740,15 @@ class AbogadosScreen(Screen):
         )
         session.guardar()
         self.manager.current = "tipo"
+
+    def elegir_directo(self, email, estado, tipo):
+        """Accesos rapidos Chat/Video/Urgente de la tarjeta -- hace lo mismo
+        que elegir el abogado y despues tocar el tipo de consulta en la
+        pantalla siguiente, sin duplicar esa logica (crear consulta
+        pendiente, ir a pagar, etc)."""
+        self.seleccionar(email, estado)
+        pantalla_tipo = self.manager.get_screen("tipo")
+        Clock.schedule_once(lambda dt: pantalla_tipo.seleccionar(tipo), 0.1)
 
     def volver(self):
         self.manager.current = "especialidad"

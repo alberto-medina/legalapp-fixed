@@ -16,6 +16,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
     _email_next_bound = False
     _huella_en_progreso = False
     _huella_cancelada = False
+    _email_focus_bound = False
 
     def on_enter(self):
         self._toques_titulo = 0
@@ -55,6 +56,16 @@ class LoginScreen(FormKeyboardMixin, Screen):
         if not self._email_next_bound and 'email' in self.ids and 'password' in self.ids:
             self.ids.email.bind(on_text_validate=self._ir_a_password)
             self._email_next_bound = True
+
+        # El email es el campo mas arriba de la pantalla: ya esta visible
+        # sin que haga falta scrollear cuando aparece el teclado (en la 133
+        # queda quieta). FormKeyboardMixin igual programa un scroll para
+        # cualquier campo que reciba foco (ver _on_form_input_focus); se
+        # cancela ese scroll en el frame siguiente, mismo mecanismo que ya
+        # se usa para la huella en contrasena.
+        if not self._email_focus_bound and 'email' in self.ids:
+            self.ids.email.bind(focus=self._on_email_focus)
+            self._email_focus_bound = True
 
     def on_leave(self):
         self._teardown_form_keyboard()
@@ -137,6 +148,10 @@ class LoginScreen(FormKeyboardMixin, Screen):
 
     def _ir_a_password(self, widget):
         self.ids.password.focus = True
+
+    def _on_email_focus(self, widget, tiene_foco):
+        if tiene_foco:
+            Clock.schedule_once(lambda dt: setattr(self, "_active_input", None), 0)
 
     def _on_titulo_touch(self, widget, touch):
         if widget.collide_point(*touch.pos):
@@ -355,21 +370,17 @@ class LoginScreen(FormKeyboardMixin, Screen):
     def go_register(self):
         self.manager.current = 'register'
 
+    def ir_registro_abogado(self):
+        self.manager.current = 'register_abogado'
+
     def recuperar_password(self):
         """Muestra popup para recuperar contrasena via email."""
-        from kivy.uix.popup import Popup as _Popup
         from kivy.uix.boxlayout import BoxLayout as _BL
-        from kivy.uix.textinput import TextInput as _TI
-        from kivy.uix.button import Button as _Btn
         from kivy.uix.label import Label as _Lbl
         from kivy.metrics import dp as _dp
+        from views.popup_estilo import popup_estilizado, input_estilizado, boton_estilizado
 
-        # Todas las medidas de este popup estaban en pixeles crudos (sin
-        # dp()), asi que en pantallas de densidad alta el popup terminaba
-        # bastante mas chico de lo esperado y el contenido se superponia /
-        # se salia de los bordes. Con dp() escala igual en cualquier
-        # densidad.
-        layout = _BL(orientation='vertical', padding=_dp(16), spacing=_dp(12))
+        layout = _BL(orientation='vertical', spacing=_dp(12))
 
         lbl_info = _Lbl(
             text='Ingresa tu email para recibir un link de restablecimiento.',
@@ -382,21 +393,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
         lbl_info.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
 
         email_prefill = self.ids.email.text.strip().lower()
-        txt_email = _TI(
-            hint_text='tu@email.com',
-            text=email_prefill,
-            multiline=False,
-            size_hint_y=None,
-            height=_dp(46),
-            font_size='15sp',
-            background_normal='',
-            background_active='',
-            background_color=(0.95, 0.94, 0.97, 1),
-            foreground_color=(0.10, 0.06, 0.14, 1),
-            hint_text_color=(0.60, 0.57, 0.68, 1),
-            cursor_color=(0.30, 0.23, 0.67, 1),
-            padding=[_dp(14), _dp(12)],
-        )
+        txt_email = input_estilizado(hint_text='tu@email.com', text=email_prefill, height=_dp(46))
 
         lbl_resultado = _Lbl(
             text='',
@@ -408,24 +405,13 @@ class LoginScreen(FormKeyboardMixin, Screen):
         )
         lbl_resultado.bind(size=lambda s, *_: setattr(s, 'text_size', s.size))
 
-        btn_enviar = _Btn(
-            text='Enviar link de recuperacion',
-            size_hint_y=None,
-            height=_dp(50),
-            bold=True,
-            font_size='15sp',
-            background_normal='',
-            background_color=(0.30, 0.23, 0.67, 1),
-            color=(1, 1, 1, 1),
-        )
+        btn_enviar = boton_estilizado(text='Enviar link de recuperacion', height=_dp(50))
 
-        btn_cerrar = _Btn(
+        btn_cerrar = boton_estilizado(
             text='Cancelar',
-            size_hint_y=None,
             height=_dp(38),
             font_size='13sp',
-            background_normal='',
-            background_color=(0, 0, 0, 0),
+            fill_color=(0, 0, 0, 0),
             color=(0.50, 0.47, 0.58, 1),
         )
 
@@ -435,13 +421,7 @@ class LoginScreen(FormKeyboardMixin, Screen):
         layout.add_widget(btn_enviar)
         layout.add_widget(btn_cerrar)
 
-        popup = _Popup(
-            title='Recuperar contrasena',
-            content=layout,
-            size_hint=(0.88, None),
-            height=_dp(380),
-            separator_color=(0.30, 0.23, 0.67, 1),
-        )
+        popup = popup_estilizado('Recuperar contrasena', layout, size_hint=(0.88, None), height=_dp(380))
 
         def _enviar(instance):
             email_val = txt_email.text.strip().lower()

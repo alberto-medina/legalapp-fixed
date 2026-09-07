@@ -14,7 +14,6 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import AsyncImage
 from kivy.uix.camera import Camera
-from kivy.uix.popup import Popup
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
 from kivy.utils import platform
@@ -22,6 +21,7 @@ from kivy.utils import platform
 import supabase_config as fb
 import session
 from views.utils_avatar import get_avatar_source, set_avatar_image
+from views.popup_estilo import popup_estilizado, boton_estilizado
 
 try:
     from plyer import filechooser, camera
@@ -1266,7 +1266,7 @@ class ChatScreen(Screen):
             os.makedirs(upload_dir, exist_ok=True)
             path = os.path.join(upload_dir, f"{int(time.time())}_camara.jpg")
 
-            layout = BoxLayout(orientation="vertical", padding=dp(10), spacing=dp(8))
+            layout = BoxLayout(orientation="vertical", spacing=dp(8))
             cam = Camera(play=True, resolution=(720, 1280))
             layout.add_widget(cam)
 
@@ -1276,28 +1276,13 @@ class ChatScreen(Screen):
                 height=dp(48),
                 spacing=dp(8),
             )
-            btn_cancelar = Button(
-                text="Cancelar",
-                background_normal="",
-                background_color=(0.92, 0.89, 0.98, 1),
-                color=(0.30, 0.23, 0.67, 1),
-            )
-            btn_sacar = Button(
-                text="Enviar foto",
-                bold=True,
-                background_normal="",
-                background_color=(0.30, 0.23, 0.67, 1),
-                color=(1, 1, 1, 1),
-            )
+            btn_cancelar = boton_estilizado(text="Cancelar", fill_color=(0.92, 0.89, 0.98, 1), color=(0.30, 0.23, 0.67, 1))
+            btn_sacar = boton_estilizado(text="Enviar foto")
             botones.add_widget(btn_cancelar)
             botones.add_widget(btn_sacar)
             layout.add_widget(botones)
 
-            popup = Popup(
-                title="Camara",
-                content=layout,
-                size_hint=(0.96, 0.88),
-            )
+            popup = popup_estilizado("Camara", layout, size_hint=(0.96, 0.88))
 
             def cancelar(_):
                 cam.play = False
@@ -1567,7 +1552,7 @@ class ChatScreen(Screen):
         self.ids.input_mensaje.hint_text = "Audio grabado"
         nombre = os.path.basename(audio_path or "") or "audio.m4a"
 
-        layout = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(10))
+        layout = BoxLayout(orientation="vertical", spacing=dp(10))
         layout.add_widget(Label(
             text="Audio listo para enviar",
             size_hint_y=None,
@@ -1585,31 +1570,13 @@ class ChatScreen(Screen):
         ))
 
         botones = BoxLayout(size_hint_y=None, height=dp(46), spacing=dp(10))
-        btn_cancelar = Button(
-            text="Descartar",
-            background_normal="",
-            background_color=(0.88, 0.24, 0.24, 1),
-            color=(1, 1, 1, 1),
-            bold=True,
-        )
-        btn_enviar = Button(
-            text="Enviar",
-            background_normal="",
-            background_color=(0.30, 0.23, 0.67, 1),
-            color=(1, 1, 1, 1),
-            bold=True,
-        )
+        btn_cancelar = boton_estilizado(text="Descartar", fill_color=(0.88, 0.24, 0.24, 1))
+        btn_enviar = boton_estilizado(text="Enviar")
         botones.add_widget(btn_cancelar)
         botones.add_widget(btn_enviar)
         layout.add_widget(botones)
 
-        popup = Popup(
-            title="Audio",
-            content=layout,
-            size_hint=(0.88, None),
-            height=dp(220),
-            auto_dismiss=False,
-        )
+        popup = popup_estilizado("Audio", layout, size_hint=(0.88, None), height=dp(220), auto_dismiss=False)
 
         def descartar(_):
             try:
@@ -1675,7 +1642,7 @@ class ChatScreen(Screen):
         if not mensaje_id:
             return
 
-        layout = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(10))
+        layout = BoxLayout(orientation="vertical", spacing=dp(10))
         layout.add_widget(Label(
             text="Se borrara este mensaje para ambos lados.",
             font_size="14sp",
@@ -1683,31 +1650,13 @@ class ChatScreen(Screen):
         ))
 
         botones = BoxLayout(size_hint_y=None, height=dp(46), spacing=dp(10))
-        btn_cancelar = Button(
-            text="Cancelar",
-            background_normal="",
-            background_color=(0.90, 0.88, 0.96, 1),
-            color=(0.30, 0.23, 0.67, 1),
-            bold=True,
-        )
-        btn_borrar = Button(
-            text="Borrar",
-            background_normal="",
-            background_color=(0.86, 0.20, 0.20, 1),
-            color=(1, 1, 1, 1),
-            bold=True,
-        )
+        btn_cancelar = boton_estilizado(text="Cancelar", fill_color=(0.90, 0.88, 0.96, 1), color=(0.30, 0.23, 0.67, 1))
+        btn_borrar = boton_estilizado(text="Borrar", fill_color=(0.86, 0.20, 0.20, 1))
         botones.add_widget(btn_cancelar)
         botones.add_widget(btn_borrar)
         layout.add_widget(botones)
 
-        popup = Popup(
-            title="Borrar mensaje",
-            content=layout,
-            size_hint=(0.86, None),
-            height=dp(200),
-            auto_dismiss=False,
-        )
+        popup = popup_estilizado("Borrar mensaje", layout, size_hint=(0.86, None), height=dp(200), auto_dismiss=False)
 
         btn_cancelar.bind(on_release=lambda *_: popup.dismiss())
         btn_borrar.bind(on_release=lambda *_: self._borrar_mensaje_chat(mensaje_id, archivo, popup))
@@ -1781,7 +1730,7 @@ class ChatScreen(Screen):
             print("No se pudo abrir:", e)
 
     def _mostrar_imagen(self, url, nombre):
-        layout = BoxLayout(orientation="vertical", padding=dp(10), spacing=dp(8))
+        layout = BoxLayout(orientation="vertical", spacing=dp(8))
         imagen = AsyncImage(
             source=url,
             allow_stretch=True,
@@ -1789,21 +1738,9 @@ class ChatScreen(Screen):
         )
         layout.add_widget(imagen)
 
-        btn = Button(
-            text="Cerrar",
-            size_hint_y=None,
-            height=dp(46),
-            bold=True,
-            background_normal="",
-            background_color=(0.30, 0.23, 0.67, 1),
-            color=(1, 1, 1, 1),
-        )
+        btn = boton_estilizado(text="Cerrar", height=dp(46))
 
-        popup = Popup(
-            title=nombre,
-            content=layout,
-            size_hint=(0.96, 0.86),
-        )
+        popup = popup_estilizado(nombre, layout, size_hint=(0.96, 0.86))
         btn.bind(on_release=popup.dismiss)
         layout.add_widget(btn)
         popup.open()
@@ -1811,7 +1748,7 @@ class ChatScreen(Screen):
     def _mostrar_audio(self, url, nombre):
         self._cerrar_audio_interno()
 
-        layout = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(10))
+        layout = BoxLayout(orientation="vertical", spacing=dp(10))
         info = Label(
             text=f"Audio\n{nombre}",
             font_size="14sp",
@@ -1841,47 +1778,14 @@ class ChatScreen(Screen):
             spacing=dp(8),
         )
 
-        btn_play = Button(
-            text="Reproducir",
-            size_hint_y=None,
-            height=dp(46),
-            bold=True,
-            background_normal="",
-            background_color=(0.30, 0.23, 0.67, 1),
-            color=(1, 1, 1, 1),
-        )
-        btn_pause = Button(
-            text="Pausar",
-            size_hint_y=None,
-            height=dp(46),
-            bold=True,
-            background_normal="",
-            background_color=(0.18, 0.55, 0.85, 1),
-            color=(1, 1, 1, 1),
-        )
-        btn_restart = Button(
-            text="Reiniciar",
-            size_hint_y=None,
-            height=dp(46),
-            bold=True,
-            background_normal="",
-            background_color=(0.18, 0.80, 0.44, 1),
-            color=(1, 1, 1, 1),
-        )
-        btn_cerrar = Button(
-            text="Cerrar",
-            size_hint_y=None,
-            height=dp(42),
-            background_normal="",
-            background_color=(0.92, 0.89, 0.98, 1),
-            color=(0.30, 0.23, 0.67, 1),
+        btn_play = boton_estilizado(text="Reproducir", height=dp(46))
+        btn_pause = boton_estilizado(text="Pausar", height=dp(46), fill_color=(0.18, 0.55, 0.85, 1))
+        btn_restart = boton_estilizado(text="Reiniciar", height=dp(46), fill_color=(0.18, 0.80, 0.44, 1))
+        btn_cerrar = boton_estilizado(
+            text="Cerrar", height=dp(42), fill_color=(0.92, 0.89, 0.98, 1), color=(0.30, 0.23, 0.67, 1)
         )
 
-        popup = Popup(
-            title="Audio",
-            content=layout,
-            size_hint=(0.90, 0.38),
-        )
+        popup = popup_estilizado("Audio", layout, size_hint=(0.90, 0.44))
         self._audio_popup = popup
 
         def _crear_player():

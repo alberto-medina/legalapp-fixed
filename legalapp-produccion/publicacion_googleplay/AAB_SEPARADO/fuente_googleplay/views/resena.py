@@ -1,9 +1,13 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.button import Button
 from kivy.clock import Clock
+from kivy.resources import resource_find
 import supabase_config as fb
 import session
 from datetime import datetime
+
+
+RATING_FONT = resource_find("data/fonts/DejaVuSans.ttf") or "data/fonts/DejaVuSans.ttf"
 
 
 class ResenaScreen(Screen):
@@ -31,16 +35,14 @@ class ResenaScreen(Screen):
         for i in range(1, 6):
             seleccionado = i <= self._puntaje_sel
             btn = Button(
-                text=str(i),
-                bold=True,
-                font_size="22sp",
+                text="★" if seleccionado else "☆",
+                font_name=RATING_FONT,
+                font_size="40sp",
                 background_normal="",
                 background_down="",
-                background_color=(
-                    (0.99, 0.84, 0.00, 1) if seleccionado else (0.15, 0.17, 0.30, 1)
-                ),
+                background_color=(0, 0, 0, 0),
                 color=(
-                    (0.00, 0.02, 0.12, 1) if seleccionado else (0.80, 0.82, 0.90, 1)
+                    (0.99, 0.75, 0.00, 1) if seleccionado else (0.75, 0.78, 0.85, 1)
                 ),
             )
             btn.bind(on_release=lambda x, v=i: self._set_puntaje(v))

@@ -104,54 +104,131 @@
                             size_hint_y: None
                             height: dp(34)
 
-                        TextInput:
-                            id: email
-                            hint_text: "ejemplo@correo.com"
-                            multiline: False
+                        # CAMPO EMAIL con icono
+                        FloatLayout:
                             size_hint_y: None
                             height: dp(56)
-                            font_size: "16sp"
-                            padding: dp(14), dp(16)
-                            background_normal: ""
-                            background_active: ""
-                            background_color: 0.95,0.94,0.97,1
-                            foreground_color: 0.10,0.06,0.14,1
-                            hint_text_color: 0.60,0.57,0.68,1
-                            cursor_color: 0.30,0.23,0.67,1
-
-                        # CAMPO PASSWORD CON OJO
-                        BoxLayout:
-                            orientation: "horizontal"
-                            size_hint_y: None
-                            height: dp(56)
-                            spacing: dp(4)
 
                             TextInput:
-                                id: password
-                                hint_text: "Contrasena"
-                                password: True
+                                id: email
+                                hint_text: "ejemplo@correo.com"
                                 multiline: False
-                                size_hint_y: None
-                                height: dp(56)
                                 font_size: "16sp"
-                                padding: dp(14), dp(16)
+                                padding: dp(52), dp(16), dp(14), dp(16)
                                 background_normal: ""
                                 background_active: ""
                                 background_color: 0.95,0.94,0.97,1
                                 foreground_color: 0.10,0.06,0.14,1
                                 hint_text_color: 0.60,0.57,0.68,1
                                 cursor_color: 0.30,0.23,0.67,1
-                                on_focus: root._on_password_focus(self, self.focus)
+                                size_hint: None, None
+                                size: self.parent.size
+                                pos: self.parent.pos
+
+                            FloatLayout:
+                                size_hint: None, None
+                                size: dp(32), dp(32)
+                                pos: self.parent.x + dp(10), self.parent.center_y - self.height / 2
+                                canvas.before:
+                                    Color:
+                                        rgba: 0.90, 0.87, 0.98, 1
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(10)]
+
+                                Label:
+                                    text: "@"
+                                    bold: True
+                                    font_size: "17sp"
+                                    color: 0.30, 0.23, 0.67, 1
+                                    size_hint: None, None
+                                    size: self.parent.size
+                                    pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+                        # CAMPO PASSWORD CON ICONO Y OJO
+                        BoxLayout:
+                            orientation: "horizontal"
+                            size_hint_y: None
+                            height: dp(56)
+                            spacing: dp(4)
+
+                            FloatLayout:
+                                size_hint_x: 1
+
+                                TextInput:
+                                    id: password
+                                    hint_text: "Contrasena"
+                                    password: True
+                                    multiline: False
+                                    font_size: "16sp"
+                                    padding: dp(52), dp(16), dp(14), dp(16)
+                                    background_normal: ""
+                                    background_active: ""
+                                    background_color: 0.95,0.94,0.97,1
+                                    foreground_color: 0.10,0.06,0.14,1
+                                    hint_text_color: 0.60,0.57,0.68,1
+                                    cursor_color: 0.30,0.23,0.67,1
+                                    on_focus: root._on_password_focus(self, self.focus)
+                                    size_hint: None, None
+                                    size: self.parent.size
+                                    pos: self.parent.pos
+
+                                FloatLayout:
+                                    size_hint: None, None
+                                    size: dp(32), dp(32)
+                                    pos: self.parent.x + dp(10), self.parent.center_y - self.height / 2
+                                    canvas.before:
+                                        Color:
+                                            rgba: 0.90, 0.87, 0.98, 1
+                                        RoundedRectangle:
+                                            pos: self.pos
+                                            size: self.size
+                                            radius: [dp(10)]
+                                        # Icono de "ojo de cerradura" (candado
+                                        # simplificado): circulo + tallo,
+                                        # mismo estilo simple y seguro que el
+                                        # resto de los iconos hechos a mano.
+                                        Color:
+                                            rgba: 0.30, 0.23, 0.67, 1
+                                        Ellipse:
+                                            pos: self.center_x - dp(4), self.center_y + dp(1)
+                                            size: dp(8), dp(8)
+                                        RoundedRectangle:
+                                            pos: self.center_x - dp(2.5), self.center_y - dp(7)
+                                            size: dp(5), dp(8)
+                                            radius: [dp(1.5)]
 
                             Button:
                                 size_hint_x: None
                                 width: dp(62)
-                                text: "Ver"
-                                font_size: "14sp"
-                                bold: True
+                                text: ""
                                 background_normal: ""
-                                background_color: 0.90,0.89,0.97,1
-                                color: 0.30,0.23,0.67,1
+                                background_color: 0, 0, 0, 0
+                                canvas.before:
+                                    Color:
+                                        rgba: 0.90,0.89,0.97,1
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(10)]
+                                # Icono de ojito (ver/ocultar contrasena),
+                                # en canvas.after por el mismo motivo que el
+                                # logo de Google -- con background_normal/
+                                # down vacios, dibujar en canvas.before puede
+                                # no renderizar.
+                                canvas.after:
+                                    Color:
+                                        rgba: 0.30, 0.23, 0.67, 1
+                                    Line:
+                                        ellipse: (self.center_x - dp(10), self.center_y - dp(6), dp(20), dp(12))
+                                        width: dp(1.6)
+                                    Ellipse:
+                                        pos: self.center_x - dp(3), self.center_y - dp(3)
+                                        size: dp(6), dp(6)
+                                    Line:
+                                        points: [self.center_x - dp(10), self.center_y - dp(7), self.center_x + dp(10), self.center_y + dp(7)] if password.password else []
+                                        width: dp(1.8)
                                 on_release: password.password = not password.password
 
                         Label:
@@ -173,8 +250,15 @@
                             bold: True
                             background_normal: ""
                             background_down: ""
-                            background_color: 0.30,0.23,0.67,1
+                            background_color: 0, 0, 0, 0
                             color: 1,1,1,1
+                            canvas.before:
+                                Color:
+                                    rgba: 0.30,0.23,0.67,1
+                                RoundedRectangle:
+                                    pos: self.pos
+                                    size: self.size
+                                    radius: [dp(14)]
                             on_release: root.login()
 
                         Label:
@@ -204,32 +288,19 @@
                                 Line:
                                     rounded_rectangle: (self.x, self.y, self.width, self.height, dp(8))
                                     width: dp(1.2)
-                                # Logo de Google (4 colores), dibujado a mano
-                                # con arcos -- sin depender de ningun asset
-                                # de imagen nuevo.
+                            # Logo de Google: imagen generada. Tiene que ir en
+                            # canvas.after, no canvas.before -- con
+                            # background_normal/down vacios (como este boton),
+                            # un Rectangle con imagen puesto en canvas.before
+                            # despues de eso no se dibuja (comprobado con test
+                            # aislado); en canvas.after si funciona.
+                            canvas.after:
                                 Color:
-                                    rgba: 0.259, 0.522, 0.957, 1
-                                Line:
-                                    circle: (self.x + dp(26), self.center_y, dp(8), 20, 100)
-                                    width: dp(2.4)
-                                Line:
-                                    points: [self.x + dp(26) + dp(7.5), self.center_y + dp(2.7), self.x + dp(26) + dp(14), self.center_y + dp(2.7)]
-                                    width: dp(2.4)
-                                Color:
-                                    rgba: 0.204, 0.659, 0.325, 1
-                                Line:
-                                    circle: (self.x + dp(26), self.center_y, dp(8), 100, 190)
-                                    width: dp(2.4)
-                                Color:
-                                    rgba: 0.984, 0.737, 0.020, 1
-                                Line:
-                                    circle: (self.x + dp(26), self.center_y, dp(8), 190, 260)
-                                    width: dp(2.4)
-                                Color:
-                                    rgba: 0.918, 0.263, 0.208, 1
-                                Line:
-                                    circle: (self.x + dp(26), self.center_y, dp(8), 260, 340)
-                                    width: dp(2.4)
+                                    rgba: 1, 1, 1, 1
+                                Rectangle:
+                                    source: "assets/google_logo.png"
+                                    pos: self.x + dp(20), self.center_y - dp(10)
+                                    size: dp(20), dp(20)
                             on_release: root.login_con_google()
 
                         Label:
@@ -242,17 +313,52 @@
                             valign: "middle"
                             text_size: self.width, None
 
-                        Button:
-                            text: "Crear cuenta"
+                        # Crear cuenta: separado en dos botones bien
+                        # visibles (Cliente/Abogado) en vez de uno solo
+                        # que llevaba primero al formulario de cliente --
+                        # los abogados terminaban sin encontrar su
+                        # registro (estaba escondido como link abajo del
+                        # formulario de cliente) y por confusion tocaban
+                        # "Continuar con Google", que es solo para clientes.
+                        BoxLayout:
+                            orientation: "horizontal"
                             size_hint_y: None
                             height: dp(52)
-                            font_size: "16sp"
-                            bold: True
-                            background_normal: ""
-                            background_down: ""
-                            background_color: 1,1,1,1
-                            color: 0.30,0.23,0.67,1
-                            on_release: root.go_register()
+                            spacing: dp(10)
+
+                            Button:
+                                text: "Soy Cliente"
+                                font_size: "15sp"
+                                bold: True
+                                background_normal: ""
+                                background_down: ""
+                                background_color: 0, 0, 0, 0
+                                color: 0.30,0.23,0.67,1
+                                canvas.before:
+                                    Color:
+                                        rgba: 0.90, 0.87, 0.98, 1
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(14)]
+                                on_release: root.go_register()
+
+                            Button:
+                                text: "Soy Abogado"
+                                font_size: "15sp"
+                                bold: True
+                                background_normal: ""
+                                background_down: ""
+                                background_color: 0, 0, 0, 0
+                                color: 1,1,1,1
+                                canvas.before:
+                                    Color:
+                                        rgba: 0.30,0.23,0.67,1
+                                    RoundedRectangle:
+                                        pos: self.pos
+                                        size: self.size
+                                        radius: [dp(14)]
+                                on_release: root.ir_registro_abogado()
 
                         Button:
                             text: "No recibi el codigo de verificacion"
