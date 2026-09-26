@@ -392,6 +392,58 @@
                     valign: "middle"
                     text_size: self.width, None
 
+                # LEGAL APP PRO (perfil destacado en la busqueda)
+                BoxLayout:
+                    size_hint_y: None
+                    height: "42dp"
+                    padding: ["0dp", "0dp", "0dp", "0dp"]
+                    canvas.before:
+                        Color:
+                            rgba: 0.23, 0.18, 0.55, 0.08
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(8)]
+
+                    Label:
+                        text: "LEGAL APP PRO"
+                        font_size: "13sp"
+                        bold: True
+                        color: 0.23, 0.18, 0.55, 1
+                        halign: "left"
+                        valign: "middle"
+                        text_size: self.size
+
+                Label:
+                    id: lbl_pro_estado
+                    text: "Destaca tu perfil primero en la lista de busqueda."
+                    font_size: "13sp"
+                    color: 0.55, 0.50, 0.65, 1
+                    size_hint_y: None
+                    height: max(dp(40), self.texture_size[1] + dp(10))
+                    halign: "left"
+                    valign: "middle"
+                    text_size: self.width, None
+
+                Button:
+                    id: btn_hacerse_pro
+                    text: "Destacar mi perfil (Legal App Pro)"
+                    size_hint_y: None
+                    height: "48dp"
+                    font_size: "14sp"
+                    bold: True
+                    background_normal: ""
+                    background_color: 0, 0, 0, 0
+                    color: 1, 1, 1, 1
+                    canvas.before:
+                        Color:
+                            rgba: 0.98, 0.75, 0.14, 1
+                        RoundedRectangle:
+                            pos: self.pos
+                            size: self.size
+                            radius: [dp(12)]
+                    on_release: root.ir_hacerse_pro()
+
                 # DATOS BANCARIOS
                 BoxLayout:
                     size_hint_y: None

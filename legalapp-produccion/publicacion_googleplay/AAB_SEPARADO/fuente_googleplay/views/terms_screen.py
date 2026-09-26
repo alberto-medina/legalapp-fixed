@@ -24,10 +24,10 @@ Cada usuario debe registrarse con datos reales, completos y actualizados. El usu
 Los abogados deben verificar su email, completar sus datos profesionales y, cuando corresponda, abonar la suscripcion aplicable. La aprobacion final puede quedar sujeta a control administrativo de matricula, identidad o documentacion.
 
 4. SUSCRIPCIONES Y ESPECIALIDADES
-La suscripcion profesional habilita el uso de la plataforma bajo las condiciones vigentes al momento del alta. La primera especialidad puede estar incluida segun el plan y las adicionales pueden generar cargos extra. Las suscripciones abonadas no son reembolsables salvo obligacion legal aplicable.
+La suscripcion profesional (Legal App Pro) habilita el uso de la plataforma bajo las condiciones vigentes al momento del alta, incluyendo un periodo de prueba gratuito cuando corresponda. La primera especialidad puede estar incluida segun el plan y las adicionales pueden generar cargos extra. Las suscripciones abonadas no son reembolsables salvo obligacion legal aplicable u otra excepcion prevista en la Politica de Reembolso.
 
 5. CONSULTAS Y PAGOS
-Los pagos de consultas y suscripciones se procesan mediante MercadoPago u otros medios habilitados. Una consulta se considera activa cuando el pago queda validado en la plataforma. Los importes, comisiones y reglas de retiro pueden actualizarse y mostrarse dentro de la app.
+Los pagos de consultas se procesan mediante MercadoPago u otros medios habilitados. Las suscripciones profesionales (Legal App Pro) se procesan a traves de Paddle.com, que actua como revendedor autorizado (Merchant of Record) de Legal App para dichos cobros. Una consulta se considera activa cuando el pago queda validado en la plataforma. Los importes, comisiones y reglas de retiro pueden actualizarse y mostrarse dentro de la app.
 
 6. HONORARIOS Y RETIROS
 Los abogados pueden solicitar retiro de honorarios sujetos a validacion administrativa. Legal App puede retener, pausar o rechazar retiros ante sospecha de fraude, contracargo, incumplimiento o datos bancarios inconsistentes.
@@ -53,7 +53,7 @@ Legal App puede actualizar estos terminos, condiciones y bases para reflejar mej
 13. LEY APLICABLE
 Estos terminos se interpretan conforme a las leyes de la Republica Argentina, sin perjuicio de los derechos del consumidor que resulten aplicables.
 
-Version 1.1 - 2026"""
+Version 1.2 - 2026"""
 
     def volver(self):
         self.manager.current = self.pantalla_anterior

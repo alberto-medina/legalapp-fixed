@@ -70,7 +70,52 @@ class PerfilAbogadoScreen(PerfilBaseMixin, Screen):
             self.ids.lbl_suscripcion.text = "Inactiva"
             self.ids.lbl_suscripcion.color = (0.90, 0.25, 0.25, 1)
 
+        self._aplicar_estado_pro(user_data)
         self._cargar_resenas(user_data.get('email', ''))
+
+    def _aplicar_estado_pro(self, user_data):
+        es_pro = bool(user_data.get('es_pro_destacado', False))
+        vence = str(user_data.get('pro_destacado_hasta', '') or '')
+
+        if "lbl_pro_estado" not in self.ids:
+            return
+
+        if es_pro:
+            fecha_str = vence[:10] if vence else "-"
+            self.ids.lbl_pro_estado.text = f"Tu perfil esta destacado hasta {fecha_str}."
+            self.ids.lbl_pro_estado.color = (0.18, 0.80, 0.44, 1)
+            self.ids.btn_hacerse_pro.text = "Renovar Legal App Pro"
+        else:
+            self.ids.lbl_pro_estado.text = "Destaca tu perfil primero en la lista de busqueda."
+            self.ids.lbl_pro_estado.color = (0.55, 0.50, 0.65, 1)
+            self.ids.btn_hacerse_pro.text = "Destacar mi perfil (Legal App Pro)"
+
+    def ir_hacerse_pro(self):
+        """Abre el link de compra alojado por RevenueCat (Web Purchase
+        Link) con el uid del abogado, sin SDK nativo -- ver
+        REVENUECAT_WEB_PURCHASE_LINK en config.py. RevenueCat avisa el
+        pago via webhook (supabase/functions/revenuecat-webhook), que
+        actualiza es_pro_destacado/pro_destacado_hasta en Supabase; no
+        hace falta que la app espere una respuesta aca."""
+        import webbrowser
+        import config
+
+        link = getattr(config, "REVENUECAT_WEB_PURCHASE_LINK", "") or ""
+        if not link:
+            self._mostrar_error("Legal App Pro todavia no esta disponible.")
+            return
+
+        uid = session.get_uid()
+        if not uid:
+            return
+
+        separador = "&" if "?" in link else "?"
+        url = f"{link}{separador}app_user_id={uid}"
+
+        try:
+            webbrowser.open(url)
+        except Exception as e:
+            self._mostrar_error(f"No se pudo abrir la pagina de pago: {e}")
 
     def _datos_extra_guardar(self):
         return {

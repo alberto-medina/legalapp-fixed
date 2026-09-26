@@ -19,6 +19,14 @@ FIREBASE_API_KEY = "AIzaSyBmBKc5MkGmWBjeEa2YPOqCKa9Ve3fxWbE"
 GOOGLE_WEB_CLIENT_ID = "511934443513-25u1356r43s8795sr6j2u1j0ed13stdg.apps.googleusercontent.com"
 
 # ============================================
+# REVENUECAT (Legal App Pro -- perfil de abogado destacado)
+# ============================================
+# Link de compra alojado por RevenueCat (Web Purchase Link) -- se abre con
+# webbrowser.open() desde ir_hacerse_pro() en perfil_abogado.py, sin SDK
+# nativo. No es un secreto (es la URL publica de checkout).
+REVENUECAT_WEB_PURCHASE_LINK = "https://pay.rev.cat/ikemvehuunwftpqz"
+
+# ============================================
 # DEBUG
 # ============================================
 DEBUG = True

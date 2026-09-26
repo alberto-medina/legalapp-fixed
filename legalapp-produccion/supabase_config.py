@@ -4,7 +4,7 @@ import uuid
 import json
 import logging
 import mimetypes
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import requests as http_requests
 from kivy.utils import platform
@@ -350,6 +350,9 @@ def acreditar_honorario(abogado_uid, tipo_servicio):
         return 0, 0
 
 
+DIAS_ESPERA_RETIRO = 15
+
+
 def sincronizar_saldo_abogado(abogado_uid):
     try:
         if not abogado_uid:
@@ -372,6 +375,8 @@ def sincronizar_saldo_abogado(abogado_uid):
         consultas = obtener_consultas_usuario(abogado_uid, "abogado")
         refs_contadas = set()
         total_neto = 0
+        total_neto_retirable = 0
+        limite_retirable = datetime.now(timezone.utc) - timedelta(days=DIAS_ESPERA_RETIRO)
 
         for consulta_id, consulta in consultas:
             estado = str(consulta.get("estado") or "").lower()
@@ -390,7 +395,17 @@ def sincronizar_saldo_abogado(abogado_uid):
                 monto = precios.get(tipo, 1000)
 
             comision = round(monto * 0.20)
-            total_neto += monto - comision
+            neto_consulta = monto - comision
+            total_neto += neto_consulta
+
+            # Si no se puede leer la fecha, se cuenta como NO retirable todavia
+            # (mas conservador que asumir que ya paso el plazo).
+            try:
+                fecha_pago = datetime.fromisoformat(str(consulta.get("created_at")).replace("Z", "+00:00"))
+                if fecha_pago <= limite_retirable:
+                    total_neto_retirable += neto_consulta
+            except Exception:
+                pass
 
         retiros = []
         try:
@@ -415,7 +430,8 @@ def sincronizar_saldo_abogado(abogado_uid):
                 pass
 
         saldo = max(total_neto - total_retirado, 0)
-        actualizar_usuario(abogado_uid, {"saldo": saldo})
+        saldo_retirable = max(min(total_neto_retirable, total_neto) - total_retirado, 0)
+        actualizar_usuario(abogado_uid, {"saldo": saldo, "saldo_retirable": saldo_retirable})
         return saldo
 
     except Exception as e:
@@ -650,7 +666,6 @@ def subir_foto_perfil(uid, path_local):
                 "apikey": SUPABASE_KEY,
                 "Authorization": f"Bearer {SUPABASE_KEY}",
                 "Content-Type": content_type,
-                "x-upsert": "true"
             }
             try:
                 logger.info(f"subir_foto_perfil: subiendo uid={uid} bucket={bucket} path={path_storage}")
@@ -741,7 +756,6 @@ def subir_archivo_chat(consulta_id, path_local, nombre):
             "apikey": SUPABASE_KEY,
             "Authorization": f"Bearer {SUPABASE_KEY}",
             "Content-Type": content_type,
-            "x-upsert": "true"
         }
         with open(path_local, "rb") as f:
             r = http_requests.post(upload_url, headers=upload_headers, data=f, timeout=60)
@@ -975,6 +989,7 @@ def solicitar_retiro(uid, monto, cuenta_destino):
 
         cuenta_destino = str(cuenta_destino or "").strip()
         saldo = user.get("saldo", 0) or 0
+        saldo_retirable = user.get("saldo_retirable", 0) or 0
         abogado_email = user.get("email", "")
 
         if monto <= 0:
@@ -983,8 +998,12 @@ def solicitar_retiro(uid, monto, cuenta_destino):
         if not cuenta_destino or len(cuenta_destino) < 6:
             return False, "Ingresa un alias o CBU valido", 0
 
-        if monto > saldo:
-            return False, f"Saldo insuficiente: ${saldo:,.0f}", 0
+        if monto > saldo_retirable:
+            return False, (
+                f"Disponible para retirar: ${saldo_retirable:,.0f}. "
+                f"Los honorarios quedan disponibles a partir de los {DIAS_ESPERA_RETIRO} dias "
+                f"desde el pago de cada consulta."
+            ), 0
 
         pendientes = _rest_get(
             "retiros",
@@ -1024,7 +1043,10 @@ def solicitar_retiro(uid, monto, cuenta_destino):
 
         if cuenta_destino != str(user.get("cuenta_bancaria") or "").strip():
             actualizar_usuario(uid, {"cuenta_bancaria": cuenta_destino})
-        actualizar_usuario(uid, {"saldo": saldo - monto})
+        actualizar_usuario(uid, {
+            "saldo": max(saldo - monto, 0),
+            "saldo_retirable": max(saldo_retirable - monto, 0),
+        })
 
         return True, "Retiro solicitado correctamente", neto
 

@@ -1,5 +1,16 @@
 #:import dp kivy.metrics.dp
 
+# Estilo global para el desplegable de CUALQUIER Spinner de la app (no solo
+# los de esta pantalla) -- por defecto Kivy dibuja las opciones en gris
+# oscuro, sin relacion con la paleta violeta/blanco del resto de la app.
+# Una sola regla de clase alcanza para toda la app porque Kivy la aplica a
+# todo SpinnerOption apenas se carga este archivo, sin importar la pantalla.
+<SpinnerOption>:
+    background_normal: ""
+    background_color: 0.96, 0.95, 0.98, 1
+    color: 0.18, 0.12, 0.40, 1
+    bold: False
+
 <AbogadosScreen>:
 
     BoxLayout:

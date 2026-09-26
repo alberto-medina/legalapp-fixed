@@ -189,6 +189,7 @@ class AdminPanelScreen(Screen):
             ("Estado", abogado_data.get('estado_abogado', '')),
             ("Aprobado", "SI" if aprobado else "NO"),
             ("Saldo", f"${abogado_data.get('saldo', 0):,.2f}"),
+            ("Disponible para retirar", f"${abogado_data.get('saldo_retirable', 0):,.2f}"),
             ("CBU/Cuenta", abogado_data.get('cuenta_bancaria', 'No cargado')),
         ]
 

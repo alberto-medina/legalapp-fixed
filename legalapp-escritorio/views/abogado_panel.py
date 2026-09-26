@@ -118,6 +118,7 @@ class AbogadoPanelScreen(Screen):
         )
         estado = user_data.get("estado_abogado", "disponible") or "disponible"
         saldo = user_data.get("saldo", 0) or 0
+        saldo_retirable = user_data.get("saldo_retirable", 0) or 0
 
         self.ids.lbl_nombre_abogado.text = nombre
         if "img_avatar_abogado" in self.ids:
@@ -144,6 +145,8 @@ class AbogadoPanelScreen(Screen):
         activas = [c for c in self._consultas if c.get("estado") in ["pagado", "en_curso", "videollamada"]]
         self.ids.lbl_consultas.text = str(len(activas))
         self.ids.lbl_honorarios.text = f"${saldo:,.0f}"
+        if "lbl_honorarios_disponible" in self.ids:
+            self.ids.lbl_honorarios_disponible.text = f"Disponible: ${saldo_retirable:,.0f}"
 
         self._actualizar_filtros()
         self._render_consultas()
@@ -333,32 +336,41 @@ class AbogadoPanelScreen(Screen):
             return
 
         saldo = user.get("saldo", 0) or 0
+        saldo_retirable = user.get("saldo_retirable", 0) or 0
         cuenta_guardada = str(user.get("cuenta_bancaria", "") or "").strip()
         layout = BoxLayout(orientation="vertical", spacing=dp(10))
 
         info = Label(
-            text=f"Saldo disponible: ${saldo:,.0f}",
+            text=f"Saldo total: ${saldo:,.0f}\nDisponible para retirar: ${saldo_retirable:,.0f}",
             font_size=sp(14),
             color=(0.35, 0.40, 0.50, 1),
             size_hint_y=None,
-            height=dp(32),
+            height=dp(48),
+        )
+        explicacion = Label(
+            text="Los honorarios quedan disponibles a partir de los 15 dias desde el pago de cada consulta.",
+            font_size=sp(11),
+            color=(0.55, 0.50, 0.65, 1),
+            size_hint_y=None,
+            height=dp(36),
         )
         cuenta = input_estilizado(hint_text="CBU / Alias / Cuenta destino", text=cuenta_guardada)
         monto = input_estilizado(
             hint_text="Monto a retirar",
-            text=str(int(saldo)) if saldo else "",
+            text=str(int(saldo_retirable)) if saldo_retirable else "",
             input_filter="int",
         )
         error = Label(text="", color=(0.90, 0.25, 0.25, 1), font_size=sp(12), size_hint_y=None, height=dp(24))
         btn = boton_estilizado(text="Solicitar retiro")
 
         layout.add_widget(info)
+        layout.add_widget(explicacion)
         layout.add_widget(cuenta)
         layout.add_widget(monto)
         layout.add_widget(error)
         layout.add_widget(btn)
 
-        popup = popup_estilizado("Retirar honorarios", layout, size_hint=(0.88, None), height=dp(360))
+        popup = popup_estilizado("Retirar honorarios", layout, size_hint=(0.88, None), height=dp(420))
 
         def _solicitar(instance):
             try:

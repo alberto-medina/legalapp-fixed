@@ -3,6 +3,7 @@ import json
 from kivy.clock import Clock
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.widget import Widget
 from kivy.uix.image import AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.button import Button
@@ -44,6 +45,25 @@ def _fecha_resena(fecha):
     if "T" in texto:
         return texto.split("T", 1)[0]
     return texto[:10]
+
+
+def _es_pro_vigente(data):
+    """Legal App Pro (perfil destacado, RevenueCat) -- True si esta
+    marcado como pro Y todavia no vencio. pro_destacado_hasta lo pone
+    supabase/functions/revenuecat-webhook cuando llega el aviso de pago."""
+    if not data.get('es_pro_destacado'):
+        return False
+    vence = str(data.get('pro_destacado_hasta', '') or '')
+    if not vence:
+        return True
+    try:
+        from datetime import datetime, timezone
+        venc_dt = datetime.fromisoformat(vence.replace('Z', '+00:00'))
+        if venc_dt.tzinfo is None:
+            venc_dt = venc_dt.replace(tzinfo=timezone.utc)
+        return venc_dt > datetime.now(timezone.utc)
+    except Exception:
+        return True
 
 
 class AbogadosScreen(Screen):
@@ -288,6 +308,11 @@ class AbogadosScreen(Screen):
                 reverse=True
             )
 
+        # Legal App Pro (perfil destacado) va primero, sin importar el
+        # orden elegido -- sort() es estable, asi que el orden interno de
+        # cada grupo (pro / no pro) no se pierde.
+        filtrados.sort(key=lambda x: 0 if _es_pro_vigente(x) else 1)
+
         self.render(filtrados)
 
     def render(self, abogados):
@@ -333,9 +358,10 @@ class AbogadosScreen(Screen):
                 provincia,
                 ciudad,
                 matricula,
+                es_pro=_es_pro_vigente(data),
             )
 
-    def add_card(self, nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia="", ciudad="", matricula=""):
+    def add_card(self, nombre, email, estado, foto, experiencia, descripcion, especialidad, provincia="", ciudad="", matricula="", es_pro=False):
         from kivy.metrics import dp as _dp
         resenas = fb.obtener_resenas_abogado(email)
         cantidad = len(resenas)
@@ -390,6 +416,29 @@ class AbogadosScreen(Screen):
             size_hint_y=None,
         )
         info.bind(minimum_height=lambda w, v: setattr(w, "height", v))
+
+        if es_pro:
+            # Insignia "PRO" -- Legal App Pro, perfil destacado via
+            # RevenueCat (ver perfil_abogado.py: ir_hacerse_pro()).
+            fila_badge = BoxLayout(orientation="horizontal", size_hint_y=None, height=_dp(18))
+            badge_pro = Label(
+                text="PRO",
+                font_size="10sp",
+                bold=True,
+                color=(0.35, 0.25, 0.02, 1),
+                size_hint=(None, None),
+                size=(_dp(34), _dp(18)),
+            )
+            with badge_pro.canvas.before:
+                Color(rgba=(0.98, 0.75, 0.14, 1))
+                badge_pro._bg = RoundedRectangle(pos=badge_pro.pos, size=badge_pro.size, radius=[_dp(9)])
+            badge_pro.bind(
+                pos=lambda w, v: setattr(w._bg, "pos", v),
+                size=lambda w, v: setattr(w._bg, "size", v),
+            )
+            fila_badge.add_widget(badge_pro)
+            fila_badge.add_widget(Widget())
+            info.add_widget(fila_badge)
 
         lbl_nombre = Label(
             text=nombre,
