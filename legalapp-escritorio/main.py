@@ -74,6 +74,7 @@ class LegalAppPro(App):
     sin_conexion = BooleanProperty(False)
     _resume_en_proceso = False
     _ultimo_resume_ts = 0
+    _boot_restaurado = False
 
     def build(self):
 
@@ -245,7 +246,10 @@ class LegalAppPro(App):
         Clock.schedule_once(lambda dt: self._restaurar_sesion_async(), 0)
 
     def _restaurar_sesion_async(self):
-        if not session.cargar():
+        tiene_sesion = session.cargar()
+        self._boot_restaurado = True
+
+        if not tiene_sesion:
             print("No hay sesion guardada, quedamos en login")
             return
 
@@ -425,6 +429,20 @@ class LegalAppPro(App):
 
     def on_pause(self):
         print("APP PAUSED")
+
+        # Si el proceso acaba de arrancar (p.ej. Android lo mato mientras
+        # estaba en el navegador de MercadoPago y lo recreo de cero al
+        # volver) y el dialogo de huella digital dispara un pause/resume
+        # instantaneo ANTES de que _restaurar_sesion_async() termine de leer
+        # el archivo guardado, session.guardar() todavia veria la sesion en
+        # memoria vacia (recien arranco el proceso) y pisaria el archivo
+        # bueno con uno vacio una fraccion de segundo antes de leerlo --
+        # confirmado en logcat: "No hay usuario logueado, quedamos en login"
+        # justo despues de un reinicio real. Mientras no se termino de leer
+        # lo que ya habia en disco, no hay nada util que guardar todavia.
+        if not self._boot_restaurado:
+            print("PAUSE ignorado: sesion aun no restaurada, no piso el archivo guardado")
+            return True
 
         # Guardado SINCRONICO a proposito: on_pause() es la unica ventana
         # garantizada antes de que Android pueda matar el proceso (ej. por

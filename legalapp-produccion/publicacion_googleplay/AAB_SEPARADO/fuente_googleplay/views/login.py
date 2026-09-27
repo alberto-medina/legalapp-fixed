@@ -41,7 +41,24 @@ class LoginScreen(FormKeyboardMixin, Screen):
             email_guardado = session.cargar_email_guardado()
             if email_guardado:
                 self.ids.email.text = email_guardado
-                if session.hay_password_con_huella():
+
+                # Si ya hay una sesion COMPLETA guardada en disco (el
+                # usuario seguia logueado y Android mato el proceso, p.ej.
+                # a mitad de un pago con MercadoPago), no hay que disparar
+                # el login con huella aca -- main.py._restaurar_sesion()
+                # ya la lee y redirige solo a la pantalla correcta
+                # (dashboard, pago_mp, etc). Sin este chequeo se ve pasar
+                # un flash por dashboard antes de llegar a la pantalla
+                # real, porque el login con huella termina antes y manda a
+                # dashboard por su cuenta (confirmado en pruebas
+                # 27/09/2026). El huella-login solo tiene sentido cuando
+                # el usuario cerro sesion a proposito, caso en el que no
+                # queda current_user guardado.
+                session.cargar()
+
+                if session.current_user:
+                    pass
+                elif session.hay_password_con_huella():
                     # La contrasena esta cifrada -- no se puede prellenar
                     # directo, hace falta la huella para descifrarla. Se
                     # dispara el prompt con una demora chica para que la
