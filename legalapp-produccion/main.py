@@ -426,13 +426,20 @@ class LegalAppPro(App):
     def on_pause(self):
         print("APP PAUSED")
 
-        def _guardar_async():
-            try:
-                session.guardar()
-            except Exception as e:
-                print(f"ERROR guardando sesion async: {e}")
+        # Guardado SINCRONICO a proposito: on_pause() es la unica ventana
+        # garantizada antes de que Android pueda matar el proceso (ej. por
+        # memoria, con el navegador de MercadoPago al frente). Guardarlo en
+        # un hilo aparte (como estaba antes) corria el riesgo real de que
+        # Android matara el proceso ANTES de que el hilo terminara de
+        # escribir -- confirmado en logcat: "No hay usuario logueado,
+        # quedamos en login" despues de reinicios, con la sesion
+        # perdida a mitad de guardado. session.guardar() solo escribe un
+        # archivo JSON local, es rapido, no hace falta un hilo para esto.
+        try:
+            session.guardar()
+        except Exception as e:
+            print(f"ERROR guardando sesion: {e}")
 
-        threading.Thread(target=_guardar_async, daemon=True).start()
         return True
 
     def on_resume(self):
