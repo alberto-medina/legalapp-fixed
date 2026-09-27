@@ -7,6 +7,12 @@ class FormKeyboardMixin:
     _form_keyboard_ready = False
     _form_scroll_id = None
     _active_input = None
+    # Las pantallas con formularios cortos que ya entran completos arriba
+    # del teclado (ver login.kv, padding con app.keyboard_height) pueden
+    # poner esto en False para que el campo activo no salte de un lado a
+    # otro al cambiar el foco -- el padding solo alcanza para que el
+    # teclado nunca tape nada, sin hacer falta el scroll extra.
+    _form_scroll_habilitado = True
 
     def _setup_form_keyboard(self, scroll_id):
         self._form_scroll_id = scroll_id
@@ -63,6 +69,8 @@ class FormKeyboardMixin:
             self._schedule_scroll(0.1)
 
     def _schedule_scroll(self, delay):
+        if not self._form_scroll_habilitado:
+            return
         Clock.schedule_once(lambda dt: self._scroll_active_input(), delay)
 
     def _scroll_active_input(self):

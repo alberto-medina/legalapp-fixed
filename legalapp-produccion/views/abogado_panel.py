@@ -344,16 +344,23 @@ class AbogadoPanelScreen(Screen):
             text=f"Saldo total: ${saldo:,.0f}\nDisponible para retirar: ${saldo_retirable:,.0f}",
             font_size=sp(14),
             color=(0.35, 0.40, 0.50, 1),
+            halign="left",
+            valign="middle",
             size_hint_y=None,
             height=dp(48),
         )
+        info.bind(size=lambda s, *_: setattr(s, "text_size", s.size))
+
         explicacion = Label(
             text="Los honorarios quedan disponibles a partir de los 15 dias desde el pago de cada consulta.",
             font_size=sp(11),
             color=(0.55, 0.50, 0.65, 1),
+            halign="left",
+            valign="top",
             size_hint_y=None,
             height=dp(36),
         )
+        explicacion.bind(width=lambda s, w: setattr(s, "text_size", (w, None)))
         cuenta = input_estilizado(hint_text="CBU / Alias / Cuenta destino", text=cuenta_guardada)
         monto = input_estilizado(
             hint_text="Monto a retirar",

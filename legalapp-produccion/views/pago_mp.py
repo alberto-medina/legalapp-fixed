@@ -1193,7 +1193,10 @@ class PagoMPScreen(Screen):
         )
 
     def volver(self):
-        if getattr(session, 'pago_tipo', None) == 'especialidad_extra':
-            self.manager.current = "perfil_abogado"
-        else:
-            self.manager.current = "pago"
+        destino = "perfil_abogado" if getattr(session, 'pago_tipo', None) == 'especialidad_extra' else "pago"
+        # Si no se limpia aca, un reinicio posterior (Android mata la app,
+        # o simplemente se vuelve a abrir mas tarde) volveria a mandar al
+        # usuario a pago_mp aunque haya elegido salir a proposito.
+        session.pago_tipo = None
+        session.guardar()
+        self.manager.current = destino

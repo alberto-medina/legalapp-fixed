@@ -309,6 +309,19 @@ class LegalAppPro(App):
             rol = user.get('rol')
             print(f"Usuario logueado: {rol}")
 
+            # Si Android mato la app mientras el usuario estaba en el
+            # checkout de MercadoPago (pantalla pago_mp), sin esto el
+            # reinicio lo mandaba directo al Dashboard/Panel, perdiendo la
+            # consulta o especialidad extra que estaba por pagar.
+            # pago_mp.py ya sabe reconstruir el pago pendiente a partir de
+            # estos datos guardados en session (ver on_enter/
+            # _armar_consulta_data_desde_session), solo faltaba mandarlo
+            # de vuelta ahi.
+            if getattr(session, 'pago_tipo', None) in ('consulta', 'especialidad_extra'):
+                print("Pago pendiente detectado, redirigiendo a pago_mp")
+                accion["screen"] = 'pago_mp'
+                return accion
+
             if rol == 'abogado':
                 suscripcion_activa = _suscripcion_habilitada_local(user)
                 email_verificado = user.get('email_verified', False)

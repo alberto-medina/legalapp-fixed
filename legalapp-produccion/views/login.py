@@ -10,6 +10,12 @@ from views.form_keyboard import FormKeyboardMixin
 
 class LoginScreen(FormKeyboardMixin, Screen):
 
+    # El formulario de login es corto y ya entra completo arriba del
+    # teclado (padding con app.keyboard_height en login.kv) -- no hace
+    # falta el scroll automatico al campo activo, que solo genera un
+    # salto visible al cambiar de email a contrasena sin necesidad real.
+    _form_scroll_habilitado = False
+
     _toques_titulo = 0
     _ultimo_toque = 0
     _login_en_proceso = False
