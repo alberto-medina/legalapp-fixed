@@ -7,9 +7,15 @@
 # todo SpinnerOption apenas se carga este archivo, sin importar la pantalla.
 <SpinnerOption>:
     background_normal: ""
-    background_color: 0.96, 0.95, 0.98, 1
+    background_color: 1, 1, 1, 1
     color: 0.18, 0.12, 0.40, 1
     bold: False
+    canvas.after:
+        Color:
+            rgba: 0.88, 0.86, 0.93, 1
+        Line:
+            points: [self.x + dp(12), self.y, self.right - dp(12), self.y]
+            width: dp(1)
 
 <AbogadosScreen>:
 
