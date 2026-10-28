@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal de Seguimiento de Expedientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/estilo.css">
+</head>
+<body class="login-page">
+
+  <div class="login-card">
+    <div class="login-brand">
+      <span class="scales">⚖️</span>
+      <span class="word">Legal<span class="app">App</span></span>
+    </div>
+    <p class="login-sub">Portal de seguimiento de expedientes</p>
+
+    <div id="error" class="login-error oculto"></div>
+
+    <form id="form-login">
+      <div class="campo">
+        <label for="email">Email</label>
+        <input type="email" id="email" required autocomplete="username">
+      </div>
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" required autocomplete="current-password">
+      </div>
+      <button type="submit" id="btn-ingresar" class="btn-primario">Ingresar</button>
+    </form>
+
+    <div class="login-demo">
+      <strong>Usuarios demo</strong><br>
+      Completá acá los usuarios que crees en Supabase (ver LEEME_PRIMERO.md) para
+      probar cada rol: abogado, cliente y admin.
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    const form = document.getElementById("form-login");
+    const errorBox = document.getElementById("error");
+    const btn = document.getElementById("btn-ingresar");
+
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      errorBox.classList.add("oculto");
+      btn.disabled = true;
+      btn.textContent = "Ingresando...";
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        await iniciarSesion(email, password);
+        window.location.href = "app.html";
+      } catch (e) {
+        errorBox.textContent = "No pudimos iniciar sesión. Revisá el email y la contraseña.";
+        errorBox.classList.remove("oculto");
+        btn.disabled = false;
+        btn.textContent = "Ingresar";
+      }
+    });
+
+    // Si ya hay sesión activa, va directo al panel.
+    authClient.onAuthStateChanged((user) => {
+      if (user) window.location.href = "app.html";
+    });
+  </script>
+</body>
+</html>

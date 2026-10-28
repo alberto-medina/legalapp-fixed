@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logueado() {
+      return request.auth != null;
+    }
+
+    function miRol() {
+      return get(/databases/$(database)/documents/perfiles/$(request.auth.uid)).data.rol;
+    }
+
+    function esAdmin() {
+      return logueado() && miRol() == 'admin';
+    }
+
+    // ---------------- perfiles ----------------
+    // Cada usuario lee su propio perfil (para saber su rol). El abogado puede
+    // leer perfiles de clientes (para el combo "Nuevo expediente"). El admin
+    // los lee todos.
+    // El abogado puede CREAR un perfil nuevo con rol "cliente" (alta de
+    // cliente desde la app), pero nunca crear un admin ni otro abogado, y
+    // nadie puede editar/borrar un perfil ya creado (evita que alguien se
+    // auto-asigne otro rol despues).
+    match /perfiles/{uid} {
+      allow read: if logueado() && (
+        request.auth.uid == uid ||
+        esAdmin() ||
+        (resource.data.rol == 'cliente' && miRol() == 'abogado')
+      );
+      allow create: if logueado() && miRol() == 'abogado' && request.resource.data.rol == 'cliente';
+      allow update, delete: if false;
+    }
+
+    // ---------------- expedientes ----------------
+    // "allow read" cubre get() Y list()/query(): Firestore evalua esta regla
+    // documento por documento tambien para las queries con where(), por eso
+    // alcanza con comparar contra resource.data sin reglas de list aparte.
+    match /expedientes/{id} {
+      allow read: if logueado() && (
+        resource.data.abogadoId == request.auth.uid ||
+        resource.data.clienteId == request.auth.uid ||
+        esAdmin()
+      );
+      allow create: if logueado() && request.resource.data.abogadoId == request.auth.uid;
+      allow update, delete: if logueado() && resource.data.abogadoId == request.auth.uid;
+    }
+
+    // ---------------- actuaciones ----------------
+    match /actuaciones/{id} {
+      allow read: if logueado() && (
+        resource.data.abogadoId == request.auth.uid ||
+        esAdmin() ||
+        get(/databases/$(database)/documents/expedientes/$(resource.data.expedienteId)).data.clienteId == request.auth.uid
+      );
+      allow create: if logueado() && request.resource.data.abogadoId == request.auth.uid;
+      allow update, delete: if logueado() && resource.data.abogadoId == request.auth.uid;
+    }
+
+    // ---------------- alertas ----------------
+    match /alertas/{id} {
+      allow read: if logueado() && (
+        resource.data.abogadoId == request.auth.uid ||
+        esAdmin() ||
+        (resource.data.paraRol == 'cliente' && resource.data.clienteId == request.auth.uid)
+      );
+      allow create, update: if logueado() && request.resource.data.abogadoId == request.auth.uid;
+      allow delete: if logueado() && resource.data.abogadoId == request.auth.uid;
+    }
+
+    // ---------------- honorarios ----------------
+    // Solo el abogado carga/edita montos; el cliente los puede leer (para ver
+    // el detalle y el recibo), nunca escribirlos.
+    match /honorarios/{id} {
+      allow read: if logueado() && (
+        resource.data.abogadoId == request.auth.uid ||
+        resource.data.clienteId == request.auth.uid ||
+        esAdmin()
+      );
+      allow create, update: if logueado() && request.resource.data.abogadoId == request.auth.uid;
+      allow delete: if logueado() && resource.data.abogadoId == request.auth.uid;
+    }
+
+    // ---------------- adjuntos ----------------
+    // A diferencia de actuaciones/alertas, ACA el cliente tambien puede crear
+    // (puede subir sus propios archivos al abogado), siempre y cuando sea
+    // realmente parte de ese expediente.
+    match /adjuntos/{id} {
+      allow read: if logueado() && (
+        resource.data.abogadoId == request.auth.uid ||
+        resource.data.clienteId == request.auth.uid ||
+        esAdmin()
+      );
+      allow create: if logueado() && (
+        request.resource.data.abogadoId == request.auth.uid ||
+        request.resource.data.clienteId == request.auth.uid
+      ) && request.resource.data.subidoPor == request.auth.uid;
+      allow delete: if logueado() && resource.data.subidoPor == request.auth.uid;
+    }
+  }
+}

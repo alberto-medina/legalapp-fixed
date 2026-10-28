@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portal de Seguimiento de Expedientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+  <div class="app-shell oculto" id="app-shell">
+    <div class="topbar">
+      <div class="login-brand">
+        <span class="scales">⚖️</span>
+        <span class="word">Legal<span class="app">App</span></span>
+      </div>
+      <div class="topbar-user">
+        <div>
+          <div class="nombre" id="nombre-usuario"></div>
+          <div class="rol" id="rol-usuario"></div>
+        </div>
+        <div class="avatar" id="avatar-usuario"></div>
+        <button class="btn-salir" id="btn-salir">Salir</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="sidebar" id="sidebar"></div>
+      <div class="contenido" id="contenido"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/adjuntos.js"></script>
+  <script src="js/honorarios.js"></script>
+  <script src="js/abogado.js"></script>
+  <script src="js/cliente.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    let perfilGlobal = null;
+    let moduloGlobal = null;
+    let vistaActual = "inicio";
+
+    function navegarA(vistaId) {
+      vistaActual = vistaId;
+      document.querySelectorAll("#sidebar button").forEach((b) => {
+        b.classList.toggle("activo", b.getAttribute("data-vista") === vistaId);
+      });
+      const contenedor = document.getElementById("contenido");
+      moduloGlobal.render(perfilGlobal, vistaId, contenedor);
+    }
+
+    function armarSidebar(menu) {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.innerHTML = menu
+        .map((item) => `<button data-vista="${item.id}">${item.label}</button>`)
+        .join("");
+      sidebar.querySelectorAll("button").forEach((b) => {
+        b.addEventListener("click", () => navegarA(b.getAttribute("data-vista")));
+      });
+    }
+
+    (async () => {
+      const perfil = await exigirSesion();
+      if (!perfil) return; // exigirSesion ya redirige al login
+
+      perfilGlobal = perfil;
+      moduloGlobal = perfil.rol === "abogado" ? Abogado : perfil.rol === "cliente" ? Cliente : Admin;
+
+      document.getElementById("nombre-usuario").textContent =
+        (perfil.rol === "abogado" ? "Dr./Dra. " : "") + perfil.nombre;
+      document.getElementById("rol-usuario").textContent = perfil.rol;
+      document.getElementById("avatar-usuario").textContent = perfil.nombre.charAt(0).toUpperCase();
+
+      armarSidebar(moduloGlobal.menu);
+      navegarA("inicio");
+
+      document.getElementById("app-shell").classList.remove("oculto");
+    })();
+
+    document.getElementById("btn-salir").addEventListener("click", cerrarSesion);
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+name = "seguimiento-expedientes-archivos"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+FIREBASE_PROJECT_ID = "seguimiento-expediente-legal"
+B2_BUCKET_ID = "c68a6a79cab88023a31c0f1b"
+B2_BUCKET_NAME = "seguimiento-expedientes"
+
+# Secretos (no van aca, se cargan con "wrangler secret put"):
+# B2_KEY_ID
+# B2_APP_KEY
