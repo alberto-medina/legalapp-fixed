@@ -13,6 +13,9 @@
   --amber:#b5790f;
   --amber-bg:#fdf1dd;
   --danger:#c23f3f;
+  --danger-bg:#fbe8e7;
+  --green:#2e9e4f;
+  --green-bg:#e7f6ea;
   --serif:'Fraunces',Georgia,serif;
   --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   color-scheme:light;
@@ -57,7 +60,7 @@ input,select,textarea{font-family:var(--sans);}
   gap:9px;
   margin-bottom:6px;
 }
-.login-brand .scales{font-size:26px;line-height:1;}
+.login-brand .brand-logo{width:34px;height:34px;border-radius:9px;display:block;flex-shrink:0;}
 .login-brand .word{
   font-family:var(--serif);
   font-weight:600;
@@ -140,6 +143,7 @@ input,select,textarea{font-family:var(--sans);}
   padding:14px 22px;
 }
 .topbar .login-brand .word{color:#fff;font-size:19px;}
+.topbar .login-brand .brand-logo{width:28px;height:28px;border-radius:7px;}
 .topbar-user{display:flex;align-items:center;gap:12px;}
 .topbar-user .nombre{font-size:13.5px;font-weight:700;line-height:1.3;text-align:right;}
 .topbar-user .rol{font-size:11px;color:#a9b3c6;text-align:right;text-transform:capitalize;}
@@ -369,6 +373,12 @@ table.tabla tr:last-child td{border-bottom:none;}
 .timeline-item.futuro::before{background:var(--amber);}
 .timeline-item.urgente::before{background:var(--danger);}
 .timeline-item.hoy::before{background:var(--teal);box-shadow:0 0 0 3px var(--teal-pale, #eaf7f4);}
+
+/* Semaforo: estado real de la actuacion, pisa el color de urgencia por fecha */
+.timeline-item.estado-proceso::before{background:var(--amber);}
+.timeline-item.estado-avanza::before{background:var(--green);}
+.timeline-item.estado-cancelado::before{background:var(--danger);}
+
 .timeline-fecha{
   font-size:11.5px;color:var(--ink-faint);font-weight:700;white-space:nowrap;width:86px;flex:none;
 }
@@ -378,6 +388,13 @@ table.tabla tr:last-child td{border-bottom:none;}
   display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
   color:var(--ink-faint);margin-left:7px;
 }
+.chip-semaforo{
+  display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;margin-left:7px;
+}
+.chip-semaforo.proceso{background:var(--amber-bg);color:var(--amber);}
+.chip-semaforo.avanza{background:var(--green-bg);color:var(--green);}
+.chip-semaforo.cancelado{background:var(--danger-bg);color:var(--danger);}
 
 .form-inline{
   display:flex;

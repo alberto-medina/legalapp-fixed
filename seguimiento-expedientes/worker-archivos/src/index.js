@@ -19,16 +19,18 @@ function jsonResponse(data, status, origin) {
   });
 }
 
-// Pide el documento del expediente a Firestore CON el token del usuario que
-// hizo la peticion. Si Firestore lo deja leer (porque nuestras reglas dicen
-// que es el abogado o el cliente de ese expediente), esta funcion devuelve el
-// documento; si no, tira un error -- asi reusamos la autorizacion que ya
-// esta escrita una sola vez en firestore.rules, sin duplicarla aca.
-async function leerExpedienteAutorizado(projectId, expedienteId, idToken) {
-  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/expedientes/${expedienteId}`;
+// Pide un documento a Firestore CON el token del usuario que hizo la
+// peticion. Si Firestore lo deja leer (porque nuestras reglas dicen que es el
+// abogado/cliente de ese expediente, o que cualquiera puede leer un perfil de
+// abogado), esta funcion devuelve el documento; si no, tira un error -- asi
+// reusamos la autorizacion que ya esta escrita una sola vez en
+// firestore.rules, sin duplicarla aca. "coleccion" es "expedientes" o
+// "perfiles" segun el tipo de subida/descarga.
+async function leerDocAutorizado(projectId, coleccion, docId, idToken) {
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/${coleccion}/${docId}`;
   const res = await fetch(url, { headers: { Authorization: `Bearer ${idToken}` } });
   if (!res.ok) {
-    throw new Error("No autorizado para este expediente");
+    throw new Error("No autorizado para este documento");
   }
   return res.json();
 }
@@ -53,6 +55,21 @@ function sanitizarNombre(nombre) {
   return (nombre || "archivo").replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 150);
 }
 
+// Saca el uid del idToken SIN verificar la firma -- no hace falta: la firma
+// ya la valida Firestore en leerDocAutorizado() (si el token fuera invalido o
+// estuviera vencido, esa llamada falla antes de llegar a usar este uid). Solo
+// nos sirve para confirmar que, al subir una foto de "perfil", el uid del
+// token coincide con el documento que se quiere modificar.
+function uidDelToken(idToken) {
+  try {
+    const payload = idToken.split(".")[1];
+    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(json).user_id || JSON.parse(json).sub || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function manejarSubida(request, env, origin) {
   const authHeader = request.headers.get("Authorization") || "";
   const idToken = authHeader.replace("Bearer ", "");
@@ -60,23 +77,29 @@ async function manejarSubida(request, env, origin) {
 
   const formData = await request.formData();
   const file = formData.get("archivo");
-  const expedienteId = formData.get("expedienteId");
+  const tipo = formData.get("tipo") === "perfil" ? "perfil" : "expediente";
+  const refId = formData.get("tipo") === "perfil" ? formData.get("perfilId") : formData.get("expedienteId");
   const subcarpeta = sanitizarNombre(formData.get("subcarpeta") || "");
+  const coleccion = tipo === "perfil" ? "perfiles" : "expedientes";
+  const carpeta = tipo === "perfil" ? "perfiles" : "expedientes";
 
-  if (!file || !expedienteId) {
-    return jsonResponse({ error: "Faltan datos (archivo o expedienteId)" }, 400, origin);
+  if (!file || !refId) {
+    return jsonResponse({ error: "Faltan datos (archivo o id)" }, 400, origin);
+  }
+  if (tipo === "perfil" && refId !== uidDelToken(idToken)) {
+    return jsonResponse({ error: "Solo podés subir tu propia foto de estudio" }, 403, origin);
   }
 
   try {
-    await leerExpedienteAutorizado(env.FIREBASE_PROJECT_ID, expedienteId, idToken);
+    await leerDocAutorizado(env.FIREBASE_PROJECT_ID, coleccion, refId, idToken);
   } catch (e) {
     return jsonResponse({ error: e.message }, 403, origin);
   }
 
   const nombreSeguro = sanitizarNombre(file.name);
   const path = subcarpeta
-    ? `expedientes/${expedienteId}/${subcarpeta}/${Date.now()}_${nombreSeguro}`
-    : `expedientes/${expedienteId}/${Date.now()}_${nombreSeguro}`;
+    ? `${carpeta}/${refId}/${subcarpeta}/${Date.now()}_${nombreSeguro}`
+    : `${carpeta}/${refId}/${Date.now()}_${nombreSeguro}`;
 
   try {
     const auth = await b2Authorize(env);
@@ -122,15 +145,17 @@ async function manejarDescarga(request, env, origin) {
   if (!idToken) return jsonResponse({ error: "Falta autenticación" }, 401, origin);
 
   const { path } = await request.json();
-  if (!path || !path.startsWith("expedientes/")) {
+  if (!path || !(path.startsWith("expedientes/") || path.startsWith("perfiles/"))) {
     return jsonResponse({ error: "Ruta inválida" }, 400, origin);
   }
 
-  // expedientes/{expedienteId}/... -> sacamos el expedienteId del propio path
-  const expedienteId = path.split("/")[1];
+  // expedientes/{expedienteId}/... o perfiles/{uid}/... -> sacamos la
+  // coleccion y el id del propio path.
+  const [carpeta, refId] = path.split("/");
+  const coleccion = carpeta === "perfiles" ? "perfiles" : "expedientes";
 
   try {
-    await leerExpedienteAutorizado(env.FIREBASE_PROJECT_ID, expedienteId, idToken);
+    await leerDocAutorizado(env.FIREBASE_PROJECT_ID, coleccion, refId, idToken);
   } catch (e) {
     return jsonResponse({ error: e.message }, 403, origin);
   }

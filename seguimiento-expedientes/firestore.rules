@@ -16,20 +16,26 @@ service cloud.firestore {
 
     // ---------------- perfiles ----------------
     // Cada usuario lee su propio perfil (para saber su rol). El abogado puede
-    // leer perfiles de clientes (para el combo "Nuevo expediente"). El admin
-    // los lee todos.
+    // leer perfiles de clientes (para el combo "Nuevo expediente"). El perfil
+    // de un abogado es legible por cualquier usuario logueado (nombre del
+    // estudio, foto y contacto son datos pensados para que el cliente los
+    // vea, no son sensibles). El admin lee todos.
     // El abogado puede CREAR un perfil nuevo con rol "cliente" (alta de
-    // cliente desde la app), pero nunca crear un admin ni otro abogado, y
-    // nadie puede editar/borrar un perfil ya creado (evita que alguien se
-    // auto-asigne otro rol despues).
+    // cliente desde la app), pero nunca crear un admin ni otro abogado.
+    // Cada usuario puede actualizar SOLO los 3 campos de "su estudio" en su
+    // propio perfil (nombre/contacto/foto) -- nunca su rol ni su email.
     match /perfiles/{uid} {
       allow read: if logueado() && (
         request.auth.uid == uid ||
         esAdmin() ||
-        (resource.data.rol == 'cliente' && miRol() == 'abogado')
+        (resource.data.rol == 'cliente' && miRol() == 'abogado') ||
+        resource.data.rol == 'abogado'
       );
       allow create: if logueado() && miRol() == 'abogado' && request.resource.data.rol == 'cliente';
-      allow update, delete: if false;
+      allow update: if logueado() && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['estudioNombre', 'estudioContacto', 'estudioFotoPath']);
+      allow delete: if false;
     }
 
     // ---------------- expedientes ----------------

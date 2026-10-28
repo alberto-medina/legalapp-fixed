@@ -22,6 +22,14 @@ const Cliente = (() => {
     return "chip-estado";
   }
 
+  // Mismo semaforo que carga el abogado por cada actuacion: amarillo en
+  // curso, verde avanza, rojo cancelado/no aceptado. Acá es solo lectura.
+  const SEMAFORO = {
+    proceso: { clase: "estado-proceso", chip: "proceso", texto: "🟡 En proceso" },
+    avanza: { clase: "estado-avanza", chip: "avanza", texto: "🟢 Avanza" },
+    cancelado: { clase: "estado-cancelado", chip: "cancelado", texto: "🔴 Cancelado" },
+  };
+
   function docA(doc) {
     return { id: doc.id, ...doc.data() };
   }
@@ -138,6 +146,7 @@ const Cliente = (() => {
   function renderStepper(e) {
     if (!e.etapas || e.etapas.length === 0) return "";
     const actual = e.etapaActualIndex ?? 0;
+    const completo = !!e.procesoCompleto;
     return `
       <div class="stepper-wrap">
         <div class="stepper-titulo">Etapas del proceso</div>
@@ -145,14 +154,15 @@ const Cliente = (() => {
           ${e.etapas
             .map(
               (et, i) => `
-            <div class="stepper-item ${i < actual ? "completado" : i === actual ? "activo" : ""}">
+            <div class="stepper-item ${i < actual || (completo && i === actual) ? "completado" : i === actual ? "activo" : ""}">
               <div class="stepper-linea"></div>
-              <div class="stepper-circulo">${i < actual ? "✓" : i + 1}</div>
+              <div class="stepper-circulo">${i < actual || (completo && i === actual) ? "✓" : i + 1}</div>
               <div class="stepper-label">${et}</div>
             </div>`
             )
             .join("")}
         </div>
+        ${completo ? `<div class="stepper-acciones"><span class="badge teal">Proceso completo</span></div>` : ""}
       </div>
     `;
   }
@@ -178,16 +188,17 @@ const Cliente = (() => {
           actuaciones.length === 0
             ? '<div class="vacio">Tu abogado todavía no cargó actuaciones en este expediente.</div>'
             : actuaciones
-                .map(
-                  (a) => `
-          <div class="timeline-item">
+                .map((a) => {
+                  const sem = SEMAFORO[a.estado] || SEMAFORO.proceso;
+                  return `
+          <div class="timeline-item ${sem.clase}">
             <div class="timeline-fecha">${fechaCorta(a.fecha)}</div>
             <div class="timeline-cuerpo">
-              <div class="tipo">${a.tipo}</div>
+              <div class="tipo">${a.tipo}<span class="chip-semaforo ${sem.chip}">${sem.texto}</span></div>
               ${a.descripcion ? `<div class="desc">${a.descripcion}</div>` : ""}
             </div>
-          </div>`
-                )
+          </div>`;
+                })
                 .join("")
         }
       </div>

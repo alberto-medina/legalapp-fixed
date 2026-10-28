@@ -17,6 +17,14 @@ const Abogado = (() => {
     plazo_escrito: "Plazo de escrito",
   };
 
+  // Semaforo de estado de cada actuacion: amarillo mientras esta en curso,
+  // verde cuando avanza/se aprueba, rojo si se cancela o no se acepta.
+  const SEMAFORO = {
+    proceso: { clase: "estado-proceso", chip: "proceso", texto: "🟡 En proceso" },
+    avanza: { clase: "estado-avanza", chip: "avanza", texto: "🟢 Avanza" },
+    cancelado: { clase: "estado-cancelado", chip: "cancelado", texto: "🔴 Cancelado" },
+  };
+
   // Calcula la urgencia en base a la fecha, sin depender de nada "corriendo" en
   // segundo plano: cada vez que se abre la Agenda o el Inicio, se recalcula sola
   // a partir de la fecha de hoy -- asi la alerta se va poniendo mas urgente a
@@ -223,7 +231,14 @@ const Abogado = (() => {
   }
 
   async function avanzarEtapa(expedienteId, nuevoIndex) {
-    await db.collection("expedientes").doc(expedienteId).update({ etapaActualIndex: nuevoIndex });
+    // Moverse de etapa (adelante o atrás) siempre deja el proceso como no
+    // terminado -- "completo" es una marca explícita, no una consecuencia de
+    // estar parado en la última etapa de la lista.
+    await db.collection("expedientes").doc(expedienteId).update({ etapaActualIndex: nuevoIndex, procesoCompleto: false });
+  }
+
+  async function marcarProcesoCompleto(expedienteId) {
+    await db.collection("expedientes").doc(expedienteId).update({ procesoCompleto: true });
   }
 
   async function guardarEtapas(expedienteId, etapasTexto) {
@@ -231,11 +246,11 @@ const Abogado = (() => {
       .split(",")
       .map((et) => et.trim())
       .filter((et) => et.length > 0);
-    await db.collection("expedientes").doc(expedienteId).update({ etapas, etapaActualIndex: 0 });
+    await db.collection("expedientes").doc(expedienteId).update({ etapas, etapaActualIndex: 0, procesoCompleto: false });
     return etapas;
   }
 
-  async function crearActuacion(expedienteId, tipo, fecha, descripcion) {
+  async function crearActuacion(expedienteId, tipo, fecha, descripcion, estado) {
     const expDoc = await db.collection("expedientes").doc(expedienteId).get();
     const expediente = expDoc.data() || {};
     await db.collection("actuaciones").add({
@@ -245,6 +260,7 @@ const Abogado = (() => {
       tipo,
       fecha,
       descripcion: descripcion || "",
+      estado: estado || "proceso",
       createdBy: perfilActual.id,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -382,6 +398,7 @@ const Abogado = (() => {
       `;
     }
     const actual = e.etapaActualIndex ?? 0;
+    const completo = !!e.procesoCompleto;
     return `
       <div class="stepper-wrap">
         <div class="stepper-titulo">Etapas del proceso</div>
@@ -389,9 +406,9 @@ const Abogado = (() => {
           ${e.etapas
             .map(
               (et, i) => `
-            <div class="stepper-item ${i < actual ? "completado" : i === actual ? "activo" : ""}">
+            <div class="stepper-item ${i < actual || (completo && i === actual) ? "completado" : i === actual ? "activo" : ""}">
               <div class="stepper-linea"></div>
-              <div class="stepper-circulo">${i < actual ? "✓" : i + 1}</div>
+              <div class="stepper-circulo">${i < actual || (completo && i === actual) ? "✓" : i + 1}</div>
               <div class="stepper-label">${et}</div>
             </div>`
             )
@@ -402,7 +419,9 @@ const Abogado = (() => {
           ${
             actual < e.etapas.length - 1
               ? `<button class="btn-teal" data-etapa="${actual + 1}">Avanzar a "${e.etapas[actual + 1]}" →</button>`
-              : `<span class="badge teal">Proceso completo</span>`
+              : completo
+              ? `<span class="badge teal">Proceso completo</span>`
+              : `<button class="btn-teal" data-completar="${e.id}">✓ Marcar proceso completo</button>`
           }
         </div>
       </div>
@@ -428,12 +447,26 @@ const Abogado = (() => {
         try {
           await avanzarEtapa(e.id, nuevoIndex);
           e.etapaActualIndex = nuevoIndex;
+          e.procesoCompleto = false;
           renderFicha(panel, e);
         } catch (err) {
           alert("No se pudo actualizar la etapa: " + err.message);
         }
       });
     });
+
+    const btnCompletar = panel.querySelector("[data-completar]");
+    if (btnCompletar) {
+      btnCompletar.addEventListener("click", async () => {
+        try {
+          await marcarProcesoCompleto(e.id);
+          e.procesoCompleto = true;
+          renderFicha(panel, e);
+        } catch (err) {
+          alert("No se pudo marcar el proceso como completo: " + err.message);
+        }
+      });
+    }
 
     const formEtapas = panel.querySelector('form[data-rol="etapas"]');
     if (formEtapas) {
@@ -460,14 +493,29 @@ const Abogado = (() => {
     ]);
 
     // Linea de tiempo del proceso: actuaciones ya presentadas + audiencias/plazos
-    // agendados, todo junto en orden cronologico (lo mas viejo arriba).
+    // agendados, todo junto en orden cronologico (lo mas viejo arriba). El
+    // "semaforo" (estado real de la actuacion) pisa el color por urgencia de
+    // fecha que ya tienen las alertas -- una actuacion siempre muestra su
+    // propio resultado, no cuanto falta para la fecha.
     const items = [
-      ...actuaciones.map((a) => ({ fecha: a.fecha, titulo: a.tipo, desc: a.descripcion, etiqueta: "Actuación" })),
+      ...actuaciones.map((a) => {
+        const sem = SEMAFORO[a.estado] || SEMAFORO.proceso;
+        return {
+          fecha: a.fecha,
+          titulo: a.tipo,
+          desc: a.descripcion,
+          etiqueta: "Actuación",
+          clase: sem.clase,
+          semaforo: sem,
+        };
+      }),
       ...alertas.map((a) => ({
         fecha: a.fecha,
         titulo: a.mensaje,
         desc: "",
         etiqueta: ETIQUETA_TIPO[a.tipo] || a.tipo,
+        clase: claseLinea(a.fecha),
+        semaforo: null,
       })),
     ].sort((x, y) => x.fecha.localeCompare(y.fecha));
 
@@ -479,10 +527,10 @@ const Abogado = (() => {
             : items
                 .map(
                   (it) => `
-          <div class="timeline-item ${claseLinea(it.fecha)}">
+          <div class="timeline-item ${it.clase}">
             <div class="timeline-fecha">${fechaCorta(it.fecha)}</div>
             <div class="timeline-cuerpo">
-              <div class="tipo">${it.titulo}<span class="lt-badge">${it.etiqueta}</span></div>
+              <div class="tipo">${it.titulo}<span class="lt-badge">${it.etiqueta}</span>${it.semaforo ? `<span class="chip-semaforo ${it.semaforo.chip}">${it.semaforo.texto}</span>` : ""}</div>
               ${it.desc ? `<div class="desc">${it.desc}</div>` : ""}
             </div>
           </div>`
@@ -503,6 +551,14 @@ const Abogado = (() => {
           <label>Descripción</label>
           <input type="text" name="descripcion" placeholder="Opcional">
         </div>
+        <div class="campo chico">
+          <label>Estado</label>
+          <select name="estado">
+            <option value="proceso">🟡 En proceso</option>
+            <option value="avanza">🟢 Avanza</option>
+            <option value="cancelado">🔴 Cancelado / no aceptado</option>
+          </select>
+        </div>
         <button type="submit" class="btn-teal">Agregar</button>
       </form>
     `;
@@ -511,7 +567,7 @@ const Abogado = (() => {
       ev.preventDefault();
       const f = new FormData(ev.target);
       try {
-        await crearActuacion(expedienteId, f.get("tipo"), f.get("fecha"), f.get("descripcion"));
+        await crearActuacion(expedienteId, f.get("tipo"), f.get("fecha"), f.get("descripcion"), f.get("estado"));
         renderActuacionesTab(panel, expedienteId);
       } catch (e) {
         alert("No se pudo cargar la actuación: " + e.message);
